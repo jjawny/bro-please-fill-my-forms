@@ -9,7 +9,7 @@ Dev starter:
 2. Open your Chromium browser's [extensions](chrome://extensions/)
 3. Click <kbd>Load unpacked</kbd> and choose[./dist](./dist)
 
-- From here, the feedback loop is: `npm run build` + <img src="public/icons/reload-extension.png" alt="reload extension" style="height: 15px;">
+- From here, the feedback loop is: `npm run build` + <img src="public/images/reload-extension.png" alt="reload extension" style="height: 15px;">
 
 To view console logs:
 
@@ -17,4 +17,4 @@ To view console logs:
 - 💉 Injected scripts logs? inspect current page (e.g., `chrome.scripting.executeScript()`)
 - 🤖 Service worker logs? inspect the [extension](chrome://extensions/):
 
-  ![how to view extension console logs](public/icons/how-to-view-extension-console-logs.png)
+  ![how to view extension console logs](public/images/how-to-view-extension-console-logs.png)
