@@ -1,61 +1,20 @@
-# React + TypeScript + Vite
+# Digi Worlds
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- Bootstrapped w `npm create vite@latest`
+- Not a SPA!!! This is a Chromium extension
 
-Currently, two official plugins are available:
+Dev starter:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. `npm run build` will create [./dist](./dist) (see [vite.config.ts](./vite.config.ts))
+2. Open your Chromium browser's [extensions](chrome://extensions/)
+3. Click <kbd>Load unpacked</kbd> and choose[./dist](./dist)
 
-## Expanding the ESLint configuration
+- From here, the feedback loop is: `npm run build` + <img src="public/icons/reload-extension.png" alt="reload extension" style="height: 15px;">
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+To view console logs:
 
-- Configure the top-level `parserOptions` property like this:
+- ⚛️ component logs? inspect the extension's pop-up
+- 💉 Injected scripts logs? inspect current page (e.g., `chrome.scripting.executeScript()`)
+- 🤖 Service worker logs? inspect the [extension](chrome://extensions/):
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
-
----
-
-Johnny WIP:
-
-0. not a SPA! this is a chromium ext
-1. vite run build should create a dist (see vite.config)
-2. vite config + manifest v3
-3. npm run build
-4. open arc://extensions/ or chrome://extensions/
-5. load unpacked -> dist
+  ![how to view extension console logs](public/icons/how-to-view-extension-console-logs.png)
