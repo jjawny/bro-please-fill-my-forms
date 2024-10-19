@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Digi Worlds by Johnny Madigan",
-  "version": "1.0",
+  "name": "Digi Worlds",
+  "version": "1.0.0",
   "permissions": ["activeTab", "scripting"],
   "action": {
     "default_popup": "index.html",
