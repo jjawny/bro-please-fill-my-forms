@@ -53,6 +53,9 @@ export default tseslint.config({
 
 Johnny WIP:
 
+0. not a SPA! this is a chromium ext
 1. vite run build should create a dist (see vite.config)
 2. vite config + manifest v3
-3.
+3. npm run build
+4. open arc://extensions/ or chrome://extensions/
+5. load unpacked -> dist
