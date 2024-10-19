@@ -1,7 +1,8 @@
 # Digi Worlds
 
+## Chromium extension
+
 - Bootstrapped w `npm create vite@latest`
-- Not a SPA!!! This is a Chromium extension
 
 Dev starter:
 
@@ -10,6 +11,7 @@ Dev starter:
 3. Click <kbd>Load unpacked</kbd> and choose[./dist](./dist)
 
 - From here, the feedback loop is: `npm run build` + <img src="public/images/reload-extension.png" alt="reload extension" style="height: 15px;">
+- DX tip: `npm run dev` to edit popup's UI faster (but note any handlers using the _chrome_ obj will sh1t itself)
 
 To view console logs:
 
