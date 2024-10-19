@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Digi Worlds",
+  "name": "DigiWorlds",
   "version": "1.0.0",
   "permissions": ["activeTab", "scripting"],
   "action": {
