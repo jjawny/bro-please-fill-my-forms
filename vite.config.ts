@@ -8,7 +8,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: "index.html",
-        background: "src/background.ts", // event-driven services
+        "service-worker": "src/service-worker.ts",
       },
       output: {
         entryFileNames: "assets/[name].js",
@@ -17,6 +17,6 @@ export default defineConfig({
       },
     },
 
-    outDir: "dist", // chromium ext expects 'dist' folder
+    outDir: "dist", // chromium extensions expect 'dist' folder
   },
 });
