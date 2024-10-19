@@ -1,0 +1,17 @@
+/* injected css classes to toggle via background worker, this file is loaded separately from index.css (styles for pop-up only) */
+
+.digi-worlds-isometric-mode {
+  transform: rotateX(45deg) rotateZ(45deg);
+  transform-style: preserve-3d;
+  will-change: transform;
+  box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
+    28px 28px 28px 0 rgba(34, 33, 81, 0.25);
+  transition: 0.4s ease-in-out transform, 0.3s ease-in-out box-shadow;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
