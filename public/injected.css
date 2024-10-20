@@ -1,4 +1,5 @@
-/* injected css classes to toggle via background worker, this file is loaded separately from index.css (styles for pop-up only) */
+/* css applied on the user's current page */
+/* see index.css/tailwind for pop-up's styles */
 
 .digi-worlds-isometric-mode {
   transform: rotateX(45deg) rotateZ(45deg);
