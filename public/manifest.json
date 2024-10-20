@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "DigiWorlds",
+  "name": "Digi Worlds",
+  "description": "Johnny was bored...",
   "version": "1.0.0",
   "permissions": ["activeTab", "scripting"],
   "action": {
