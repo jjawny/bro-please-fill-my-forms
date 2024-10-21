@@ -21,18 +21,22 @@ type UserPreferencesStoreType = {
  * @returns previously saved user preferences
  */
 const loadInitialData = (): UserPreferences => {
-  let res = defaultUserPreferences;
+  // Attempt to load saved
   try {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved) {
-      res = JSON.parse(saved) as UserPreferences;
-      console.log("Your previously saved preferences:", res);
+    const savedJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedJSON) {
+      const saved = JSON.parse(savedJSON) as UserPreferences;
+      console.log("Your previously saved preferences:", saved);
+      return saved;
     }
   } catch (err) {
     console.warn("Error loading your previously saved preferences:", err);
-  } finally {
-    return res;
   }
+
+  // Load defaults
+  const defaults = defaultUserPreferences;
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(defaults));
+  return defaults;
 };
 
 export const useUserPreferencesStore = create<UserPreferencesStoreType>(
