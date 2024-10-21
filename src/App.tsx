@@ -1,46 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import reactLogo from "./assets/react.svg";
-import useManageLocalStorage from "./lib/hooks/useManageLocalStorage";
-import {
-  defaultUserPreferences,
-  LOCAL_STORAGE_KEY,
-  UserPreferencesType,
-} from "./lib/types/UserPreferences";
+import { Theme } from "./lib/enums/Theme";
+import { useTheme } from "./lib/hooks/useTheme";
 import viteLogo from "/vite.svg";
 
 function App() {
   const [isIsometrictMode, setIsIsometricMode] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
-  const {
-    data: userPreferences,
-    // isLoadingDataForFirstTime,
-    // clearData,
-    saveData,
-  } = useManageLocalStorage<UserPreferencesType>(LOCAL_STORAGE_KEY);
-
-  useEffect(() => {
-    if (userPreferences?.theme === "dark") {
-      setIsDarkMode(true);
-      document.body.classList.add("dark");
-    }
-    // ignore? run once
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDarkMode((curr) => {
-      const isDarkMode = !curr;
-      document.body.classList.toggle("dark", isDarkMode);
-      // TODO: handle system
-      saveData(
-        userPreferences
-          ? { ...userPreferences, theme: isDarkMode ? "dark" : "light" }
-          : defaultUserPreferences
-      );
-      return isDarkMode;
-    });
-  };
+  const { theme, toggleTheme } = useTheme();
 
   const toggleIsometricMode = () => {
     console.log("test");
@@ -77,7 +45,9 @@ function App() {
         <button onClick={toggleIsometricMode}>
           {isIsometrictMode ? "on" : "off"}
         </button>
-        <button onClick={toggleTheme}>{isDarkMode ? "on" : "off"}</button>
+        <button onClick={toggleTheme}>
+          {theme === Theme.Dark ? "on" : "off"}
+        </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
