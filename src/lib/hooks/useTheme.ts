@@ -8,14 +8,36 @@ export const useTheme = () => {
     (state) => state.setUserPreferences
   );
 
-  useEffect(() => {
-    document.body.classList.toggle(Theme.Dark, theme === Theme.Dark);
-  }, [theme]);
+  const applySystemTheme = (e: MediaQueryListEvent | null = null) => {
+    if (theme !== Theme.System) return;
 
-  const toggleTheme = () => {
-    const nextTheme = theme === Theme.Dark ? Theme.Light : Theme.Dark;
-    setUserPreferences("theme", nextTheme);
+    const isDarkMode = e
+      ? e.matches
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const nextTheme = isDarkMode ? Theme.Dark : Theme.Light;
+    document.documentElement.setAttribute("theme", nextTheme);
   };
+
+  useEffect(function listenToSystemThemeChanges() {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", applySystemTheme);
+
+    return () => {
+      mediaQuery.removeEventListener("change", applySystemTheme);
+    };
+  }, []);
+
+  useEffect(
+    function syncTheme() {
+      applySystemTheme();
+      const root = document.documentElement;
+      if (theme === Theme.Dark) root.setAttribute("theme", Theme.Dark);
+      else if (theme === Theme.Light) root.setAttribute("theme", Theme.Light);
+    },
+    [theme]
+  );
+
+  const toggleTheme = (theme: Theme) => setUserPreferences("theme", theme);
 
   return { theme, toggleTheme };
 };
