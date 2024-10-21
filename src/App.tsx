@@ -45,9 +45,9 @@ function App() {
         <button onClick={toggleIsometricMode}>
           {isIsometrictMode ? "on" : "off"}
         </button>
-        <button onClick={toggleTheme}>
-          {theme === Theme.Dark ? "on" : "off"}
-        </button>
+        <button onClick={() => toggleTheme(Theme.Dark)}>dark</button>
+        <button onClick={() => toggleTheme(Theme.Light)}>light</button>
+        <button onClick={() => toggleTheme(Theme.System)}>system</button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
