@@ -10,17 +10,22 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Theme variables LIGHT */
+  /* default theme = light */
   --background-color: #ffffff;
   --dot-color: #bbbbbb;
   --text-color: #242424;
 }
 
-body.dark {
-  /* Theme variables DARK */
+[theme="dark"] {
   --background-color: #242424;
   --dot-color: #696969;
   --text-color: #ffffff;
+}
+
+[theme="system"] {
+  --background-color: var(--background-color);
+  --dot-color: var(--dot-color);
+  --text-color: var(--text-color);
 }
 
 body {
