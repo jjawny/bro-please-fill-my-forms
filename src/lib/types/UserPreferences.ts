@@ -1,13 +1,13 @@
-export const LOCAL_STORAGE_KEY = "digi-worlds-user-preferences";
+import { Theme } from "../enums/Theme";
 
-export type UserPreferencesType = {
-  theme: "light" | "dark" | "system";
-  isGeorge: boolean; // TODO:
-  avatarFaceBlob?: string; // TODO:
-  language?: string; // TODO:
+export type UserPreferences = {
+  theme: Theme;
+  isGeorge: boolean;
+  // avatarFaceBlob?: string; // TODO:
+  // language?: string; // TODO:
 };
 
-export const defaultUserPreferences: UserPreferencesType = {
-  theme: "system",
+export const defaultUserPreferences: UserPreferences = {
+  theme: Theme.Light,
   isGeorge: false,
 };
