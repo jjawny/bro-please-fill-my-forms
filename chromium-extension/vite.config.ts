@@ -1,9 +1,10 @@
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
       input: {
@@ -16,7 +17,7 @@ export default defineConfig({
         assetFileNames: "assets/[name].[ext]",
       },
     },
-
-    outDir: "dist", // chromium extensions expect 'dist' folder
+    // Chromium Extensions expect a 'dist' folder
+    outDir: "dist",
   },
 });
