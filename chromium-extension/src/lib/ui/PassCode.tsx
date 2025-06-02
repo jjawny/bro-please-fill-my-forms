@@ -2,7 +2,6 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "~/lib/ui/shadcn/input-otp";
 
@@ -13,9 +12,9 @@ export default function PassCode() {
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />
         <InputOTPSlot index={2} />
-      </InputOTPGroup>
-      <InputOTPSeparator />
-      <InputOTPGroup>
+        {/* </InputOTPGroup> */}
+        {/* <InputOTPSeparator /> */}
+        {/* <InputOTPGroup> */}
         <InputOTPSlot index={3} />
         <InputOTPSlot index={4} />
         <InputOTPSlot index={5} />

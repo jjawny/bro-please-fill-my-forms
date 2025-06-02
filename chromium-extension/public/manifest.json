@@ -13,7 +13,8 @@
     }
   },
   "background": {
-    "service_worker": "assets/service-worker.js"
+    "service_worker": "assets/service-worker.js",
+    "type": "module"
   },
   "icons": {
     "16": "images/icon16.png",
@@ -22,8 +23,8 @@
   },
   "content_scripts": [
     {
-      "css": ["injected.css"],
-      "matches": ["<all_urls>"]
+      "matches": ["<all_urls>"],
+      "js": ["assets/service-worker.js"]
     }
   ]
 }

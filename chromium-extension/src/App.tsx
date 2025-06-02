@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
-import { SERVICE_WORKER_ACTIONS } from "./lib/service-worker/service-worker-actions";
+import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
 import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
 import { ScrapedForm } from "./lib/types/FormField";
-import PassCode from "./lib/ui/PassCode";
+import ByoApiKey from "./lib/ui/ByoApiKey";
+import Footer from "./lib/ui/Footer";
+import Hero from "./lib/ui/Hero";
 import { generateFormContent } from "./lib/utils/geminiApi";
-import viteLogo from "/images/logo.png";
 
 function App() {
-  const [isIsometrictMode, setIsIsometricMode] = useState<boolean>(false);
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -18,26 +18,6 @@ function App() {
   // const { theme, toggleTheme } = useTheme();
   const { toggleTheme } = useTheme();
   const { userPreferences, setUserPreferences } = useUserPreferencesStore();
-
-  const toggleIsometricMode = () => {
-    console.log("Scraping form fields from current page...");
-
-    setIsIsometricMode((curr) => {
-      const next = !curr;
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length > 0 && tabs[0]?.id) {
-          chrome.runtime.sendMessage({
-            action: "toggleIsometric",
-            isOn: next,
-            tabId: tabs[0].id,
-          });
-        } else {
-          console.log("No active tab found");
-        }
-      });
-      return next;
-    });
-  };
 
   const scrapeFormFields = () => {
     setIsLoading(true);
@@ -119,32 +99,9 @@ function App() {
     <div className="container">
       <div className="grid-bg"></div>
       <div className="content">
-        <div style={{ position: "relative" }}>
-          <h1>NEW NAME HERE</h1>
-          <div style={{ position: "absolute", top: -30, left: -50 }}>
-            <a href="https://vitejs.dev" target="_blank">
-              <img
-                src={viteLogo}
-                style={{ maxHeight: "6rem" }}
-                alt="Vite logo"
-              />
-            </a>
-          </div>
-        </div>
+        <Hero />
 
-        {/* GH link */}
-        {/* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-      </div> */}
-
-        <p>To protect your BYO Gemini API Key, enter your PIN to decrypt</p>
-        <p>
-          Forgot your key? Click here to clear (you will need to re-enter an API
-          key again)
-        </p>
-        <PassCode />
+        <ByoApiKey />
         <div className="card">
           {/* API Key Input */}
           <div style={{ marginBottom: "10px" }}>
@@ -222,13 +179,11 @@ function App() {
               paddingTop: "10px",
             }}
           >
-            <button onClick={toggleIsometricMode}>
-              Isometric: {isIsometrictMode ? "on" : "off"}
-            </button>
             <button onClick={() => toggleTheme(Theme.Dark)}>dark</button>
             <button onClick={() => toggleTheme(Theme.Light)}>light</button>
             <button onClick={() => toggleTheme(Theme.System)}>system</button>
           </div>
+          <Footer />
         </div>
       </div>
     </div>
