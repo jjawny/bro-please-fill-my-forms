@@ -5,9 +5,18 @@ import {
   InputOTPSlot,
 } from "~/lib/ui/shadcn/input-otp";
 
-export default function PassCode() {
+interface PassCodeProps {
+  onComplete: (value: string) => void;
+}
+
+export default function PassCode({ onComplete }: PassCodeProps) {
   return (
-    <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} className="bg-white">
+    <InputOTP
+      maxLength={6}
+      pattern={REGEXP_ONLY_DIGITS}
+      className="bg-white"
+      onComplete={onComplete}
+    >
       <InputOTPGroup>
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />
