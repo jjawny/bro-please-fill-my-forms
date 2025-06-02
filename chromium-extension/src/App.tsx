@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
+import { SERVICE_WORKER_ACTIONS } from "./lib/service-worker/service-worker-actions";
 import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
 import { ScrapedForm } from "./lib/types/FormField";
 import PassCode from "./lib/ui/PassCode";
@@ -46,7 +47,7 @@ function App() {
       if (tabs.length > 0 && tabs[0]?.id) {
         chrome.runtime.sendMessage(
           {
-            action: "scrapeForm",
+            action: SERVICE_WORKER_ACTIONS.scrapeFormFields,
             tabId: tabs[0].id,
           },
           (response) => {
@@ -92,7 +93,7 @@ function App() {
         if (tabs.length > 0 && tabs[0]?.id) {
           chrome.runtime.sendMessage(
             {
-              action: "fillForm",
+              action: SERVICE_WORKER_ACTIONS.fillFormFields,
               tabId: tabs[0].id,
               formData: response.fields,
               scrapedForm: scrapedForm,
