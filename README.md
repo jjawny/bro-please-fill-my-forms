@@ -7,7 +7,7 @@
 Dev starter:
 
 1. `npm run build` will create [./dist](./dist) (see [vite.config.ts](./vite.config.ts))
-2. Open your Chromium browser's [extensions](chrome://extensions/)
+2. Open your Chromium browser's [chrome://extensions/](chrome://extensions/)
 3. Click <kbd>Load unpacked</kbd> and choose[./dist](./dist)
 
 - From here, the feedback loop is: `npm run build` + <img src="public/images/reload-extension.png" alt="reload extension" style="height: 15px;">

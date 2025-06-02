@@ -8,7 +8,8 @@ import viteLogo from "/vite.svg";
 function App() {
   const [isIsometrictMode, setIsIsometricMode] = useState<boolean>(false);
 
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
 
   const toggleIsometricMode = () => {
     console.log("test");
