@@ -235,27 +235,7 @@ const fillFormFields = (
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Received message:", message);
 
-  if (message.action === "toggleIsometric") {
-    if (!message.tabId) {
-      console.log("no valid tabid to target");
-      return;
-    }
-
-    loadCustomCssForTab(message.tabId);
-
-    chrome.scripting.executeScript({
-      target: { tabId: message.tabId },
-      func: (isOn) => {
-        console.log("Toggling isometric mode:", isOn);
-        if (isOn) {
-          document.body.classList.add("digi-worlds-isometric-mode");
-        } else {
-          document.body.classList.remove("digi-worlds-isometric-mode");
-        }
-      },
-      args: [message.isOn],
-    });
-  } else if (message.action === "scrapeForm") {
+  if (message.action === "scrapeForm") {
     if (!message.tabId) {
       sendResponse({ success: false, error: "No valid tab ID provided" });
       return;

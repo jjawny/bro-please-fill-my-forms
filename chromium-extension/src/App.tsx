@@ -3,6 +3,7 @@ import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
 import { ScrapedForm } from "./lib/types/FormField";
+import PassCode from "./lib/ui/PassCode";
 import { generateFormContent } from "./lib/utils/geminiApi";
 import viteLogo from "/images/logo.png";
 
@@ -137,6 +138,12 @@ function App() {
         </a>
       </div> */}
 
+        <p>To protect your BYO Gemini API Key, enter your PIN to decrypt</p>
+        <p>
+          Forgot your key? Click here to clear (you will need to re-enter an API
+          key again)
+        </p>
+        <PassCode />
         <div className="card">
           {/* API Key Input */}
           <div style={{ marginBottom: "10px" }}>
