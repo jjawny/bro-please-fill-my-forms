@@ -6,7 +6,7 @@ import { useTheme } from "./lib/hooks/useTheme";
 import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
 import { ScrapedForm } from "./lib/types/FormField";
 import { generateFormContent } from "./lib/utils/geminiApi";
-import viteLogo from "/vite.svg";
+import viteLogo from "/images/logo.png";
 
 function App() {
   const [isIsometrictMode, setIsIsometricMode] = useState<boolean>(false);

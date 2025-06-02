@@ -1,26 +1,26 @@
-# Digi Worlds
+# NEED A BETTER NAME
 
-## Chromium extension
+A Chromium **Extension** that **auto-fills** forms based on **natural** language (pro-tip: use **dictation**! 🎙️)
 
-- Bootstrapped w `npm create vite@latest`
+# Use
+1. Generate your Google Gemini API Key [here](https://aistudio.google.com/apikey) (free quota)
+2. Find a site with forms
+3. Open the popup and follow the steps to auto-fill
 
-Dev starter:
 
-1. `npm run build` will create [./dist](./dist) (see [vite.config.ts](./vite.config.ts))
-2. Open your Chromium browser's [chrome://extensions/](chrome://extensions/)
-3. Click <kbd>Load unpacked</kbd> and choose[./dist](./dist)
-
-- From here, the feedback loop is: `npm run build` + <img src="public/images/reload-extension.png" alt="reload extension" style="height: 15px;">
-- DX tip: `npm run dev` to edit popup's UI faster (but note any handlers using the _chrome_ obj will sh1t itself)
+# Run
+1. `npm run build` will dump a [dist](./dist) directory (see [vite.config.ts](./vite.config.ts))
+2. Open your Chromium browser extension page (for example: [chrome://extensions/](chrome://extensions/))
+3. Click <kbd>Load unpacked</kbd> and choose [dist](./dist)
+4. From here, the feedback loop is `npm run build` + reload <img src="readme/reload-extension-guide.png" alt="reload extension" style="max-height: 256px;">
+5. `npm run dev` to edit the popup UI like a normal web app (note any event handlers using the _chrome_ obj will sh!t itself)
 
 To view console logs:
 
-- ⚛️ component logs? inspect the extension's pop-up
-- 💉 Injected scripts logs? inspect current page (e.g., `chrome.scripting.executeScript()`)
-- 🤖 Service worker logs? inspect the [extension](chrome://extensions/):
+- ⚛️ Component logs? inspect the popup
+- 💉 Injected scripts logs? inspect current page
+- 🤖 Service worker logs? inspect the extension
 
-  ![how to view extension console logs](public/images/how-to-view-extension-console-logs.png)
+  ![how to view extension console logs](readme/inspect-service-worker-logs.png)
 
 
-///
-https://aistudio.google.com/apikey
