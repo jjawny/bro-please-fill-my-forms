@@ -1,6 +1,4 @@
 import { useState } from "react";
-import "./App.css";
-import reactLogo from "./assets/react.svg";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
@@ -116,101 +114,116 @@ function App() {
   };
 
   return (
-    <>
-      <div>
+    <div className="container">
+      <div className="grid-bg"></div>
+      <div className="content">
+        <div style={{ position: "relative" }}>
+          <h1>NEW NAME HERE</h1>
+          <div style={{ position: "absolute", top: -30, left: -50 }}>
+            <a href="https://vitejs.dev" target="_blank">
+              <img
+                src={viteLogo}
+                style={{ maxHeight: "6rem" }}
+                alt="Vite logo"
+              />
+            </a>
+          </div>
+        </div>
+
+        {/* GH link */}
+        {/* <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Digi Worlds - Form Filler</h1>
+      </div> */}
 
-      <div className="card">
-        {/* API Key Input */}
-        <div style={{ marginBottom: "10px" }}>
-          <input
-            type="password"
-            placeholder="Enter Gemini API Key"
-            value={userPreferences.geminiApiKey || ""}
-            onChange={(e) => setUserPreferences("geminiApiKey", e.target.value)}
-            style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
-          />
-        </div>
+        <div className="card">
+          {/* API Key Input */}
+          <div style={{ marginBottom: "10px" }}>
+            <input
+              type="password"
+              placeholder="Enter Gemini API Key"
+              value={userPreferences.geminiApiKey || ""}
+              onChange={(e) =>
+                setUserPreferences("geminiApiKey", e.target.value)
+              }
+              style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
+            />
+          </div>
 
-        {/* Form Scraping */}
-        <button onClick={scrapeFormFields} disabled={isLoading}>
-          {isLoading ? "Scraping..." : "Scrape Form Fields"}
-        </button>
+          {/* Form Scraping */}
+          <button onClick={scrapeFormFields} disabled={isLoading}>
+            {isLoading ? "Scraping..." : "Scrape Form Fields"}
+          </button>
 
-        {/* Display scraped form info */}
-        {scrapedForm && (
+          {/* Display scraped form info */}
+          {scrapedForm && (
+            <div
+              style={{
+                margin: "10px 0",
+                padding: "10px",
+                border: "1px solid #ccc",
+              }}
+            >
+              <p>Found {scrapedForm.fields.length} form fields:</p>
+              <ul style={{ textAlign: "left", fontSize: "12px" }}>
+                {scrapedForm.fields.map((field, index) => (
+                  <li key={index}>
+                    {field.label || field.name || field.id} ({field.type})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* User Prompt Input */}
+          <div style={{ marginBottom: "10px" }}>
+            <textarea
+              placeholder="Enter your prompt for filling the form (e.g., 'Fill this job application for a software engineer position')"
+              value={userPrompt}
+              onChange={(e) => setUserPrompt(e.target.value)}
+              style={{ width: "100%", padding: "8px", minHeight: "60px" }}
+            />
+          </div>
+
+          {/* Fill Form Button */}
+          <button
+            onClick={fillForm}
+            disabled={
+              isLoading ||
+              !scrapedForm ||
+              !userPrompt.trim() ||
+              !userPreferences.geminiApiKey
+            }
+          >
+            {isLoading ? "Filling Form..." : "Fill Form with AI"}
+          </button>
+
+          {/* Error Display */}
+          {errorMessage && (
+            <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>
+              {errorMessage}
+            </div>
+          )}
+
+          {/* Theme and debug controls */}
           <div
             style={{
-              margin: "10px 0",
-              padding: "10px",
-              border: "1px solid #ccc",
+              marginTop: "20px",
+              borderTop: "1px solid #ccc",
+              paddingTop: "10px",
             }}
           >
-            <p>Found {scrapedForm.fields.length} form fields:</p>
-            <ul style={{ textAlign: "left", fontSize: "12px" }}>
-              {scrapedForm.fields.map((field, index) => (
-                <li key={index}>
-                  {field.label || field.name || field.id} ({field.type})
-                </li>
-              ))}
-            </ul>
+            <button onClick={toggleIsometricMode}>
+              Isometric: {isIsometrictMode ? "on" : "off"}
+            </button>
+            <button onClick={() => toggleTheme(Theme.Dark)}>dark</button>
+            <button onClick={() => toggleTheme(Theme.Light)}>light</button>
+            <button onClick={() => toggleTheme(Theme.System)}>system</button>
           </div>
-        )}
-
-        {/* User Prompt Input */}
-        <div style={{ marginBottom: "10px" }}>
-          <textarea
-            placeholder="Enter your prompt for filling the form (e.g., 'Fill this job application for a software engineer position')"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-            style={{ width: "100%", padding: "8px", minHeight: "60px" }}
-          />
-        </div>
-
-        {/* Fill Form Button */}
-        <button
-          onClick={fillForm}
-          disabled={
-            isLoading ||
-            !scrapedForm ||
-            !userPrompt.trim() ||
-            !userPreferences.geminiApiKey
-          }
-        >
-          {isLoading ? "Filling Form..." : "Fill Form with AI"}
-        </button>
-
-        {/* Error Display */}
-        {errorMessage && (
-          <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>
-            {errorMessage}
-          </div>
-        )}
-
-        {/* Theme and debug controls */}
-        <div
-          style={{
-            marginTop: "20px",
-            borderTop: "1px solid #ccc",
-            paddingTop: "10px",
-          }}
-        >
-          <button onClick={toggleIsometricMode}>
-            Isometric: {isIsometrictMode ? "on" : "off"}
-          </button>
-          <button onClick={() => toggleTheme(Theme.Dark)}>dark</button>
-          <button onClick={() => toggleTheme(Theme.Light)}>light</button>
-          <button onClick={() => toggleTheme(Theme.System)}>system</button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
