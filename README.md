@@ -3,7 +3,7 @@
 A Chromium **Extension** that **auto-fills** forms based on **natural** language (pro-tip: use **dictation**! 🎙️)
 
 # Use
-1. Generate your Google Gemini API Key [here](https://aistudio.google.com/apikey) (free quota)
+1. BYO keys; generate your Google Gemini API Key [here](https://aistudio.google.com/apikey) (free quota)
 2. Find a site with forms
 3. Open the popup and follow the steps to auto-fill
 
