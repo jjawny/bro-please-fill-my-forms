@@ -20,3 +20,7 @@ To view console logs:
 - 🤖 Service worker logs? inspect the [extension](chrome://extensions/):
 
   ![how to view extension console logs](public/images/how-to-view-extension-console-logs.png)
+
+
+///
+https://aistudio.google.com/apikey
