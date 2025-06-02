@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { decryptData, encryptData } from "../utils/crypto";
 import PassCode from "./PassCode";
+import { Input } from "./shadcn/input";
 
 const PIN = "123456";
 
 export default function ByoApiKey() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
   const [encryptedApiKey, setEncryptedApiKey] = useState<string>("");
   const [decryptedApiKey, setDecryptedApiKey] = useState<string>("");
   const [enteredPin, setEnteredPin] = useState<string>("");
@@ -123,7 +124,8 @@ export default function ByoApiKey() {
       ) : null}
 
       <div style={{ marginBottom: "10px" }}>
-        <input
+        <Input
+          className="bg-white"
           // type="password"
           placeholder="Enter Gemini API Key"
           value={apiKeyInput}
