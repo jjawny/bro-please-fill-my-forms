@@ -13,6 +13,7 @@ export default function ByoApiKey() {
   const [decryptedApiKey, setDecryptedApiKey] = useState<string>("");
   const [enteredPin, setEnteredPin] = useState<string>("");
   const [apiKeyInput, setApiKeyInput] = useState<string>("");
+  const [passCodeError, setPassCodeError] = useState<string | undefined>();
   const [isShaking, setIsShaking] = useState<boolean>(false);
 
   const handlePinSubmit = async (pin: string) => {
@@ -34,6 +35,7 @@ export default function ByoApiKey() {
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 500);
       // alert("Incorrect PIN");
+      setPassCodeError("Incorrect PIN, please try again.");
     }
   };
 
@@ -74,13 +76,14 @@ export default function ByoApiKey() {
           <li>3. Enter your PIN to decrypt your API key before using</li>
         </ol>
         <PassCode
-          onComplete={handlePinSubmit}
           isPlayShakeAnimation={isShaking}
+          onComplete={handlePinSubmit}
+          error={passCodeError}
         />
         <p className="pt-2">
           <ToolTipWrapper
-            content={"You will need to re-enter your API key again"}
-            backgroundColor="bg-red-500"
+            content="You will need to re-enter your API key again"
+            backgroundColorHex="#ff0000"
           >
             <span>
               <Button onClick={handleClear} size="sm" className="text-black">

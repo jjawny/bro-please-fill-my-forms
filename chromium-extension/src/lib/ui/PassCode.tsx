@@ -1,4 +1,5 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useState } from "react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -9,25 +10,49 @@ import { cn } from "../utils/cn";
 export default function PassCode({
   isPlayShakeAnimation = false,
   onComplete,
+  error,
 }: {
   isPlayShakeAnimation: boolean;
   onComplete: (value: string) => void;
+  error?: string;
 }) {
+  const LARGE_STYLES = "w-16 h-16 text-3xl";
+
+  const [value, setValue] = useState("");
+
+  const handleComplete = (pin: string) => {
+    onComplete(pin);
+    setValue("");
+  };
+
   return (
-    <InputOTP
-      maxLength={4}
-      pattern={REGEXP_ONLY_DIGITS}
-      className={cn("bg-white")}
-      onComplete={onComplete}
-    >
-      <InputOTPGroup
-        className={cn(isPlayShakeAnimation ? "animate-shake" : "")}
+    <>
+      <InputOTP
+        maxLength={4}
+        pattern={REGEXP_ONLY_DIGITS}
+        className={cn("bg-white w-")}
+        value={value}
+        onChange={setValue}
+        onComplete={handleComplete}
       >
-        <InputOTPSlot index={0} />
-        <InputOTPSlot index={1} />
-        <InputOTPSlot index={2} />
-        <InputOTPSlot index={3} />
-      </InputOTPGroup>
-    </InputOTP>
+        <InputOTPGroup
+          className={cn(isPlayShakeAnimation ? "animate-shake" : "")}
+        >
+          <InputOTPSlot className={LARGE_STYLES} index={0} />
+          <InputOTPSlot className={LARGE_STYLES} index={1} />
+          <InputOTPSlot className={LARGE_STYLES} index={2} />
+          <InputOTPSlot className={LARGE_STYLES} index={3} />
+        </InputOTPGroup>
+      </InputOTP>
+      <ErrOrPlaceHolder hasError={!!error} />
+    </>
   );
 }
+
+const ErrOrPlaceHolder = ({ hasError }: { hasError: boolean }) => {
+  if (hasError) {
+    return <span className="text-red-500">{hasError}</span>;
+  }
+
+  return <span>&#8203;&#x200B;</span>;
+};
