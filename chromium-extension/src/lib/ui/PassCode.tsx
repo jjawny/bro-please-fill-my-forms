@@ -4,29 +4,29 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "~/lib/ui/shadcn/input-otp";
+import { cn } from "../utils/cn";
 
-interface PassCodeProps {
+export default function PassCode({
+  isPlayShakeAnimation = false,
+  onComplete,
+}: {
+  isPlayShakeAnimation: boolean;
   onComplete: (value: string) => void;
-}
-
-export default function PassCode({ onComplete }: PassCodeProps) {
+}) {
   return (
     <InputOTP
-      maxLength={6}
+      maxLength={4}
       pattern={REGEXP_ONLY_DIGITS}
-      className="bg-white"
+      className={cn("bg-white")}
       onComplete={onComplete}
     >
-      <InputOTPGroup>
+      <InputOTPGroup
+        className={cn(isPlayShakeAnimation ? "animate-shake" : "")}
+      >
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />
         <InputOTPSlot index={2} />
-        {/* </InputOTPGroup> */}
-        {/* <InputOTPSeparator /> */}
-        {/* <InputOTPGroup> */}
         <InputOTPSlot index={3} />
-        <InputOTPSlot index={4} />
-        <InputOTPSlot index={5} />
       </InputOTPGroup>
     </InputOTP>
   );

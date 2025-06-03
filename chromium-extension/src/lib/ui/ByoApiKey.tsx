@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { decryptData, encryptData } from "../utils/crypto";
 import PassCode from "./PassCode";
+import { Button } from "./shadcn/button";
 import { Input } from "./shadcn/input";
+import ToolTipWrapper from "./ToolTipWrapper";
 
-const PIN = "123456";
+const PIN = "1234";
 
 export default function ByoApiKey() {
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
@@ -11,9 +13,11 @@ export default function ByoApiKey() {
   const [decryptedApiKey, setDecryptedApiKey] = useState<string>("");
   const [enteredPin, setEnteredPin] = useState<string>("");
   const [apiKeyInput, setApiKeyInput] = useState<string>("");
+  const [isShaking, setIsShaking] = useState<boolean>(false);
 
   const handlePinSubmit = async (pin: string) => {
     if (pin === PIN) {
+      setIsShaking(false);
       setEnteredPin(pin);
       if (encryptedApiKey) {
         // Decrypt existing key
@@ -27,7 +31,9 @@ export default function ByoApiKey() {
       }
       setIsUnlocked(true);
     } else {
-      alert("Incorrect PIN");
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      // alert("Incorrect PIN");
     }
   };
 
@@ -62,27 +68,27 @@ export default function ByoApiKey() {
   if (!isUnlocked) {
     return (
       <>
-        <p>
-          To protect your BYO Gemini API Key, enter your PIN to{" "}
-          {encryptedApiKey ? "decrypt" : "unlock"}
-        </p>
-        <p>
-          Forgot your key?{" "}
-          <button
-            onClick={handleClear}
-            style={{
-              background: "none",
-              border: "none",
-              color: "blue",
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
+        <ol className="justify-items-start py-5">
+          <li>1. Visit Google Gemini for your free API Key</li>
+          <li>2. Choose a PIN you will remember (will not be saved)</li>
+          <li>3. Enter your PIN to decrypt your API key before using</li>
+        </ol>
+        <PassCode
+          onComplete={handlePinSubmit}
+          isPlayShakeAnimation={isShaking}
+        />
+        <p className="pt-2">
+          <ToolTipWrapper
+            content={"You will need to re-enter your API key again"}
+            backgroundColor="bg-red-500"
           >
-            Click here to clear
-          </button>{" "}
-          (you will need to re-enter an API key again)
+            <span>
+              <Button onClick={handleClear} size="sm" className="text-black">
+                Forgot your PIN?
+              </Button>
+            </span>
+          </ToolTipWrapper>
         </p>
-        <PassCode onComplete={handlePinSubmit} />
       </>
     );
   }

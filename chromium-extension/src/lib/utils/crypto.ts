@@ -1,3 +1,18 @@
+/**
+ * 
+I've successfully updated the component to use the native Web Crypto API instead of CryptoJS. The changes include:
+
+Replaced CryptoJS with Web Crypto API: Using the browser's built-in crypto.subtle for encryption/decryption
+Enhanced security: Implemented PBKDF2 key derivation with 100,000 iterations and SHA-256 hashing
+AES-GCM encryption: Using AES-GCM which provides both confidentiality and authenticity
+Proper salt and IV handling: Each encryption uses a random salt and initialization vector for security
+Base64 encoding: Encoded the combined salt, IV, and encrypted data for storage
+The native Web Crypto API provides better security, performance, and doesn't require external dependencies. The encryption process now uses industry-standard practices with proper key derivation and authenticated encryption.
+ * @param data 
+ * 
+ * @param pin 
+ * @returns 
+ */
 export const encryptData = async (
   data: string,
   pin: string
