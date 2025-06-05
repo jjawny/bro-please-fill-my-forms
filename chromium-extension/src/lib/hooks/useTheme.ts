@@ -1,20 +1,18 @@
 import { useEffect } from "react";
-import { Theme } from "../enums/Theme";
-import { useUserPreferencesStore } from "../stores/UserPreferencesStore";
+import { Theme, ThemeType } from "../enums/Theme";
+import { useUserDataStore } from "../stores/UserPreferencesStore";
 
 export const useTheme = () => {
-  const theme = useUserPreferencesStore((state) => state.userPreferences.theme);
-  const setUserPreferences = useUserPreferencesStore(
-    (state) => state.setUserPreferences
-  );
+  const theme = useUserDataStore((state) => state.UserData.theme);
+  const setUserPreferences = useUserDataStore((state) => state.setUserData);
 
   const applySystemTheme = (e: MediaQueryListEvent | null = null) => {
-    if (theme !== Theme.System) return;
+    if (theme !== Theme.system) return;
 
     const isDarkMode = e
       ? e.matches
       : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const nextTheme = isDarkMode ? Theme.Dark : Theme.Light;
+    const nextTheme = isDarkMode ? Theme.dark : Theme.light;
     document.documentElement.setAttribute("theme", nextTheme);
   };
 
@@ -31,13 +29,13 @@ export const useTheme = () => {
     function syncTheme() {
       applySystemTheme();
       const root = document.documentElement;
-      if (theme === Theme.Dark) root.setAttribute("theme", Theme.Dark);
-      else if (theme === Theme.Light) root.setAttribute("theme", Theme.Light);
+      if (theme === Theme.dark) root.setAttribute("theme", Theme.dark);
+      else if (theme === Theme.light) root.setAttribute("theme", Theme.light);
     },
     [theme]
   );
 
-  const toggleTheme = (theme: Theme) => setUserPreferences("theme", theme);
+  const toggleTheme = (theme: ThemeType) => setUserPreferences("theme", theme);
 
   return { theme, toggleTheme };
 };

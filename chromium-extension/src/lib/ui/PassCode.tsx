@@ -44,14 +44,14 @@ export default function PassCode({
           <InputOTPSlot className={LARGE_STYLES} index={3} />
         </InputOTPGroup>
       </InputOTP>
-      <ErrOrPlaceHolder hasError={!!error} />
+      <OneOfPlaceHolder error={error} />
     </>
   );
 }
 
-const ErrOrPlaceHolder = ({ hasError }: { hasError: boolean }) => {
-  if (hasError) {
-    return <span className="text-red-500">{hasError}</span>;
+const OneOfPlaceHolder = ({ error }: { error?: string }) => {
+  if (!!error) {
+    return <span className="text-red-500">{error}</span>;
   }
 
   return <span>&#8203;&#x200B;</span>;

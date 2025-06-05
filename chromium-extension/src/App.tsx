@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
-import { useUserPreferencesStore } from "./lib/stores/UserPreferencesStore";
+import { useUserDataStore } from "./lib/stores/UserPreferencesStore";
 import { ScrapedForm } from "./lib/types/FormField";
 import ByoApiKey from "./lib/ui/ByoApiKey";
 import Footer from "./lib/ui/Footer";
@@ -17,7 +17,7 @@ function App() {
 
   // const { theme, toggleTheme } = useTheme();
   const { toggleTheme } = useTheme();
-  const { userPreferences, setUserPreferences } = useUserPreferencesStore();
+  const { UserData, setUserData } = useUserDataStore();
 
   const scrapeFormFields = () => {
     setIsLoading(true);
@@ -44,7 +44,7 @@ function App() {
   };
 
   const fillForm = async () => {
-    if (!scrapedForm || !userPrompt.trim() || !userPreferences.geminiApiKey) {
+    if (!scrapedForm || !userPrompt.trim() || !UserData.geminiApiKeyEncrypted) {
       setErrorMessage(
         "Please scrape form, enter a prompt, and set your Gemini API key"
       );
@@ -64,7 +64,7 @@ function App() {
       }));
 
       const response = await generateFormContent(
-        userPreferences.geminiApiKey,
+        UserData.geminiApiKeyEncrypted,
         formStructure,
         userPrompt
       );
@@ -108,9 +108,9 @@ function App() {
             <input
               type="password"
               placeholder="Enter Gemini API Key"
-              value={userPreferences.geminiApiKey || ""}
+              value={UserData.geminiApiKeyEncrypted || ""}
               onChange={(e) =>
-                setUserPreferences("geminiApiKey", e.target.value)
+                setUserData("geminiApiKeyEncrypted", e.target.value)
               }
               style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
             />
@@ -158,7 +158,7 @@ function App() {
               isLoading ||
               !scrapedForm ||
               !userPrompt.trim() ||
-              !userPreferences.geminiApiKey
+              !UserData.geminiApiKeyEncrypted
             }
           >
             {isLoading ? "Filling Form..." : "Fill Form with AI"}
@@ -179,9 +179,9 @@ function App() {
               paddingTop: "10px",
             }}
           >
-            <button onClick={() => toggleTheme(Theme.Dark)}>dark</button>
-            <button onClick={() => toggleTheme(Theme.Light)}>light</button>
-            <button onClick={() => toggleTheme(Theme.System)}>system</button>
+            <button onClick={() => toggleTheme(Theme.dark)}>dark</button>
+            <button onClick={() => toggleTheme(Theme.light)}>light</button>
+            <button onClick={() => toggleTheme(Theme.system)}>system</button>
           </div>
           <Footer />
         </div>
