@@ -26,6 +26,10 @@ type UserDataStore = UserData &
     DEBUG_DUMP: () => Promise<void>;
   };
 
+/**
+ * There are 2 main user paths:
+ *  1. No key > user sees API key field first > PIN field to encrypt
+ */
 export const useApiKeyStore = create<UserDataStore>((set, get) => ({
   ...getDefaultUserData(),
   ...getDefaultTemporaryUserData(),
