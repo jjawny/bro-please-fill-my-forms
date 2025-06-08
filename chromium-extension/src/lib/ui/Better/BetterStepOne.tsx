@@ -3,14 +3,12 @@ import { usePinStore } from "../../stores/PinStore";
 import BetterPassCode from "./BetterPassCode";
 
 export default function BetterStepOne() {
-  const { initialize, isInitialized, unlock, pin: savedPin, pinStatus, setNewPin: setupPin, GET_DEBUG_JSON_DUMP } = usePinStore();
+  const { isInitialized, unlock, pin: savedPin, pinStatus, setNewPin: setupPin, GET_DEBUG_JSON_DUMP } = usePinStore();
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
 
   useEffect(() => {
-    if (!isInitialized) {
-      initialize();
-    } else {
+    if (isInitialized) {
       attemptAutoUnlock();
     }
   }, [isInitialized]);
