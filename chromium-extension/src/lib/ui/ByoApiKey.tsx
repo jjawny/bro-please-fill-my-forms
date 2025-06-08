@@ -24,7 +24,7 @@ export default function ByoApiKey() {
         // Decrypt existing key
         try {
           const decrypted = await decryptData(encryptedApiKey, pin);
-          setDecryptedApiKey(decrypted);
+          setDecryptedApiKey(decrypted.isOk ? decrypted.value : "");
         } catch (error) {
           console.error("Decryption failed:", error);
           setDecryptedApiKey("");

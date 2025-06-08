@@ -7,11 +7,11 @@ import ToolTipWrapper from "./ToolTipWrapper";
 const PIN = "1234";
 
 export default function ApiKeyField() {
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
+  const [, setIsUnlocked] = useState<boolean>(false);
   const [encryptedApiKey, setEncryptedApiKey] = useState<string>("");
-  const [decryptedApiKey, setDecryptedApiKey] = useState<string>("");
-  const [enteredPin, setEnteredPin] = useState<string>("");
-  const [apiKeyInput, setApiKeyInput] = useState<string>("");
+  const [, setDecryptedApiKey] = useState<string>("");
+  const [, setEnteredPin] = useState<string>("");
+  const [, setApiKeyInput] = useState<string>("");
   const [passCodeError, setPassCodeError] = useState<string | undefined>();
   const [isShaking, setIsShaking] = useState<boolean>(false);
 
@@ -23,7 +23,7 @@ export default function ApiKeyField() {
         // Decrypt existing key
         try {
           const decrypted = await decryptData(encryptedApiKey, pin);
-          setDecryptedApiKey(decrypted);
+          setDecryptedApiKey(decrypted.isOk ? decrypted.value : "");
         } catch (error) {
           console.error("Decryption failed:", error);
           setDecryptedApiKey("");

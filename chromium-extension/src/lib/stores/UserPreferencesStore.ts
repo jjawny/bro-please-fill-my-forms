@@ -1,90 +1,37 @@
 import { create } from "zustand";
-import { getDefaultUserData, UserData } from "../types/UserData";
+import { ThemeType } from "../enums/Theme";
+import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "../types/UserPreferences";
+import { safelyLoadUserPreferencesFromSyncStorage, saveToSyncStorage } from "../utils/chrome-storage-sync";
 
-export const STORAGE_KEY = "DIGI_WORLDS";
-
-// Simple encryption for sensitive data like API keys
-const encryptSensitiveData = (data: string): string => {
-  // Basic base64 encoding for obfuscation (upgrade to crypto-js for production)
-  return btoa(data);
+type UserPreferencesStore = UserPreferences & {
+  isInitialized: boolean;
+  /**
+   * Sets the state w any previously saved data
+   */
+  initialize: () => Promise<void>;
+  /**
+   * Sets the theme in-memory and in browser storage
+   */
+  setTheme: (theme: ThemeType) => Promise<void>;
 };
 
-const decryptSensitiveData = (encryptedData: string): string => {
-  try {
-    return atob(encryptedData);
-  } catch {
-    return "";
-  }
-};
+export const useUserPreferencesStore = create<UserPreferencesStore>((set) => ({
+  ...getDefaultUserPreferences(),
+  isInitialized: false,
 
-type UserDataStoreType = {
-  UserData: UserData;
-  setUserData: <K extends keyof UserData>(key: K, value: UserData[K]) => void;
-};
+  initialize: async () => {
+    set({ isInitialized: false });
 
-/**
- * Loads the initial data - previously saved user preferences
- * FYI: Zustand store becomes a singleton after being initialized (when first component accesses the store)
- * @returns previously saved user preferences
- */
-const loadInitialData = async (): Promise<UserData> => {
-  // Attempt to load saved from Chrome storage
-  try {
-    const result = await chrome.storage.local.get([STORAGE_KEY]);
-    if (result[STORAGE_KEY]) {
-      const saved = result[STORAGE_KEY] as UserData;
-      // Decrypt sensitive data
-      const decryptedPreferences = {
-        ...saved,
-        geminiApiKey: saved.geminiApiKeyEncrypted
-          ? decryptSensitiveData(saved.geminiApiKeyEncrypted)
-          : "",
-      };
-      console.log("Your previously saved preferences:", {
-        ...decryptedPreferences,
-        geminiApiKey: "***",
-      });
-      return decryptedPreferences;
-    }
-  } catch (err) {
-    console.warn("Error loading your previously saved preferences:", err);
-  }
+    const userPreferences = await safelyLoadUserPreferencesFromSyncStorage();
 
-  // Load defaults
-  const defaults = getDefaultUserData();
-  await chrome.storage.local.set({ [STORAGE_KEY]: defaults });
-  return defaults;
-};
+    set({ isInitialized: true, ...userPreferences });
+  },
 
-// Helper to save preferences to Chrome storage with encryption for sensitive data
-const savePreferences = async (preferences: UserData) => {
-  try {
-    const encryptedPreferences = {
-      ...preferences,
-      // Encrypt sensitive data like API keys
-      geminiApiKey: preferences.geminiApiKeyEncrypted
-        ? encryptSensitiveData(preferences.geminiApiKeyEncrypted)
-        : "",
-    };
-    await chrome.storage.local.set({ [STORAGE_KEY]: encryptedPreferences });
-  } catch (err) {
-    console.warn("Error saving preferences:", err);
-  }
-};
+  setTheme: async (theme: ThemeType): Promise<void> => {
+    const nextState = { theme: theme };
 
-export const useUserDataStore = create<UserDataStoreType>((set, get) => ({
-  UserData: getDefaultUserData(),
-  setUserData: async (key, value) => {
-    const nextData = { ...get().UserData, [key]: value };
+    await saveToSyncStorage(UserPreferencesSchema, nextState);
 
-    // Save to Chrome storage with encryption
-    await savePreferences(nextData);
-
-    set((state) => ({ ...state, UserData: nextData }));
+    set({ ...nextState });
   },
 }));
-
-// Initialize the store with saved data
-loadInitialData().then((savedPreferences) => {
-  useUserDataStore.setState({ UserData: savedPreferences });
-});

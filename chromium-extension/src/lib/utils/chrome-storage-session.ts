@@ -1,67 +1,54 @@
-import { ZodError } from "zod";
+import z, { ZodError, ZodTypeAny } from "zod";
 import { OneOf } from "../types/OneOf";
-import {
-  getDefaultTemporaryUserData,
-  TemporaryUserData,
-  TemporaryUserDataSchema,
-} from "../types/TemporaryData";
+import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "../types/TemporaryData";
 
 /**
  * Notes:
  *  - Data stored for the lifetime of the browser session (shared between tabs)
  * @returns Temporarily saved UserData
  */
-export const loadFromSessionStorage = async (): Promise<TemporaryUserData> => {
+export async function safelyLoadTemporaryDataFromSessionStorage(): Promise<TemporaryData> {
   try {
-    const keys: (keyof TemporaryUserData)[] = ["pin"];
-    const items = await chrome.storage.session.get(keys);
+    const itemKeys: (keyof TemporaryData)[] = ["pin"];
+    const items = await chrome.storage.session.get(itemKeys);
+    const temporaryData: TemporaryData = { pin: items.pin };
 
-    let temporaryUserData: TemporaryUserData = {
-      pin: items.pin,
-    };
+    console.debug(`Loaded TemporaryData from chrome.storage.session`, temporaryData);
 
-    const validationResponse =
-      TemporaryUserDataSchema.safeParse(temporaryUserData);
+    const validationResponse = TemporaryDataSchema.safeParse(temporaryData);
 
     if (!validationResponse.success) {
-      temporaryUserData = await healCorruptTemporaryUserData();
+      const defaults = getDefaultTemporaryData();
+      await saveToSessionStorage(TemporaryDataSchema, defaults);
+      return defaults;
     }
 
-    return temporaryUserData;
-  } catch (ex: unknown) {
-    console.error(`Error loading UserData from chrome.storage.sync`, ex);
-    return getDefaultTemporaryUserData();
+    const validatedData = validationResponse.data;
+    return validatedData;
+  } catch (error: unknown) {
+    console.error(`Failed to load TemporaryData from chrome.storage.session, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    return getDefaultTemporaryData();
   }
-};
+}
 
-export const saveToSessionStorage = async (
-  temporaryUserData: Partial<TemporaryUserData>
-): Promise<OneOf<undefined, Error | ZodError<TemporaryUserData>>> => {
+export async function saveToSessionStorage<T extends ZodTypeAny>(schema: T, data: z.infer<T>): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
   try {
-    const validationResponse =
-      TemporaryUserDataSchema.safeParse(temporaryUserData);
+    const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {
       return { isOk: false, error: validationResponse.error };
     }
 
-    await chrome.storage.session.set(validationResponse.data);
+    const validatedData = validationResponse.data;
 
-    return { isOk: true, value: undefined };
-  } catch (ex: unknown) {
-    return {
-      isOk: false,
-      error:
-        ex instanceof Error
-          ? ex
-          : new Error("Unknown error occurred when saving TemporaryUserData"),
-    };
+    await chrome.storage.session.set(validatedData);
+
+    return { isOk: true, value: validatedData };
+  } catch (error: unknown) {
+    console.error(
+      `Failed to save '${JSON.stringify(data)}' to chrome.storage.session, reason: ${error instanceof Error ? error.message : "Unknown"}`,
+      error,
+    );
+    return { isOk: false, error: "Failed to save to chrome.storage.session" };
   }
-};
-
-const healCorruptTemporaryUserData = async (): Promise<TemporaryUserData> => {
-  const temporaryUserData = getDefaultTemporaryUserData();
-  await saveToSessionStorage(temporaryUserData);
-
-  return temporaryUserData;
-};
+}

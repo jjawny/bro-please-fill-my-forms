@@ -1,10 +1,7 @@
-import { ZodError } from "zod";
+import z, { ZodError, ZodTypeAny } from "zod";
+import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "../types/ByoKeyData";
 import { OneOf } from "../types/OneOf";
-import {
-  getDefaultUserData,
-  UserData,
-  UserDataSchema,
-} from "../types/UserData";
+import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "../types/UserPreferences";
 
 /**
  * Notes:
@@ -13,60 +10,87 @@ import {
  *  - If the user is NOT logged into Chrome, this will behave like chrome.storage.local
  * @returns Previously saved UserData
  */
-export async function safelyLoadUserDataFromSyncStorage(): Promise<UserData> {
+export async function safelyLoadByoKeyDataFromSyncStorage(): Promise<ByoKeyData> {
   try {
-    const itemKeys: (keyof UserData)[] = [
-      "theme",
-      "geminiApiKeyEncrypted",
-      "geminiApiKeyHash",
-    ];
+    const itemKeys: (keyof ByoKeyData)[] = ["geminiApiKeyEncrypted", "geminiApiKeyHash", "hasGeminiApiKeyConnectedSuccessfully"];
     const items = await chrome.storage.sync.get(itemKeys);
-
-    let userData: UserData = {
-      theme: items.theme,
+    const byoKeyData: ByoKeyData = {
       geminiApiKeyEncrypted: items.geminiApiKeyEncrypted,
-      geminiApiKeyHash: items.geminiApiKeyHashed,
+      geminiApiKeyHash: items.geminiApiKeyHash,
+      hasGeminiApiKeyConnectedSuccessfully: items.isGeminiApiKeyConnectedSuccessfully ?? false,
     };
 
-    const validationResponse = UserDataSchema.safeParse(userData);
+    console.debug(`Loaded ByoKeyData from chrome.storage.sync`, byoKeyData);
 
+    const validationResponse = ByoKeyDataSchema.safeParse(byoKeyData);
+
+    // Fallback to defaults and attempt to heal corrupt data
     if (!validationResponse.success) {
-      userData = await healCorruptUserData();
+      const defaults = getDefaultByoKeyData();
+      await saveToSyncStorage(ByoKeyDataSchema, defaults);
+      return defaults;
     }
 
-    return userData;
-  } catch (ex: unknown) {
-    console.error(`Error loading UserData from chrome.storage.sync`, ex);
-    return getDefaultUserData();
+    const validationData = validationResponse.data;
+    return validationData;
+  } catch (error: unknown) {
+    console.error(`Failed to load ByoKeyData from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    return getDefaultByoKeyData();
   }
 }
 
-export const saveToSyncStorage = async (
-  userData: Partial<UserData>
-): Promise<OneOf<undefined, Error | ZodError<UserData>>> => {
+/**
+ * @returns Previously saved UserPreferences
+ */
+export async function safelyLoadUserPreferencesFromSyncStorage(): Promise<UserPreferences> {
   try {
-    const validationResponse = UserDataSchema.safeParse(userData);
+    const itemKeys: (keyof UserPreferences)[] = ["theme"];
+    const items = await chrome.storage.sync.get(itemKeys);
+    const userPreferences: UserPreferences = { theme: items.theme };
+
+    console.debug(`Loaded UserPreferences from chrome.storage.sync`, userPreferences);
+
+    const validationResponse = UserPreferencesSchema.safeParse(userPreferences);
+
+    // Fallback to defaults and attempt to heal corrupt data
+    if (!validationResponse.success) {
+      const defaults = getDefaultUserPreferences();
+      await saveToSyncStorage(UserPreferencesSchema, defaults);
+      return defaults;
+    }
+
+    const validatedData = validationResponse.data;
+    return validatedData;
+  } catch (error: unknown) {
+    console.error(`Failed to load UserPreferences from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    return getDefaultUserPreferences();
+  }
+}
+
+/**
+ * generic save to sync storage
+ * @param schema
+ * @param data
+ * @returns
+ */
+export async function saveToSyncStorage<T extends ZodTypeAny>(schema: T, data: z.infer<T>): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+  try {
+    const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {
       return { isOk: false, error: validationResponse.error };
     }
 
-    await chrome.storage.sync.set(validationResponse.data);
+    const validatedData = validationResponse.data;
 
-    return { isOk: true, value: undefined };
-  } catch (ex: unknown) {
-    const error =
-      ex instanceof Error
-        ? ex
-        : new Error("Unknown error occurred when saving UserData");
+    await chrome.storage.sync.set(validatedData);
 
-    return { isOk: false, error: error };
+    return { isOk: true, value: validatedData };
+  } catch (error: unknown) {
+    console.error(
+      `Failed to save '${JSON.stringify(data)}' to chrome.storage.sync, reason: ${error instanceof Error ? error.message : "Unknown"}`,
+      error,
+    );
+    return { isOk: false, error: "Failed to save to chrome.storage.sync" };
   }
-};
-
-const healCorruptUserData = async (): Promise<UserData> => {
-  const userData = getDefaultUserData();
-  await saveToSyncStorage(userData);
-
-  return userData;
-};
+}

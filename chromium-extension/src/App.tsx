@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
-import { useUserDataStore } from "./lib/stores/UserPreferencesStore";
+import { usePinStore } from "./lib/stores/PinStore";
 import { ScrapedForm } from "./lib/types/FormField";
+import BetterStepOne from "./lib/ui/Better/BetterStepOne";
 import ByoApiKey from "./lib/ui/ByoApiKey";
 import Footer from "./lib/ui/Footer";
 import Hero from "./lib/ui/Hero";
@@ -17,7 +18,7 @@ function App() {
 
   // const { theme, toggleTheme } = useTheme();
   const { toggleTheme } = useTheme();
-  const { UserData, setUserData } = useUserDataStore();
+  const { geminiApiKeyDecrypted } = usePinStore();
 
   const scrapeFormFields = () => {
     setIsLoading(true);
@@ -37,17 +38,15 @@ function App() {
             } else {
               setErrorMessage(response?.error || "Failed to scrape form");
             }
-          }
+          },
         );
       }
     });
   };
 
   const fillForm = async () => {
-    if (!scrapedForm || !userPrompt.trim() || !UserData.geminiApiKeyEncrypted) {
-      setErrorMessage(
-        "Please scrape form, enter a prompt, and set your Gemini API key"
-      );
+    if (!scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted) {
+      setErrorMessage("Please scrape form, enter a prompt, and set your Gemini API key");
       return;
     }
 
@@ -63,11 +62,7 @@ function App() {
         options: field.options,
       }));
 
-      const response = await generateFormContent(
-        UserData.geminiApiKeyEncrypted,
-        formStructure,
-        userPrompt
-      );
+      const response = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
 
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs.length > 0 && tabs[0]?.id) {
@@ -83,15 +78,13 @@ function App() {
               if (!fillResponse?.success) {
                 setErrorMessage(fillResponse?.error || "Failed to fill form");
               }
-            }
+            },
           );
         }
       });
     } catch (error) {
       setIsLoading(false);
-      setErrorMessage(
-        error instanceof Error ? error.message : "An error occurred"
-      );
+      setErrorMessage(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
@@ -100,7 +93,8 @@ function App() {
       <div className="grid-bg"></div>
       <div className="content">
         <Hero />
-
+        <BetterStepOne />
+        <div className="h-[80vh]"></div>
         <ByoApiKey />
         <div className="card">
           {/* API Key Input */}
@@ -108,10 +102,10 @@ function App() {
             <input
               type="password"
               placeholder="Enter Gemini API Key"
-              value={UserData.geminiApiKeyEncrypted || ""}
-              onChange={(e) =>
-                setUserData("geminiApiKeyEncrypted", e.target.value)
-              }
+              value={geminiApiKeyDecrypted || ""}
+              // onChange={(e) =>
+              //   setUserData("geminiApiKeyEncrypted", e.target.value)
+              // }
               style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
             />
           </div>
@@ -152,24 +146,12 @@ function App() {
           </div>
 
           {/* Fill Form Button */}
-          <button
-            onClick={fillForm}
-            disabled={
-              isLoading ||
-              !scrapedForm ||
-              !userPrompt.trim() ||
-              !UserData.geminiApiKeyEncrypted
-            }
-          >
+          <button onClick={fillForm} disabled={isLoading || !scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted}>
             {isLoading ? "Filling Form..." : "Fill Form with AI"}
           </button>
 
           {/* Error Display */}
-          {errorMessage && (
-            <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>
-              {errorMessage}
-            </div>
-          )}
+          {errorMessage && <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>{errorMessage}</div>}
 
           {/* Theme and debug controls */}
           <div
