@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { usePinStore } from "../../stores/PinStore";
-import BetterPassCode from "./BetterPassCode";
+import { usePinStore } from "~/lib/stores/PinStore";
+import BetterPassCode from "~/lib/ui/Better/BetterPassCode";
 
 export default function BetterStepOne() {
   const { isInitialized, unlock, pin: savedPin, pinStatus, setNewPin: setupPin, GET_DEBUG_JSON_DUMP } = usePinStore();

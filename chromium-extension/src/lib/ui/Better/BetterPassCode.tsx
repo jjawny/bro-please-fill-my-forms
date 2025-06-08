@@ -1,11 +1,7 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useState } from "react";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "~/lib/ui/shadcn/input-otp";
-import { cn } from "../../utils/cn";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/ui/shadcn/input-otp";
+import { cn } from "~/lib/utils/cn";
 
 export default function BetterPassCode({
   isPlayShakeAnimation = false,
@@ -35,9 +31,7 @@ export default function BetterPassCode({
         onChange={setValue}
         onComplete={handleComplete}
       >
-        <InputOTPGroup
-          className={cn(isPlayShakeAnimation ? "animate-shake" : "")}
-        >
+        <InputOTPGroup className={cn(isPlayShakeAnimation ? "animate-shake" : "")}>
           <InputOTPSlot className={LARGE_STYLES} index={0} />
           <InputOTPSlot className={LARGE_STYLES} index={1} />
           <InputOTPSlot className={LARGE_STYLES} index={2} />
@@ -51,7 +45,7 @@ export default function BetterPassCode({
 
 const OneOfPlaceHolder = ({ error }: { error?: string }) => {
   if (!!error) {
-    return <span className="text-red-500">{error}</span>;
+    return <span className="text-red-500 pt-2">{error}</span>;
   }
 
   return <span>&#8203;&#x200B;</span>;

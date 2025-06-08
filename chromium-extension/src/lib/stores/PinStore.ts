@@ -172,21 +172,18 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         const decryptionResponse = await decryptData(existingEncryptedKey, newPinFormatted);
 
-        if (!decryptionResponse.isOk) {
-          return { isOk: false, error: decryptionResponse.error };
-        }
+        messages = messages.concat(decryptionResponse.messages ?? []);
 
-        const decryptedKey = decryptionResponse.value;
-        const decryptedKeyHash = await hash(decryptedKey);
-
-        if (decryptedKeyHash !== existingKeyHash) {
-          return { isOk: false, error: "Incorrect PIN" };
+        // Decryption can fail if the PIN was incorrect OR for other reasons
+        // For simplicity and security, just respond w "PIN failed" for all of these cases
+        if (!decryptionResponse.isOk || (await hash(decryptionResponse.value)) !== existingKeyHash) {
+          return { isOk: false, error: "PIN failed" };
         }
 
         const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: newPinFormatted });
         messages = messages.concat(saveToSessionStorageResponse.messages ?? []);
 
-        transitionToUnlockedStatus(decryptedKey, newPinFormatted);
+        transitionToUnlockedStatus(decryptionResponse.value, newPinFormatted);
 
         return { isOk: true, value: "Successfully unlocked", messages };
       } catch (error) {
