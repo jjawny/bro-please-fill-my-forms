@@ -1,9 +1,9 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Theme } from "~/lib/enums/Theme";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
-import { Button } from "~/lib/ui/shadcn/button";
+import { RippleButton } from "../ui/shadcn/ripple";
 
-export default function ChangeThemeButton() {
+export default function ToggleThemeButton() {
   const { theme, setTheme } = useUserPreferencesStore();
 
   const handleThemeChange = () => {
@@ -25,7 +25,7 @@ export default function ChangeThemeButton() {
   };
 
   return (
-    <Button
+    <RippleButton
       variant="secondary"
       size="icon"
       className="size-8 absolute top-0 right-0 z-50"
@@ -33,6 +33,6 @@ export default function ChangeThemeButton() {
       aria-label={`Switch from ${theme.toLowerCase()} theme`}
     >
       {getThemeIcon()}
-    </Button>
+    </RippleButton>
   );
 }

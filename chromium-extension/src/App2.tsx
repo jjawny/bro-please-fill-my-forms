@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import ChangeThemeButton from "~/lib/components/ChangeThemeButton";
-import PadLockButton from "~/lib/components/PadLockButton";
+import ToggleLockButton from "~/lib/components/ToggleLockButton";
+import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 import BetterStepOne from "~/lib/ui/Better/BetterStepOne";
@@ -20,8 +20,8 @@ export default function App2() {
     <div className="app-container">
       <div className="app-container-background"></div>
       <div className="app-container-content">
-        <PadLockButton />
-        <ChangeThemeButton />
+        <ToggleLockButton />
+        <ToggleThemeButton />
         <Hero />
         <BetterStepOne />
       </div>
