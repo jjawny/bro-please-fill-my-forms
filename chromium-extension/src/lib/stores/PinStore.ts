@@ -85,10 +85,17 @@ export const usePinStore = create<PinStore>((set, get) => {
       const pinFormatted = pin.trim();
       const apiKeyFormatted = apiKey.trim();
       const apiKeyHash = await hash(apiKeyFormatted);
-      const apiKeyEncrypted = await encryptData(apiKeyFormatted, pinFormatted);
+      const encryptApiKeyResponse = await encryptData(apiKeyFormatted, pinFormatted);
+
+      messages = messages.concat(encryptApiKeyResponse.messages ?? []);
+
+      if (!encryptApiKeyResponse.isOk) {
+        return { isOk: false, error: encryptApiKeyResponse.error, messages };
+      }
+
       const isApiKeyValid = shouldTestApiKey ? true : get().hasGeminiApiKeyConnectedSuccessfully; // TODO: make API call to validate the key
       const nextData: ByoKeyData = {
-        geminiApiKeyEncrypted: apiKeyEncrypted,
+        geminiApiKeyEncrypted: encryptApiKeyResponse.value,
         geminiApiKeyHash: apiKeyHash,
         hasGeminiApiKeyConnectedSuccessfully: isApiKeyValid ?? false,
       };
@@ -138,10 +145,10 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         transitionToLockedStatus();
 
-        return { isOk: true, value: "Successfully locked", messages: messages };
+        return { isOk: true, value: "Successfully locked", messages };
       } catch (error) {
         console.error(`Failed to lock, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-        return { isOk: false, error: "Failed to lock", messages: messages };
+        return { isOk: false, error: "Failed to lock", messages };
       }
     },
 
@@ -181,10 +188,10 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         transitionToUnlockedStatus(decryptedKey, newPinFormatted);
 
-        return { isOk: true, value: "Successfully unlocked", messages: messages };
+        return { isOk: true, value: "Successfully unlocked", messages };
       } catch (error) {
         console.error(`Failed to unlock, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-        return { isOk: false, error: "Failed to unlock", messages: messages };
+        return { isOk: false, error: "Failed to unlock", messages };
       }
     },
 
@@ -203,7 +210,7 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(encryptApiKeyResponse.messages ?? []);
 
         if (!encryptApiKeyResponse.isOk) {
-          return { isOk: false, error: encryptApiKeyResponse.error, messages: messages };
+          return { isOk: false, error: encryptApiKeyResponse.error, messages };
         }
 
         const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: newPinFormatted });
@@ -211,10 +218,10 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         transitionToUnlockedStatus(apiKeyDecrypted, newPinFormatted);
 
-        return { isOk: true, value: "Successfully set new PIN", messages: messages };
+        return { isOk: true, value: "Successfully set new PIN", messages };
       } catch (error) {
         console.error(`Failed to set new PIN, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-        return { isOk: false, error: "Failed to set new PIN", messages: messages };
+        return { isOk: false, error: "Failed to set new PIN", messages };
       }
     },
 
@@ -237,13 +244,13 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(encryptApiKeyResponse.messages ?? []);
 
         if (!encryptApiKeyResponse.isOk) {
-          return { isOk: false, error: encryptApiKeyResponse.error, messages: messages };
+          return { isOk: false, error: encryptApiKeyResponse.error, messages };
         }
 
-        return { isOk: true, value: "Successfully set new API key", messages: messages };
+        return { isOk: true, value: "Successfully set new API key", messages };
       } catch (error) {
         console.error(`Failed to set new API key, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-        return { isOk: false, error: "Failed to set new API key", messages: messages };
+        return { isOk: false, error: "Failed to set new API key", messages };
       }
     },
 
@@ -253,10 +260,10 @@ export const usePinStore = create<PinStore>((set, get) => {
       try {
         await transitionToSettingUpStatus();
 
-        return { isOk: true, value: "Successfully reset", messages: messages };
+        return { isOk: true, value: "Successfully reset", messages };
       } catch (error) {
         console.error(`Failed to reset, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-        return { isOk: false, error: "Failed to reset", messages: messages };
+        return { isOk: false, error: "Failed to reset", messages };
       }
     },
 
