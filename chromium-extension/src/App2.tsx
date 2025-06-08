@@ -17,9 +17,9 @@ export default function App2() {
   }, [isPinStoreInitialized, isUserPreferencesStoreInitialized, initializePinStore, initializeUserPreferencesStore]);
 
   return (
-    <div className="container relative">
-      <div className="grid-bg"></div>
-      <div className="content">
+    <div className="app-container">
+      <div className="app-container-background"></div>
+      <div className="app-container-content">
         <PadLockButton />
         <ChangeThemeButton />
         <Hero />

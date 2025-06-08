@@ -1,25 +1,23 @@
-.container {
+.app-container {
   position: relative;
   height: 100vh;
-  width: 100%;
-  background-color: transparent; /* Let body background show through */
+  width: 100vw;
+  background-color: transparent;
 }
 
-.grid-bg {
+.app-container-background {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
+  width: 100vw;
   background-image:
     linear-gradient(to right, rgba(79, 79, 79, 0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px);
   background-size: 14px 24px;
   -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
   mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
-  pointer-events: none; /* Allow clicks to pass through */
+  pointer-events: none;
 }
 
-.content {
+.app-container-content {
   position: relative;
   z-index: 1;
   padding: 20px;
