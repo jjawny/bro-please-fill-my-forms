@@ -68,7 +68,9 @@
 body {
   background-color: var(--background-color);
   color: var(--text-color);
-  transition: background-color 0.3s, color 0.6s;
+  transition:
+    background-color 0.3s,
+    color 0.6s;
 }
 
 @keyframes shake {
@@ -110,23 +112,11 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
-  background-image: linear-gradient(
-      to right,
-      rgba(79, 79, 79, 0.18) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(79, 79, 79, 0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px);
   background-size: 14px 24px;
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 50% at 50% 0%,
-    #000 70%,
-    transparent 110%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 50% at 50% 0%,
-    #000 70%,
-    transparent 110%
-  );
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
   pointer-events: none; /* Allow clicks to pass through */
 }
 
