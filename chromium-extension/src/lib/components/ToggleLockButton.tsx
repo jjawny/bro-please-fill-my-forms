@@ -10,7 +10,13 @@ export default function ToggleLockButton() {
   }
 
   return (
-    <RippleButton onClick={lock} disabled={pinStatus !== "UNLOCKED"} variant="secondary" size="icon" className="size-8 absolute top-0 left-0 z-50">
+    <RippleButton
+      onClick={lock}
+      disabled={pinStatus !== "UNLOCKED"}
+      variant="secondary"
+      size="icon"
+      className="size-8 absolute top-0 left-0 z-50 m-2"
+    >
       {" "}
       {pinStatus === "LOCKED" ? <LockIcon /> : <LockOpenIcon />}
     </RippleButton>

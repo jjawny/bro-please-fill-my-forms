@@ -28,7 +28,7 @@ export default function ToggleThemeButton() {
     <RippleButton
       variant="secondary"
       size="icon"
-      className="size-8 absolute top-0 right-0 z-50"
+      className="size-8 absolute top-0 right-0 z-50 m-2"
       onClick={handleThemeChange}
       aria-label={`Switch from ${theme.toLowerCase()} theme`}
     >
