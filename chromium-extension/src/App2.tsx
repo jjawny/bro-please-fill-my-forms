@@ -8,7 +8,8 @@ import Hero from "~/lib/ui/Hero";
 
 export default function App2() {
   const { initialize: initializePinStore, isInitialized: isPinStoreInitialized } = usePinStore();
-  const { initialize: initializeUserPreferencesStore, isInitialized: isUserPreferencesStoreInitialized } = useUserPreferencesStore();
+  const { initialize: initializeUserPreferencesStore, isInitialized: isUserPreferencesStoreInitialized } =
+    useUserPreferencesStore();
 
   // Initialize stores once for entire component tree
   useEffect(() => {
