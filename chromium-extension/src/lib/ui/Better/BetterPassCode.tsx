@@ -30,6 +30,7 @@ export default function BetterPassCode({
         value={value}
         onChange={setValue}
         onComplete={handleComplete}
+        autoFocus
       >
         <InputOTPGroup className={cn(isPlayShakeAnimation ? "animate-shake" : "")}>
           <InputOTPSlot className={LARGE_STYLES} index={0} />
