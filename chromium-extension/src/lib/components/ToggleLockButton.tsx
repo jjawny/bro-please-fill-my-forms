@@ -11,6 +11,7 @@ export default function ToggleLockButton() {
 
   return (
     <RippleButton
+      title="Lock"
       onClick={lock}
       disabled={pinStatus !== "UNLOCKED"}
       variant="secondary"

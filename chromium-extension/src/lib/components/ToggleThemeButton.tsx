@@ -26,6 +26,7 @@ export default function ToggleThemeButton() {
 
   return (
     <RippleButton
+      title="Toggle Theme"
       variant="secondary"
       size="icon"
       className="size-8 absolute top-0 right-0 z-50 m-2"
