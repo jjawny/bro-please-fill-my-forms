@@ -59,7 +59,7 @@ export default function BetterStepOne() {
 
   return (
     <>
-      <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre>
+      {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
       <BetterPassCode isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} />
     </>
   );
