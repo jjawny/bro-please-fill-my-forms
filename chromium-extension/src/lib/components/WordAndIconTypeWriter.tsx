@@ -2,25 +2,33 @@ import React from "react";
 import { useTypewriter } from "../hooks/useTypeWriter";
 import { cn } from "../utils/cn";
 
-export type WordAndIcon = {
-  word: string;
+export type TextIconPair = {
+  text: string;
   icon?: React.ReactNode;
 };
 
-export default function WordAndIconTypeWriter({
-  wordsAndIcons = [{ word: "Hello" }],
+export default function TextIconPairTypeWriter({
+  pairs = [{ text: "Hello" }],
+  className,
 }: {
-  wordsAndIcons: WordAndIcon[];
+  pairs: TextIconPair[];
+  className?: string;
 }) {
   const { text, currentWordIndex } = useTypewriter({
-    words: wordsAndIcons.map((wi) => wi.word),
+    words: pairs.map((p) => p.text),
     pauseTimeAfterDeleting: 100,
   });
 
-  const currentIcon = wordsAndIcons[currentWordIndex]?.icon;
+  const currentIcon = pairs[currentWordIndex]?.icon;
 
   return (
-    <div className={cn("text-start text-sm", "flex gap-1 items-center")}>
+    <div
+      className={cn(
+        className,
+        "flex gap-1 items-center overflow-hidden",
+        "text-start text-sm text-stone-300 whitespace-nowrap",
+      )}
+    >
       <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
         {currentIcon}
       </span>

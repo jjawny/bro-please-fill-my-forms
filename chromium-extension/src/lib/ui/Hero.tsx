@@ -1,10 +1,16 @@
 import HeroDemo from "../components/HeroDemo";
+import { cn } from "../utils/cn";
 import logo from "/images/logo.png";
 export default function Hero() {
   return (
-    <div className="relative select-none pb-10">
+    <div
+      className={cn(
+        "relative  w-[300px] pb-[300px]",
+        // "bg-pink-200"
+      )}
+    >
       <HeroDemo />
-      <h1 className="flex tracking-tight space-x-5">
+      {/* <h1 className="flex tracking-tight space-x-5">
         <span>
           <span className="font-black">F</span>
           <span className="font-extrabold">I</span>
@@ -22,9 +28,9 @@ export default function Hero() {
           <span className="font-thin">R</span>
           <span className="font-thin">M</span>
         </span>
-      </h1>
-      <div className="absolute -top-[30px] -left-[68px]">
-        <img src={logo} style={{ maxHeight: "6rem" }} alt="Logo logo" />
+      </h1> */}
+      <div className="select-none absolute top-[-50px] right-[-66px] z-50">
+        <img src={logo} style={{ maxHeight: "8rem" }} alt="Logo logo" />
       </div>
     </div>
   );
