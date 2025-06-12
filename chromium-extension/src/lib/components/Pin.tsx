@@ -7,6 +7,7 @@ export type PinHelperText = {
   errorText?: string;
   helperText?: string;
 };
+
 /**
  * Simple PIN component that doesn't reference any stores
  */
@@ -41,15 +42,15 @@ export default function Pin({
           <InputOTPSlot className={LARGE_STYLES} index={3} />
         </InputOTPGroup>
       </InputOTP>
-      <OneOfPlaceHolder pinHelperText={pinHelperText} />
+      <HelperText pinHelperText={pinHelperText} />
     </>
   );
 }
 
-const OneOfPlaceHolder = ({ pinHelperText }: { pinHelperText?: PinHelperText }) => {
-  if (!!pinHelperText?.errorText) {
+const HelperText = ({ pinHelperText }: { pinHelperText?: PinHelperText }) => {
+  if (pinHelperText?.errorText) {
     return <span className="text-red-500 pt-2">{pinHelperText.errorText}</span>;
   }
 
-  return <span className="text-stone-500 pt-2">{pinHelperText?.helperText ?? <>&#8203;&#x200B;</>}</span>;
+  return <span className="text-stone-500 pt-2">{pinHelperText?.helperText ?? "\u200B"}</span>;
 };
