@@ -1,10 +1,10 @@
 import { useState } from "react";
+import PinWrapper from "./lib/components/PinWrapper";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
 import { usePinStore } from "./lib/stores/PinStore";
 import { ScrapedForm } from "./lib/types/FormField";
-import BetterStepOne from "./lib/ui/Better/BetterStepOne";
 import ByoApiKey from "./lib/ui/ByoApiKey";
 import Footer from "./lib/ui/Footer";
 import Hero from "./lib/ui/Hero";
@@ -93,7 +93,7 @@ function App() {
       <div className="grid-bg"></div>
       <div className="content">
         <Hero />
-        <BetterStepOne />
+        <PinWrapper />
         <div className="h-[80vh]"></div>
         <ByoApiKey />
         <div className="card">
@@ -146,7 +146,10 @@ function App() {
           </div>
 
           {/* Fill Form Button */}
-          <button onClick={fillForm} disabled={isLoading || !scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted}>
+          <button
+            onClick={fillForm}
+            disabled={isLoading || !scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted}
+          >
             {isLoading ? "Filling Form..." : "Fill Form with AI"}
           </button>
 

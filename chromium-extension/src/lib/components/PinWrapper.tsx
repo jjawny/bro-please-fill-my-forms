@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import Pin from "~/lib/components/Pin";
 import { usePinStore } from "~/lib/stores/PinStore";
 
-export default function BetterStepOne() {
+/**
+ * A wrapper for <Pin> with heavier business logic
+ */
+export default function PinWrapper() {
   const { isInitialized, unlock, pin: savedPin, pinStatus, setNewPin: setupPin, GET_DEBUG_JSON_DUMP } = usePinStore();
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();

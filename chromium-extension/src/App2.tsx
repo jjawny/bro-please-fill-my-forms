@@ -1,9 +1,9 @@
 import { useEffect } from "react";
+import PinWrapper from "~/lib/components/PinWrapper";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
-import BetterStepOne from "~/lib/ui/Better/BetterStepOne";
 import Hero from "~/lib/ui/Hero";
 
 export default function App2() {
@@ -26,7 +26,7 @@ export default function App2() {
         {pinStatus !== "UNLOCKED" ? (
           <>
             <Hero />
-            <BetterStepOne />
+            <PinWrapper />
           </>
         ) : (
           <p>TODO: actual step 1</p>

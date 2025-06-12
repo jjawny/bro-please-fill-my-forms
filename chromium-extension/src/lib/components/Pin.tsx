@@ -5,6 +5,9 @@ import { cn } from "~/lib/utils/cn";
 
 const LARGE_STYLES = "w-16 h-16 text-3xl border-stone-300";
 
+/**
+ * Simple PIN component that doesn't reference any stores
+ */
 export default function Pin({
   isPlayShakeAnimation = false,
   onComplete,
