@@ -26,7 +26,7 @@ export default function HeroDemo() {
   return (
     <div className="relative">
       <TextIconPairTypeWriter
-        className={cn(SHARED_STYLES, "w-56", "-z-10", "transform rotate-20 -translate-y-9")}
+        className={cn(SHARED_STYLES, "w-55", "-z-10", "transform rotate-20 -translate-y-9")}
         pairs={WORDS_AND_ICONS_GROUP_3}
       />
       <TextIconPairTypeWriter
@@ -38,7 +38,7 @@ export default function HeroDemo() {
         pairs={WORDS_AND_ICONS_GROUP_1}
       />
       <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-1", "!h-fit !p-3")}>
-        <h1 className="text-4xl select-text whitespace-nowrap">FILLA MY FORM</h1>
+        <h1 className="text-xl select-text whitespace-nowrap font-extrabold">BRO PLEASE, FILL MY FORMS</h1>
       </div>
     </div>
   );
