@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Pin from "~/lib/components/Pin";
 import { usePinStore } from "~/lib/stores/PinStore";
+import { RippleButton } from "~/lib/ui/shadcn/ripple";
 
 /**
  * A wrapper for <Pin> with heavier business logic
@@ -66,6 +67,7 @@ export default function PinWrapper() {
     <>
       {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
       <Pin isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} helperText={helperText} />
+      <RippleButton>test</RippleButton>
     </>
   );
 }
