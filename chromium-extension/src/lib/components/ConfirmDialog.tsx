@@ -34,7 +34,7 @@ export default function ConfirmDialog({
 }) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>{trigger}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       {/* Force small width for Chrome Extension UI */}
       <AlertDialogContent className="!max-w-xs">
         <AlertDialogHeader>
