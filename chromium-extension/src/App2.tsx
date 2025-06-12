@@ -1,10 +1,10 @@
 import { useEffect } from "react";
+import Hero from "~/lib/components/Hero";
 import PinWrapper from "~/lib/components/PinWrapper";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
-import Hero from "~/lib/ui/Hero";
 import Footer from "./lib/components/Footer";
 
 export default function App2() {
