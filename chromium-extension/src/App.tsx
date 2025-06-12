@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Theme } from "./lib/enums/Theme";
-import { useTheme } from "./lib/hooks/useTheme";
 import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
 import { usePinStore } from "./lib/stores/PinStore";
 import { ScrapedForm } from "./lib/types/FormField";
@@ -14,7 +12,6 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   // const { theme, toggleTheme } = useTheme();
-  const { toggleTheme } = useTheme();
   const { geminiApiKeyDecrypted } = usePinStore();
 
   const scrapeFormFields = () => {
@@ -149,19 +146,6 @@ function App() {
 
           {/* Error Display */}
           {errorMessage && <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>{errorMessage}</div>}
-
-          {/* Theme and debug controls */}
-          <div
-            style={{
-              marginTop: "20px",
-              borderTop: "1px solid #ccc",
-              paddingTop: "10px",
-            }}
-          >
-            <button onClick={() => toggleTheme(Theme.dark)}>dark</button>
-            <button onClick={() => toggleTheme(Theme.light)}>light</button>
-            <button onClick={() => toggleTheme(Theme.system)}>system</button>
-          </div>
         </div>
       </div>
     </div>
