@@ -1,49 +1,23 @@
 import { useState } from "react";
-import { decryptData, encryptData } from "../utils/crypto";
+import { encryptData } from "../utils/crypto";
 import { Button } from "./shadcn/button";
 import { Input } from "./shadcn/input";
 import ToolTipWrapper from "./ToolTipWrapper";
 
-const PIN = "1234";
-
 export default function ByoApiKey() {
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
-  const [encryptedApiKey, setEncryptedApiKey] = useState<string>("");
+  const [, setEncryptedApiKey] = useState<string>("");
   const [decryptedApiKey, setDecryptedApiKey] = useState<string>("");
   const [enteredPin, setEnteredPin] = useState<string>("");
   const [apiKeyInput, setApiKeyInput] = useState<string>("");
-  const [passCodeError, setPassCodeError] = useState<string | undefined>();
-  const [isShaking, setIsShaking] = useState<boolean>(false);
-
-  const handlePinSubmit = async (pin: string) => {
-    if (pin === PIN) {
-      setIsShaking(false);
-      setEnteredPin(pin);
-      if (encryptedApiKey) {
-        // Decrypt existing key
-        try {
-          const decrypted = await decryptData(encryptedApiKey, pin);
-          setDecryptedApiKey(decrypted.isOk ? decrypted.value : "");
-        } catch (error) {
-          console.error("Decryption failed:", error);
-          setDecryptedApiKey("");
-        }
-      }
-      setIsUnlocked(true);
-    } else {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 500);
-      // alert("Incorrect PIN");
-      setPassCodeError("Incorrect PIN, please try again.");
-    }
-  };
 
   const handleApiKeySubmit = async () => {
     if (apiKeyInput && enteredPin) {
       try {
         // Encrypt the API key
         const encrypted = await encryptData(apiKeyInput, enteredPin);
-        setEncryptedApiKey(encrypted);
+        if (!encrypted.isOk) return;
+        setEncryptedApiKey(encrypted.value);
         setDecryptedApiKey(apiKeyInput);
         setApiKeyInput("");
       } catch (error) {

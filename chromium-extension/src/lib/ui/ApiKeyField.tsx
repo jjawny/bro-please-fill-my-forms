@@ -1,41 +1,13 @@
 import { useState } from "react";
-import { decryptData } from "../utils/crypto";
 import { Button } from "./shadcn/button";
 import ToolTipWrapper from "./ToolTipWrapper";
 
-const PIN = "1234";
-
 export default function ApiKeyField() {
   const [, setIsUnlocked] = useState<boolean>(false);
-  const [encryptedApiKey, setEncryptedApiKey] = useState<string>("");
+  const [, setEncryptedApiKey] = useState<string>("");
   const [, setDecryptedApiKey] = useState<string>("");
   const [, setEnteredPin] = useState<string>("");
   const [, setApiKeyInput] = useState<string>("");
-  const [passCodeError, setPassCodeError] = useState<string | undefined>();
-  const [isShaking, setIsShaking] = useState<boolean>(false);
-
-  const handlePinSubmit = async (pin: string) => {
-    if (pin === PIN) {
-      setIsShaking(false);
-      setEnteredPin(pin);
-      if (encryptedApiKey) {
-        // Decrypt existing key
-        try {
-          const decrypted = await decryptData(encryptedApiKey, pin);
-          setDecryptedApiKey(decrypted.isOk ? decrypted.value : "");
-        } catch (error) {
-          console.error("Decryption failed:", error);
-          setDecryptedApiKey("");
-        }
-      }
-      setIsUnlocked(true);
-    } else {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 500);
-      // alert("Incorrect PIN");
-      setPassCodeError("Incorrect PIN, please try again.");
-    }
-  };
 
   const handleClear = () => {
     setEncryptedApiKey("");
