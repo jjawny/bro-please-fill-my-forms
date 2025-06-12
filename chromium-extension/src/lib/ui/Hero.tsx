@@ -1,5 +1,5 @@
-import HeroDemo from "../components/HeroDemo";
-import { cn } from "../utils/cn";
+import HeroDemo from "~/lib/components/HeroDemo";
+import { cn } from "~/lib/utils/cn";
 import logo from "/images/logo.png";
 
 export default function Hero() {

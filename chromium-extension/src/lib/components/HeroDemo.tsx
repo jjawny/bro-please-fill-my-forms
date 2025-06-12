@@ -1,6 +1,6 @@
 import { CalendarIcon, DollarSignIcon, MailIcon, MapPinIcon, PhoneIcon, SignatureIcon } from "lucide-react";
+import TextIconPairTypeWriter, { TextIconPair } from "~/lib/components/WordAndIconTypeWriter";
 import { cn } from "~/lib/utils/cn";
-import TextIconPairTypeWriter, { TextIconPair } from "./WordAndIconTypeWriter";
 
 const SHARED_STYLES = "select-none h-7 pl-1 right-0 absolute bg-white border border-stone-200 rounded-sm";
 
