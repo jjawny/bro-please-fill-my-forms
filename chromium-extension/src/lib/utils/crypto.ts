@@ -72,14 +72,21 @@ export const decryptData = async (encryptedData: string, pin: string): Promise<O
     // 4. Remove any randomly generated prefix
     const separatorIndex = decryptedValue.indexOf(API_KEY_PREFIX_SEPARATOR);
     const hasPrefix = separatorIndex !== -1;
-    const originalData = hasPrefix ? decryptedValue.slice(separatorIndex + API_KEY_PREFIX_SEPARATOR.length) : decryptedValue;
+    const originalData = hasPrefix
+      ? decryptedValue.slice(separatorIndex + API_KEY_PREFIX_SEPARATOR.length)
+      : decryptedValue;
 
     if (hasPrefix) messages.push(`Removed prefix: ${decryptedValue.slice(0, separatorIndex)}`);
 
-    console.debug("Successfully decrypted data:", originalData);
+    console.debug("Successfully decrypted data:", originalData ?? "<EMPTY>");
     return { isOk: true, value: originalData, messages };
   } catch (error) {
-    console.error(`Failed to decrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+    const isExpectedError = error instanceof DOMException && error.name === "InvalidAccessError";
+    if (!isExpectedError) {
+      console.warn(`Failed to decrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+    } else {
+      console.error(`Failed to decrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+    }
     return { isOk: false, error: "Failed to decrypt data", messages };
   }
 };
@@ -95,7 +102,9 @@ export const hash = async (data: string): Promise<string> => {
 
 const deriveKey = async (pin: string, salt: Uint8Array): Promise<CryptoKey> => {
   const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(pin), { name: "PBKDF2" }, false, ["deriveKey"]);
+  const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(pin), { name: "PBKDF2" }, false, [
+    "deriveKey",
+  ]);
   const derivedKey = crypto.subtle.deriveKey(
     { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
     keyMaterial,

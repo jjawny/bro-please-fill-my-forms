@@ -9,10 +9,15 @@ export default function ToggleLockButton() {
     return null;
   }
 
+  const handleClick = async () => {
+    const lockResponse = await lock();
+    console.debug("Lock response:", lockResponse);
+  };
+
   return (
     <RippleButton
       title="Lock"
-      onClick={lock}
+      onClick={handleClick}
       disabled={pinStatus !== "UNLOCKED"}
       variant="secondary"
       size="icon"
