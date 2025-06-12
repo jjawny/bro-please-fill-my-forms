@@ -5,12 +5,12 @@ export function useTypewriter(args: {
   typingSpeed?: number;
   deletingSpeed?: number;
   pauseTime?: number;
-}): string {
+}) {
   const { words, typingSpeed = 100, deletingSpeed = 50, pauseTime = 1000 } = args;
 
   const [text, setText] = useState("");
-  const [wordIdx, setWordIdx] = useState(0);
-  const [charIdx, setCharIdx] = useState(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -23,7 +23,7 @@ export function useTypewriter(args: {
   }, []);
 
   useEffect(() => {
-    const currWord = words[wordIdx];
+    const currWord = words[wordIndex];
 
     const scheduleNextAction = (delay: number, action: () => void) => {
       cleanUp();
@@ -31,16 +31,16 @@ export function useTypewriter(args: {
     };
 
     const getAction = () => {
-      if (!isDeleting && charIdx < currWord.length) return "TYPING";
-      if (!isDeleting && charIdx === currWord.length) return "AFTER_TYPING_PAUSE";
-      if (isDeleting && charIdx > 0) return "DELETING";
-      if (isDeleting && charIdx === 0) return "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD";
+      if (!isDeleting && charIndex < currWord.length) return "TYPING";
+      if (!isDeleting && charIndex === currWord.length) return "AFTER_TYPING_PAUSE";
+      if (isDeleting && charIndex > 0) return "DELETING";
+      if (isDeleting && charIndex === 0) return "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD";
       return "idle";
     };
 
     switch (getAction()) {
       case "TYPING":
-        scheduleNextAction(typingSpeed, () => setCharIdx((prev) => prev + 1));
+        scheduleNextAction(typingSpeed, () => setCharIndex((prev) => prev + 1));
         break;
 
       case "AFTER_TYPING_PAUSE":
@@ -48,13 +48,13 @@ export function useTypewriter(args: {
         break;
 
       case "DELETING":
-        scheduleNextAction(deletingSpeed, () => setCharIdx((prev) => prev - 1));
+        scheduleNextAction(deletingSpeed, () => setCharIndex((prev) => prev - 1));
         break;
 
       case "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD":
         scheduleNextAction(pauseTime, () => {
           setIsDeleting(false);
-          setWordIdx((prev) => (prev + 1) % words.length);
+          setWordIndex((prev) => (prev + 1) % words.length);
         });
         break;
 
@@ -62,10 +62,10 @@ export function useTypewriter(args: {
         break;
     }
 
-    setText(currWord.slice(0, charIdx));
+    setText(currWord.slice(0, charIndex));
 
     return cleanUp;
-  }, [charIdx, isDeleting, wordIdx, words, typingSpeed, deletingSpeed, pauseTime, cleanUp]);
+  }, [charIndex, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseTime, cleanUp]);
 
-  return text;
+  return { text, currentWordIndex: wordIndex };
 }

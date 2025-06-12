@@ -1,21 +1,22 @@
 import React from "react";
 import { useTypewriter } from "../hooks/useTypeWriter";
 
-interface TypewriterProps {
-  text: string[];
-}
-
-const TypeWriter: React.FC<TypewriterProps> = ({ text = ["Hello"] }) => {
-  const wordss = useTypewriter({
-    words: text,
-  });
-
-  return (
-    <div>
-      <style></style>
-      {wordss} <span className="cursor">|</span>
-    </div>
-  );
+export type WordAndIcon = {
+  word: string;
+  icon?: React.ReactNode;
 };
 
-export default TypeWriter;
+export default function TypeWriter({ wordsAndIcons = [{ word: "Hello" }] }: { wordsAndIcons: WordAndIcon[] }) {
+  const { text, currentWordIndex } = useTypewriter({ words: wordsAndIcons.map((wi) => wi.word) });
+
+  const currentIcon = wordsAndIcons[currentWordIndex]?.icon;
+
+  return (
+    <div className="text-start flex gap-1 items-center">
+      <span key={currentWordIndex} className="animate-bounce-in">
+        {currentIcon}
+      </span>
+      {text}
+    </div>
+  );
+}

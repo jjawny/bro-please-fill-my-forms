@@ -1,6 +1,6 @@
-import TypeWriter from "../components/TypeWriter";
+import { CalendarIcon, DollarSignIcon, MailIcon, MapPinIcon, PhoneIcon, SignatureIcon } from "lucide-react";
+import TypeWriter, { WordAndIcon } from "../components/TypeWriter";
 import logo from "/images/logo.png";
-
 export default function Hero() {
   return (
     <div className="relative select-none pb-10">
@@ -32,6 +32,14 @@ export default function Hero() {
 }
 
 function StackedInputs() {
+  const WORDS_AND_ICONS: WordAndIcon[] = [
+    { word: "999,999,999,999", icon: <DollarSignIcon /> },
+    { word: "Broski McBro", icon: <SignatureIcon /> },
+    { word: "Broski.McBro@bro.com", icon: <MailIcon /> },
+    { word: "-27.470605815771588, 153.0248755838874", icon: <MapPinIcon /> },
+    { word: "1800-Broski", icon: <PhoneIcon /> },
+    { word: "01/01/2000", icon: <CalendarIcon /> },
+  ];
   return (
     <div className="relative">
       {/* Notification-style divs - stacked/fan */}
@@ -40,7 +48,9 @@ function StackedInputs() {
 
       {/* Front input with typewriter animation */}
       <div className="absolute w-60 h-12 p-3 border-stone-200 border bg-white rounded-sm z-20 overflow-hidden whitespace-nowra transform -rotate-1">
-        <TypeWriter text={["test ts tset"]} />
+        <div className="text-start flex gap-1">
+          <TypeWriter wordsAndIcons={WORDS_AND_ICONS} />
+        </div>
       </div>
     </div>
   );
