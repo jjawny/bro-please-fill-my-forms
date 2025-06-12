@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import Pin from "~/lib/components/Pin";
 import { usePinStore } from "~/lib/stores/PinStore";
-import BetterPassCode from "~/lib/ui/Better/BetterPassCode";
 
 export default function BetterStepOne() {
   const { isInitialized, unlock, pin: savedPin, pinStatus, setNewPin: setupPin, GET_DEBUG_JSON_DUMP } = usePinStore();
@@ -62,12 +62,7 @@ export default function BetterStepOne() {
   return (
     <>
       {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
-      <BetterPassCode
-        isPlayShakeAnimation={isShaking}
-        onComplete={handlePinSubmit}
-        error={pinError}
-        helperText={helperText}
-      />
+      <Pin isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} helperText={helperText} />
     </>
   );
 }
