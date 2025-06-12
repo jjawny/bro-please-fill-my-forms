@@ -67,7 +67,9 @@ export default function PinWrapper() {
     <>
       {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
       <Pin isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} helperText={helperText} />
-      <RippleButton>test</RippleButton>
+      {pinStatus !== "SETTING_UP" && (
+        <RippleButton className="text-stone-500 mt-6 bg-stone-900">Forget PIN</RippleButton>
+      )}
     </>
   );
 }
