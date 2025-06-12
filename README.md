@@ -30,5 +30,6 @@ TODO:
 - [ ] Migrate logic from App.tsx out (ApiKeyField and ByoApiKey fields to be deleted)
 - [ ] then delete App.tsx
 - [ ] then rename App2.tsx to App.tsx
-
+- [ ] start the theme
+- [ ] figure out the best way to control the size of chrome extension UIs
 - [ ] delete components.json when done as its pretty broken
