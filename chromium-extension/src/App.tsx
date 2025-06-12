@@ -6,7 +6,6 @@ import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-act
 import { usePinStore } from "./lib/stores/PinStore";
 import { ScrapedForm } from "./lib/types/FormField";
 import ByoApiKey from "./lib/ui/ByoApiKey";
-import Footer from "./lib/ui/Footer";
 import Hero from "./lib/ui/Hero";
 import { generateFormContent } from "./lib/utils/geminiApi";
 
@@ -168,7 +167,6 @@ function App() {
             <button onClick={() => toggleTheme(Theme.light)}>light</button>
             <button onClick={() => toggleTheme(Theme.system)}>system</button>
           </div>
-          <Footer />
         </div>
       </div>
     </div>

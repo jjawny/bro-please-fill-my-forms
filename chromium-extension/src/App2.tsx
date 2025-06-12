@@ -5,6 +5,7 @@ import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 import Hero from "~/lib/ui/Hero";
+import Footer from "./lib/components/Footer";
 
 export default function App2() {
   const { initialize: initializePinStore, isInitialized: isPinStoreInitialized, pinStatus } = usePinStore();
@@ -32,6 +33,7 @@ export default function App2() {
           <p>TODO: actual step 1</p>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
