@@ -47,14 +47,23 @@ type PinStore = ByoKeyData &
   };
 
 export const usePinStore = create<PinStore>((set, get) => {
-  const transitionToLockedStatus = (otherState?: Partial<PinStore>) => {
+  const transitionToLockedStatus = async (otherState?: Partial<PinStore>) => {
+    // If the user intentionally locks, clear the PIN so nothing tries to auto-unlock
+    const pin = undefined;
+    await saveToSessionStorage(TemporaryDataSchema, { pin });
+
     set({
+      pin: pin,
       pinStatus: "LOCKED",
       geminiApiKeyDecrypted: undefined,
       ...otherState,
     });
   };
-  const transitionToUnlockedStatus = (geminiApiKeyDecrypted: string, pinUsed: string, otherState?: Partial<PinStore>) => {
+  const transitionToUnlockedStatus = (
+    geminiApiKeyDecrypted: string,
+    pinUsed: string,
+    otherState?: Partial<PinStore>,
+  ) => {
     set({
       pin: pinUsed,
       pinStatus: "UNLOCKED",
@@ -78,7 +87,11 @@ export const usePinStore = create<PinStore>((set, get) => {
     });
   };
 
-  const encryptApiKey = async (pin: string, apiKey: string, shouldTestApiKey: boolean = false): Promise<OneOf<ByoKeyData, string>> => {
+  const encryptApiKey = async (
+    pin: string,
+    apiKey: string,
+    shouldTestApiKey: boolean = false,
+  ): Promise<OneOf<ByoKeyData, string>> => {
     let messages: string[] = [];
 
     try {
@@ -107,7 +120,10 @@ export const usePinStore = create<PinStore>((set, get) => {
 
       return { isOk: true, value: nextData, messages };
     } catch (error) {
-      console.error(`Failed to encrypt and save API key, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+      console.error(
+        `Failed to encrypt and save API key, reason: ${error instanceof Error ? error.message : "Unknown"}`,
+        error,
+      );
       return { isOk: false, error: "Failed to encrypt and save API key", messages };
     }
   };
@@ -143,7 +159,7 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "Can only lock when unlocked" };
         }
 
-        transitionToLockedStatus();
+        await transitionToLockedStatus();
 
         return { isOk: true, value: "Successfully locked", messages };
       } catch (error) {
@@ -246,7 +262,10 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         return { isOk: true, value: "Successfully set new API key", messages };
       } catch (error) {
-        console.error(`Failed to set new API key, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+        console.error(
+          `Failed to set new API key, reason: ${error instanceof Error ? error.message : "Unknown"}`,
+          error,
+        );
         return { isOk: false, error: "Failed to set new API key", messages };
       }
     },
