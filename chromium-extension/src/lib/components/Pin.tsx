@@ -1,31 +1,28 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/ui/shadcn/input-otp";
 import { cn } from "~/lib/utils/cn";
 
 const LARGE_STYLES = "w-16 h-16 text-3xl border-stone-300";
-
+export type PinHelperText = {
+  errorText?: string;
+  helperText?: string;
+};
 /**
  * Simple PIN component that doesn't reference any stores
  */
 export default function Pin({
   isPlayShakeAnimation = false,
+  pinHelperText,
+  value,
+  onChange,
   onComplete,
-  error,
-  helperText,
 }: {
   isPlayShakeAnimation: boolean;
+  pinHelperText?: PinHelperText;
+  value: string;
+  onChange: (value: string) => void;
   onComplete: (value: string) => void;
-  error?: string;
-  helperText?: string;
 }) {
-  const [value, setValue] = useState("");
-
-  const handleComplete = (pin: string) => {
-    onComplete(pin);
-    setValue("");
-  };
-
   return (
     <>
       <InputOTP
@@ -33,8 +30,8 @@ export default function Pin({
         pattern={REGEXP_ONLY_DIGITS}
         className={cn("bg-white")}
         value={value}
-        onChange={setValue}
-        onComplete={handleComplete}
+        onChange={onChange}
+        onComplete={onComplete}
         autoFocus
       >
         <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake")}>
@@ -44,15 +41,15 @@ export default function Pin({
           <InputOTPSlot className={LARGE_STYLES} index={3} />
         </InputOTPGroup>
       </InputOTP>
-      <OneOfPlaceHolder error={error} helperText={helperText} />
+      <OneOfPlaceHolder pinHelperText={pinHelperText} />
     </>
   );
 }
 
-const OneOfPlaceHolder = ({ error, helperText }: { error?: string; helperText?: string }) => {
-  if (!!error) {
-    return <span className="text-red-500 pt-2">{error}</span>;
+const OneOfPlaceHolder = ({ pinHelperText }: { pinHelperText?: PinHelperText }) => {
+  if (!!pinHelperText?.errorText) {
+    return <span className="text-red-500 pt-2">{pinHelperText.errorText}</span>;
   }
 
-  return <span className="text-stone-500 pt-2">{helperText ?? <>&#8203;&#x200B;</>}</span>;
+  return <span className="text-stone-500 pt-2">{pinHelperText?.helperText ?? <>&#8203;&#x200B;</>}</span>;
 };

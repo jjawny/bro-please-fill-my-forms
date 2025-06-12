@@ -20,6 +20,8 @@ export default function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   confirmVariant,
+  onCancel,
+  onConfirm,
 }: {
   trigger: ReactNode;
   title?: ReactNode;
@@ -27,6 +29,8 @@ export default function ConfirmDialog({
   confirmLabel?: string;
   cancelLabel?: string;
   confirmVariant?: VariantProps<typeof buttonVariants>["variant"];
+  onCancel?: () => void;
+  onConfirm?: () => void;
 }) {
   return (
     <AlertDialog>
@@ -38,8 +42,12 @@ export default function ConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline">{cancelLabel ?? "Cancel"}</AlertDialogCancel>
-          <AlertDialogAction variant={confirmVariant}>{confirmLabel ?? "Confirm"}</AlertDialogAction>
+          <AlertDialogCancel variant="outline" onClick={onCancel}>
+            {cancelLabel ?? "Cancel"}
+          </AlertDialogCancel>
+          <AlertDialogAction variant={confirmVariant} onClick={onConfirm}>
+            {confirmLabel ?? "Confirm"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
