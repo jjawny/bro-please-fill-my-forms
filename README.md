@@ -33,3 +33,4 @@ TODO:
 - [ ] start the theme
 - [ ] figure out the best way to control the size of chrome extension UIs
 - [ ] delete components.json when done as its pretty broken
+- [ ] console warn anything that isn't caught? need to separate logs for things that aren't us (dont console.error our errors, use console.warn?)
