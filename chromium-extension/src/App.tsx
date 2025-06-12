@@ -1,12 +1,10 @@
 import { useState } from "react";
-import PinWrapper from "./lib/components/PinWrapper";
 import { Theme } from "./lib/enums/Theme";
 import { useTheme } from "./lib/hooks/useTheme";
 import { SERVICE_WORKER_ACTIONS } from "./lib/service-workers/service-worker-actions";
 import { usePinStore } from "./lib/stores/PinStore";
 import { ScrapedForm } from "./lib/types/FormField";
 import ByoApiKey from "./lib/ui/ByoApiKey";
-import Hero from "./lib/ui/Hero";
 import { generateFormContent } from "./lib/utils/geminiApi";
 
 function App() {
@@ -91,9 +89,6 @@ function App() {
     <div className="container">
       <div className="grid-bg"></div>
       <div className="content">
-        <Hero />
-        <PinWrapper />
-        <div className="h-[80vh]"></div>
         <ByoApiKey />
         <div className="card">
           {/* API Key Input */}

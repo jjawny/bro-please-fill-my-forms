@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { decryptData, encryptData } from "../utils/crypto";
-import PassCode from "./PassCode";
 import { Button } from "./shadcn/button";
 import { Input } from "./shadcn/input";
 import ToolTipWrapper from "./ToolTipWrapper";
@@ -75,16 +74,13 @@ export default function ByoApiKey() {
           <li>2. Choose a PIN you will remember (will not be saved)</li>
           <li>3. Enter your PIN to decrypt your API key before using</li>
         </ol>
-        <PassCode
+        {/* <PassCode
           isPlayShakeAnimation={isShaking}
           onComplete={handlePinSubmit}
           error={passCodeError}
-        />
+        /> */}
         <p className="pt-2">
-          <ToolTipWrapper
-            content="You will need to re-enter your API key again"
-            backgroundColorHex="#ff0000"
-          >
+          <ToolTipWrapper content="You will need to re-enter your API key again" backgroundColorHex="#ff0000">
             <span>
               <Button onClick={handleClear} size="sm" className="text-black">
                 Forgot your PIN?

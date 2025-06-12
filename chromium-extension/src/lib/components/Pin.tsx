@@ -31,13 +31,13 @@ export default function Pin({
       <InputOTP
         maxLength={4}
         pattern={REGEXP_ONLY_DIGITS}
-        className={cn("bg-white w-")}
+        className={cn("bg-white")}
         value={value}
         onChange={setValue}
         onComplete={handleComplete}
         autoFocus
       >
-        <InputOTPGroup className={cn(isPlayShakeAnimation ? "animate-shake" : "")}>
+        <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake")}>
           <InputOTPSlot className={LARGE_STYLES} index={0} />
           <InputOTPSlot className={LARGE_STYLES} index={1} />
           <InputOTPSlot className={LARGE_STYLES} index={2} />
