@@ -1,6 +1,6 @@
 import { CalendarIcon, DollarSignIcon, MailIcon, MapPinIcon, PhoneIcon, SignatureIcon } from "lucide-react";
-import TypeWriter, { WordAndIcon } from "../components/TypeWriter";
 import { cn } from "../utils/cn";
+import WordAndIconTypeWriter, { WordAndIcon } from "./WordAndIconTypeWriter";
 
 export default function HeroDemo() {
   const SHARED_STYLES = "right-0 absolute h-12 p-3 bg-white border border-stone-200 rounded-sm";
@@ -20,7 +20,7 @@ export default function HeroDemo() {
       <div
         className={cn(SHARED_STYLES, "text-start flex gap-1 w-60 rounded-sm z-20 overflow-hidden whitespace-nowrap")}
       >
-        <TypeWriter wordsAndIcons={WORDS_AND_ICONS} />
+        <WordAndIconTypeWriter wordsAndIcons={WORDS_AND_ICONS} />
       </div>
     </div>
   );

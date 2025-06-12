@@ -6,8 +6,15 @@ export type WordAndIcon = {
   icon?: React.ReactNode;
 };
 
-export default function TypeWriter({ wordsAndIcons = [{ word: "Hello" }] }: { wordsAndIcons: WordAndIcon[] }) {
-  const { text, currentWordIndex } = useTypewriter({ words: wordsAndIcons.map((wi) => wi.word) });
+export default function WordAndIconTypeWriter({
+  wordsAndIcons = [{ word: "Hello" }],
+}: {
+  wordsAndIcons: WordAndIcon[];
+}) {
+  const { text, currentWordIndex } = useTypewriter({
+    words: wordsAndIcons.map((wi) => wi.word),
+    pauseTimeAfterDeleting: 100,
+  });
 
   const currentIcon = wordsAndIcons[currentWordIndex]?.icon;
 

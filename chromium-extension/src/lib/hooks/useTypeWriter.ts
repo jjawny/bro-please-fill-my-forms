@@ -5,8 +5,17 @@ export function useTypewriter(args: {
   typingSpeed?: number;
   deletingSpeed?: number;
   pauseTime?: number;
+  pauseTimeAfterTyping?: number;
+  pauseTimeAfterDeleting?: number;
 }) {
-  const { words, typingSpeed = 100, deletingSpeed = 50, pauseTime = 1000 } = args;
+  const {
+    words,
+    typingSpeed = 100,
+    deletingSpeed = 50,
+    pauseTime = 1000,
+    pauseTimeAfterTyping,
+    pauseTimeAfterDeleting,
+  } = args;
 
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
@@ -44,7 +53,7 @@ export function useTypewriter(args: {
         break;
 
       case "AFTER_TYPING_PAUSE":
-        scheduleNextAction(pauseTime, () => setIsDeleting(true));
+        scheduleNextAction(pauseTimeAfterTyping ?? pauseTime, () => setIsDeleting(true));
         break;
 
       case "DELETING":
@@ -52,7 +61,7 @@ export function useTypewriter(args: {
         break;
 
       case "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD":
-        scheduleNextAction(pauseTime, () => {
+        scheduleNextAction(pauseTimeAfterDeleting ?? pauseTime, () => {
           setIsDeleting(false);
           setWordIndex((prev) => (prev + 1) % words.length);
         });
