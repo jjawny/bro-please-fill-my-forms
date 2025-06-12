@@ -24,3 +24,10 @@ To view console logs:
   ![how to view extension console logs](readme/inspect-service-worker-logs.png)
 
 
+---
+TODO:
+
+- [ ] Migrate logic from App.tsx out (ApiKeyField and ByoApiKey fields to be deleted)
+- [ ] then delete App.tsx
+- [ ] then rename App2.tsx to App.tsx
+
