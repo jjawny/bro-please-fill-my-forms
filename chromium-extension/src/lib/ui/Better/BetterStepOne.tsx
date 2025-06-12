@@ -57,10 +57,17 @@ export default function BetterStepOne() {
     }
   };
 
+  const helperText = pinStatus === "SETTING_UP" ? "Set your new PIN" : "Enter your PIN to unlock";
+
   return (
     <>
       {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
-      <BetterPassCode isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} />
+      <BetterPassCode
+        isPlayShakeAnimation={isShaking}
+        onComplete={handlePinSubmit}
+        error={pinError}
+        helperText={helperText}
+      />
     </>
   );
 }

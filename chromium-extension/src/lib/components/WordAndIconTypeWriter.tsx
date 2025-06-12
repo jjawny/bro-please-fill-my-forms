@@ -26,7 +26,7 @@ export default function TextIconPairTypeWriter({
       className={cn(
         className,
         "flex gap-1 items-center overflow-hidden",
-        "text-start text-sm text-stone-300 whitespace-nowrap",
+        "text-start text-sm text-stone-200 whitespace-nowrap",
       )}
     >
       <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
