@@ -1,5 +1,6 @@
 import React from "react";
 import { useTypewriter } from "../hooks/useTypeWriter";
+import { cn } from "../utils/cn";
 
 export type WordAndIcon = {
   word: string;
@@ -19,8 +20,8 @@ export default function WordAndIconTypeWriter({
   const currentIcon = wordsAndIcons[currentWordIndex]?.icon;
 
   return (
-    <div className="text-start flex gap-1 items-center">
-      <span key={currentWordIndex} className="animate-bounce-in">
+    <div className={cn("text-start text-sm", "flex gap-1 items-center")}>
+      <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
         {currentIcon}
       </span>
       {text}
