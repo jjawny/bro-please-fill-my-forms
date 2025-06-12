@@ -3,6 +3,8 @@ import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/ui/shadcn/input-otp";
 import { cn } from "~/lib/utils/cn";
 
+const LARGE_STYLES = "w-16 h-16 text-3xl border-stone-300";
+
 export default function BetterPassCode({
   isPlayShakeAnimation = false,
   onComplete,
@@ -14,8 +16,6 @@ export default function BetterPassCode({
   error?: string;
   helperText?: string;
 }) {
-  const LARGE_STYLES = "w-16 h-16 text-3xl";
-
   const [value, setValue] = useState("");
 
   const handleComplete = (pin: string) => {
