@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { RippleButton } from "~/lib/ui/shadcn/ripple";
@@ -15,36 +15,26 @@ export default function PinWrapper() {
     pinStatus,
     setNewPin: setupPin,
     reset,
-    GET_DEBUG_JSON_DUMP,
+    // GET_DEBUG_JSON_DUMP,
   } = usePinStore();
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const hasAttemptedAutoUnlock = useRef<boolean>(false);
 
-  useEffect(() => {
-    if (isInitialized) {
-      attemptAutoUnlock();
-    }
-  }, [isInitialized]);
-
-  // 1. Initialize the store to load any previously saved data
-  // 2. If a PIN is saved (session storage), attempt to unlock with it
-  // 3. The unlock fn will change the pinStatus to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
-  const attemptAutoUnlock = async () => {
-    console.debug("Attempting auto unlock with PIN:", savedPin);
-
-    if (savedPin) {
-      var unlockResponse = await unlock(savedPin);
-      if (unlockResponse.isOk) {
-        console.debug("Auto-unlock successful");
-        return;
+  useEffect(
+    function autoUnlock() {
+      // 1. Initialize the store to load any previously saved data
+      // 2. If a PIN is saved (session storage), attempt to unlock with it
+      // 3. The unlock fn will change the pinStatus to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
+      if (!hasAttemptedAutoUnlock.current && isInitialized && savedPin) {
+        hasAttemptedAutoUnlock.current = true;
+        unlock(savedPin);
       }
-
-      console.error("Auto-unlock failed:", unlockResponse.error);
-      return;
-    }
-  };
+    },
+    [isInitialized, savedPin],
+  );
 
   const handlePinSubmit = async (pin: string) => {
     setIsSubmitting(true);
