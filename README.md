@@ -27,9 +27,8 @@ To view console logs:
 ---
 TODO:
 
-- [ ] Migrate logic from App.tsx out (ApiKeyField and ByoApiKey fields to be deleted)
-- [ ] then delete App.tsx
-- [ ] then rename App2.tsx to App.tsx
+- [ ] Migrate logic from OldApp.tsx out (ApiKeyField and ByoApiKey fields to be deleted)
+- [ ] then delete OldApp.tsx
 - [ ] start the theme
 - [ ] delete components.json when done as its pretty broken
 - [ ] console warn anything that isn't caught? need to separate logs for things that aren't us (dont console.error our errors, use console.warn?)
