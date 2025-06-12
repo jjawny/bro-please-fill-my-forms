@@ -31,3 +31,4 @@ TODO:
 - [ ] then delete App.tsx
 - [ ] then rename App2.tsx to App.tsx
 
+- [ ] delete components.json when done as its pretty broken

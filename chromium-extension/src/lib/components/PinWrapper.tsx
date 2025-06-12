@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Pin from "~/lib/components/Pin";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { RippleButton } from "~/lib/ui/shadcn/ripple";
+import ConfirmDialog from "./ConfirmDialog";
 
 /**
  * A wrapper for <Pin> with heavier business logic
@@ -68,7 +69,13 @@ export default function PinWrapper() {
       {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
       <Pin isPlayShakeAnimation={isShaking} onComplete={handlePinSubmit} error={pinError} helperText={helperText} />
       {pinStatus !== "SETTING_UP" && (
-        <RippleButton className="text-stone-500 mt-6 bg-stone-900">Forget PIN</RippleButton>
+        <ConfirmDialog
+          title="Are you sure you want to reset your PIN?"
+          description="You will need to set a PIN and API key key again."
+          confirmLabel="Reset"
+          confirmVariant="destructive"
+          trigger={<RippleButton className="mt-6 ">Reset PIN</RippleButton>}
+        />
       )}
     </>
   );
