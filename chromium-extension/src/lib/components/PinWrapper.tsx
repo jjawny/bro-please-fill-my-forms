@@ -104,7 +104,7 @@ export default function PinWrapper() {
       {pinStatus !== "SETTING_UP" && (
         <ConfirmDialog
           title="Are you sure you want to reset your PIN?"
-          description="You will need to set a PIN and API key key again."
+          description="You will need to set an API key again."
           confirmLabel="Reset"
           confirmVariant="destructive"
           onConfirm={handleResetPin}
