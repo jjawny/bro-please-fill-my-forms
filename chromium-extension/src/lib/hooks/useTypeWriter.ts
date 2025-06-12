@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useTypewriter(args: {
   words: string[];
@@ -7,59 +7,65 @@ export function useTypewriter(args: {
   pauseTime?: number;
 }): string {
   const { words, typingSpeed = 100, deletingSpeed = 50, pauseTime = 1000 } = args;
+
   const [text, setText] = useState("");
   const [wordIdx, setWordIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const cleanUp = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     const currWord = words[wordIdx];
 
-    // Typing Phase
-    if (!isPaused && !isDeleting) {
-      if (charIdx < currWord.length) {
-        timeoutRef.current = setTimeout(() => setCharIdx((prev) => prev + 1), typingSpeed);
-      } else {
-        setIsPaused(true);
-      }
-    }
-
-    // Deleting Phase
-    if (!isPaused && isDeleting) {
-      if (charIdx > 0) {
-        timeoutRef.current = setTimeout(() => setCharIdx((prev) => prev - 1), deletingSpeed);
-      } else {
-        setIsPaused(true);
-        setWordIdx((prev) => (prev + 1) % words.length); // cycle through words after each delete phase
-      }
-    }
-
-    if (!isPaused) setText(currWord.slice(0, charIdx)); // update text to display
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const scheduleNextAction = (delay: number, action: () => void) => {
+      cleanUp();
+      timeoutRef.current = setTimeout(action, delay);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [charIdx, isDeleting, wordIdx, words, typingSpeed, deletingSpeed]);
 
-  useEffect(
-    function HandlePause() {
-      const UnPause = () => {
-        setIsPaused(false);
-        setIsDeleting((prev) => !prev);
-      };
+    const getAction = () => {
+      if (!isDeleting && charIdx < currWord.length) return "TYPING";
+      if (!isDeleting && charIdx === currWord.length) return "AFTER_TYPING_PAUSE";
+      if (isDeleting && charIdx > 0) return "DELETING";
+      if (isDeleting && charIdx === 0) return "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD";
+      return "idle";
+    };
 
-      if (isPaused) timeoutRef.current = setTimeout(() => UnPause(), pauseTime);
+    switch (getAction()) {
+      case "TYPING":
+        scheduleNextAction(typingSpeed, () => setCharIdx((prev) => prev + 1));
+        break;
 
-      return () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      };
-    },
-    [isPaused, pauseTime],
-  );
+      case "AFTER_TYPING_PAUSE":
+        scheduleNextAction(pauseTime, () => setIsDeleting(true));
+        break;
+
+      case "DELETING":
+        scheduleNextAction(deletingSpeed, () => setCharIdx((prev) => prev - 1));
+        break;
+
+      case "AFTER_DELETING_PAUSE_AND_MOVE_TO_NEXT_WORD":
+        scheduleNextAction(pauseTime, () => {
+          setIsDeleting(false);
+          setWordIdx((prev) => (prev + 1) % words.length);
+        });
+        break;
+
+      default:
+        break;
+    }
+
+    setText(currWord.slice(0, charIdx));
+
+    return cleanUp;
+  }, [charIdx, isDeleting, wordIdx, words, typingSpeed, deletingSpeed, pauseTime, cleanUp]);
 
   return text;
 }
