@@ -7,7 +7,7 @@ import BetterStepOne from "~/lib/ui/Better/BetterStepOne";
 import Hero from "~/lib/ui/Hero";
 
 export default function App2() {
-  const { initialize: initializePinStore, isInitialized: isPinStoreInitialized } = usePinStore();
+  const { initialize: initializePinStore, isInitialized: isPinStoreInitialized, pinStatus } = usePinStore();
   const { initialize: initializeUserPreferencesStore, isInitialized: isUserPreferencesStoreInitialized } =
     useUserPreferencesStore();
 
@@ -23,8 +23,14 @@ export default function App2() {
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />
-        <Hero />
-        <BetterStepOne />
+        {pinStatus !== "UNLOCKED" ? (
+          <>
+            <Hero />
+            <BetterStepOne />
+          </>
+        ) : (
+          <p>TODO: actual step 1</p>
+        )}
       </div>
     </div>
   );

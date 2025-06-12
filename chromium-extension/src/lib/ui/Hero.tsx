@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <div
       className={cn(
-        "relative  w-[300px] mr-[50px] h-[100px]",
+        "relative  w-[300px] mr-[50px] h-[90px]",
         // "bg-lime-300", // FOR DEBUGGING POSITION
       )}
     >
