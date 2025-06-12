@@ -47,10 +47,12 @@ type PinStore = ByoKeyData &
   };
 
 export const usePinStore = create<PinStore>((set, get) => {
+  // TODO: bubble-up more OneOfs from all these transition functions
   const transitionToLockedStatus = async (otherState?: Partial<PinStore>) => {
     // If the user intentionally locks, clear the PIN so nothing tries to auto-unlock
-    const pin = undefined;
-    await saveToSessionStorage(TemporaryDataSchema, { pin });
+    const pin = null;
+    const clearTempDataResponse = await saveToSessionStorage(TemporaryDataSchema, { pin });
+    console.debug("Clear temporary data response:", clearTempDataResponse);
 
     set({
       pin: pin,
