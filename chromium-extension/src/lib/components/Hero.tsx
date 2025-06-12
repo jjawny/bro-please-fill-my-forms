@@ -6,14 +6,20 @@ export default function Hero() {
   return (
     <div
       className={cn(
-        "relative  w-[300px] mr-[50px] h-[90px]",
-        // "bg-lime-300", // FOR DEBUGGING POSITION
+        "relative w-[300px] mr-[50px] h-[90px]",
+        "bg-lime-300", // FOR DEBUGGING POSITION
       )}
     >
       <HeroDemo />
-      <div className="select-none absolute top-[-65px] right-[-66px] z-50">
-        <img src={logo} className="max-h-32" alt="TODO: name of app + logo" />
-      </div>
+      <HeroLogo />
+    </div>
+  );
+}
+
+function HeroLogo() {
+  return (
+    <div className="select-none absolute top-[-65px] right-[-66px] z-50">
+      <img src={logo} className="max-h-32" alt="TODO: name of app + logo" />
     </div>
   );
 }
