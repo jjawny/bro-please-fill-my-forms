@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./shadcn/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/shadcn/tooltip";
 
 export default function ToolTipWrapper({
   backgroundColorHex,
@@ -13,9 +13,7 @@ export default function ToolTipWrapper({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent backgroundColorHex={backgroundColorHex}>
-        {content}
-      </TooltipContent>
+      <TooltipContent backgroundColorHex={backgroundColorHex}>{content}</TooltipContent>
     </Tooltip>
   );
 }

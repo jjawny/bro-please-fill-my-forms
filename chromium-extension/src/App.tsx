@@ -7,6 +7,7 @@ import { useTheme } from "~/lib/hooks/useTheme";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 import Footer from "./lib/components/Footer";
+import Step1 from "./lib/components/Step1";
 
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
@@ -30,16 +31,26 @@ export default function App() {
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />
-        {pinStatus !== "UNLOCKED" ? (
-          <>
-            <Hero />
-            <PinWrapper />
-          </>
-        ) : (
-          <p>TODO: actual step 1</p>
-        )}
+        {pinStatus !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
       </div>
       <Footer />
+    </div>
+  );
+}
+
+function LockedView() {
+  return (
+    <>
+      <Hero />
+      <PinWrapper />
+    </>
+  );
+}
+
+function UnlockedView() {
+  return (
+    <div className="flex flex-col gap-3 pt-20 w-full">
+      <Step1 />
     </div>
   );
 }
