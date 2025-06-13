@@ -27,8 +27,6 @@ To view console logs:
 ---
 TODO:
 
-- [ ] Migrate logic from OldApp.tsx out (ApiKeyField and ByoApiKey fields to be deleted)
-- [ ] then delete OldApp.tsx
 - [ ] delete components.json when done as its pretty broken
 - [ ] console warn anything that isn't caught? need to separate logs for things that aren't us (dont console.error our errors, use console.warn?)
 - [ ] update all schemas and stores and default storage types to validate and infer tpye as nullable NOT nullish (think about how this fails validation when the value does not exist yet) as setting pin as undefined does not clear it but null does, OR we can change any undefined values to null during saving as thats the intent anyway (to clear)
