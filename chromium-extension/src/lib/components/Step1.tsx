@@ -1,13 +1,47 @@
-import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon } from "lucide-react";
-import { useState } from "react";
+import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
+import { usePinStore } from "~/lib/stores/PinStore";
 import { cn } from "~/lib/utils/cn";
+
+const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
 
 export default function Step1() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [apiKeyInputValue, setApiKeyInputValue] = useState<string>("");
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isValidating, setIsValidating] = useState<boolean>(false);
+  const [isDirty, setIsDirty] = useState<boolean>(false);
+
+  const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
+  const setNewApiKey = usePinStore((state) => state.setNewApiKey);
+
+  useEffect(
+    function debouncedSaveKey() {
+      setIsValidating(true);
+      setIsDirty(true);
+
+      const timeoutId = setTimeout(async () => {
+        try {
+          const cleanedApiKey = apiKeyInputValue.trim();
+          const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
+          await setNewApiKey(cleanedApiKey, shouldTest);
+          setIsDirty(false);
+        } catch (error) {
+          console.error("Failed to set API key:", error);
+        } finally {
+          setIsValidating(false);
+        }
+      }, 2_000);
+
+      return () => {
+        clearTimeout(timeoutId);
+        setIsValidating(false);
+      };
+    },
+    [apiKeyInputValue, setNewApiKey],
+  );
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(apiKeyInputValue);
@@ -19,7 +53,7 @@ export default function Step1() {
     <div>
       <h2 className="text-start">1. Enter a Gemini API Key</h2>
       <div className="flex gap-1 items-center w-full">
-        <form className="w-full">
+        <form className="w-full relative">
           <Input
             type={isVisible ? "text" : "password"}
             placeholder="Gemini API Key"
@@ -27,6 +61,12 @@ export default function Step1() {
             onChange={(e) => setApiKeyInputValue(e.target.value)}
             className="bg-white p-2"
             autoComplete="off"
+          />
+          <ApiKeyInputEndAdornment
+            isValidating={isValidating}
+            isDirty={isDirty}
+            hasApiKey={!!apiKeyInputValue}
+            hasGeminiApiKeyConnectedSuccessfully={!!hasGeminiApiKeyConnectedSuccessfully}
           />
         </form>
         <RippleButton
@@ -48,6 +88,44 @@ export default function Step1() {
           {isCopied ? <CheckIcon /> : <CopyIcon />}
         </RippleButton>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Hints at the state of the API key (order matters)
+ * @param args
+ * @returns
+ */
+function ApiKeyInputEndAdornment(args: {
+  isValidating: boolean;
+  isDirty: boolean;
+  hasApiKey: boolean;
+  hasGeminiApiKeyConnectedSuccessfully: boolean;
+}) {
+  const { isValidating, isDirty, hasApiKey, hasGeminiApiKeyConnectedSuccessfully } = args;
+
+  const getIcon = () => {
+    if (isValidating) {
+      return <LoaderCircleIcon className="h-4 w-4 text-stone-500 animate-spin" />;
+    }
+
+    if (isDirty || !hasApiKey) {
+      return null;
+    }
+
+    if (hasGeminiApiKeyConnectedSuccessfully) {
+      return <CheckIcon className="h-4 w-4 text-green-500" />;
+    }
+
+    if (!hasGeminiApiKeyConnectedSuccessfully) {
+      return <XIcon className="h-4 w-4 text-red-500" />;
+    }
+  };
+
+  return (
+    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-6 flex items-center justify-end bg-gradient-to-l from-white via-white to-transparent">
+      {getIcon()}
     </div>
   );
 }
