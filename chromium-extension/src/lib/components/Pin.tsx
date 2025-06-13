@@ -50,10 +50,10 @@ export default function Pin({
   );
 }
 
-const HelperText = ({ pinHelperText }: { pinHelperText?: PinHelperText }) => {
+function HelperText({ pinHelperText }: { pinHelperText?: PinHelperText }) {
   if (pinHelperText?.errorText) {
     return <span className="text-red-500 pt-2">{pinHelperText.errorText}</span>;
   }
 
   return <span className="pt-2 opacity-50">{pinHelperText?.helperText ?? "\u200B"}</span>;
-};
+}
