@@ -3,14 +3,13 @@ import { SERVICE_WORKER_ACTIONS } from "../service-workers/service-worker-action
 import { usePinStore } from "../stores/PinStore";
 import { ScrapedForm } from "../types/FormField";
 import { generateFormContent } from "../utils/geminiApi";
-import ByoApiKey from "./ByoApiKey";
 
 // @ts-ignore
 function OldApp() {
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [, setErrorMessage] = useState<string>("");
 
   // const { theme, toggleTheme } = useTheme();
   const { geminiApiKeyDecrypted } = usePinStore();
@@ -84,71 +83,46 @@ function OldApp() {
   };
 
   return (
-    <div className="container">
-      <div className="grid-bg"></div>
-      <div className="content">
-        <ByoApiKey />
-        <div className="card">
-          {/* API Key Input */}
-          <div style={{ marginBottom: "10px" }}>
-            <input
-              type="password"
-              placeholder="Enter Gemini API Key"
-              value={geminiApiKeyDecrypted || ""}
-              // onChange={(e) =>
-              //   setUserData("geminiApiKeyEncrypted", e.target.value)
-              // }
-              style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
-            />
-          </div>
+    <div>
+      {/* Form Scraping */}
+      <button onClick={scrapeFormFields} disabled={isLoading}>
+        {isLoading ? "Scraping..." : "Scrape Form Fields"}
+      </button>
 
-          {/* Form Scraping */}
-          <button onClick={scrapeFormFields} disabled={isLoading}>
-            {isLoading ? "Scraping..." : "Scrape Form Fields"}
-          </button>
-
-          {/* Display scraped form info */}
-          {scrapedForm && (
-            <div
-              style={{
-                margin: "10px 0",
-                padding: "10px",
-                border: "1px solid #ccc",
-              }}
-            >
-              <p>Found {scrapedForm.fields.length} form fields:</p>
-              <ul style={{ textAlign: "left", fontSize: "12px" }}>
-                {scrapedForm.fields.map((field, index) => (
-                  <li key={index}>
-                    {field.label || field.name || field.id} ({field.type})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* User Prompt Input */}
-          <div style={{ marginBottom: "10px" }}>
-            <textarea
-              placeholder="Enter your prompt for filling the form (e.g., 'Fill this job application for a software engineer position')"
-              value={userPrompt}
-              onChange={(e) => setUserPrompt(e.target.value)}
-              style={{ width: "100%", padding: "8px", minHeight: "60px" }}
-            />
-          </div>
-
-          {/* Fill Form Button */}
-          <button
-            onClick={fillForm}
-            disabled={isLoading || !scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted}
-          >
-            {isLoading ? "Filling Form..." : "Fill Form with AI"}
-          </button>
-
-          {/* Error Display */}
-          {errorMessage && <div style={{ color: "red", margin: "10px 0", fontSize: "12px" }}>{errorMessage}</div>}
+      {/* Display scraped form info */}
+      {scrapedForm && (
+        <div
+          style={{
+            margin: "10px 0",
+            padding: "10px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <p>Found {scrapedForm.fields.length} form fields:</p>
+          <ul style={{ textAlign: "left", fontSize: "12px" }}>
+            {scrapedForm.fields.map((field, index) => (
+              <li key={index}>
+                {field.label || field.name || field.id} ({field.type})
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
+
+      {/* User Prompt Input */}
+      <div style={{ marginBottom: "10px" }}>
+        <textarea
+          placeholder="Enter your prompt for filling the form (e.g., 'Fill this job application for a software engineer position')"
+          value={userPrompt}
+          onChange={(e) => setUserPrompt(e.target.value)}
+          style={{ width: "100%", padding: "8px", minHeight: "60px" }}
+        />
       </div>
+
+      {/* Fill Form Button */}
+      <button onClick={fillForm} disabled={isLoading || !scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted}>
+        {isLoading ? "Filling Form..." : "Fill Form with AI"}
+      </button>
     </div>
   );
 }

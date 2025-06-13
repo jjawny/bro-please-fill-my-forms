@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
+import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/stores/PinStore";
-import { RippleButton } from "~/lib/ui/shadcn/ripple";
 import ConfirmDialog from "./ConfirmDialog";
 
 /**

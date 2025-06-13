@@ -1,6 +1,6 @@
-import { Theme } from "../enums/Theme";
-import { useTheme } from "../hooks/useTheme";
-import { cn } from "../utils/cn";
+import { Theme } from "~/lib/enums/Theme";
+import { useTheme } from "~/lib/hooks/useTheme";
+import { cn } from "~/lib/utils/cn";
 import githubLogo from "/images/github-logo.svg";
 
 export default function Footer() {
@@ -11,8 +11,8 @@ export default function Footer() {
       <a href="https://vitejs.dev" target="_blank">
         <img
           src={githubLogo}
-          className={cn("select-none pointer-events-auto h-4", theme !== Theme.dark && "invert")}
           alt="GitHub repo"
+          className={cn("select-none pointer-events-auto h-4", theme !== Theme.dark && "invert")}
         />
       </a>
     </footer>

@@ -1,5 +1,5 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/ui/shadcn/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/components/shadcn/input-otp";
 import { cn } from "~/lib/utils/cn";
 
 const LARGE_STYLES = "w-16 h-16 text-3xl";
@@ -39,10 +39,10 @@ export default function Pin({
         autoFocus
       >
         <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake", "shadow-sm")}>
-          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={0} />
-          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={1} />
-          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={2} />
-          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={3} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} index={0} className={LARGE_STYLES} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} index={1} className={LARGE_STYLES} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} index={2} className={LARGE_STYLES} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} index={3} className={LARGE_STYLES} />
         </InputOTPGroup>
       </InputOTP>
       <HelperText pinHelperText={pinHelperText} />

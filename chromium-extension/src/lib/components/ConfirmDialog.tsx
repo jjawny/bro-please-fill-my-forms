@@ -10,8 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/lib/ui/shadcn/alert-dialog";
-import { buttonVariants } from "~/lib/ui/shadcn/button";
+} from "~/lib/components/shadcn/alert-dialog";
+import { buttonVariants } from "~/lib/components/shadcn/button";
 
 export default function ConfirmDialog({
   trigger,

@@ -20,7 +20,7 @@ export default function Hero() {
 function HeroLogo() {
   return (
     <div className="select-none absolute top-[-60px] right-[-66px] z-50">
-      <img src={logo} className="max-h-32" alt="TODO: name of app + logo" />
+      <img src={logo} alt="TODO: name of app + logo" className="max-h-32" />
     </div>
   );
 }

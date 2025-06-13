@@ -1,6 +1,6 @@
 import { LockIcon, LockOpenIcon } from "lucide-react";
+import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/stores/PinStore";
-import { RippleButton } from "../ui/shadcn/ripple";
 
 export default function ToggleLockButton() {
   const pinStatus = usePinStore((state) => state.pinStatus);
@@ -18,10 +18,10 @@ export default function ToggleLockButton() {
   return (
     <RippleButton
       title="Lock"
-      onClick={handleClick}
-      disabled={pinStatus !== "UNLOCKED"}
-      variant="secondary"
       size="icon"
+      variant="secondary"
+      disabled={pinStatus !== "UNLOCKED"}
+      onClick={handleClick}
       className="size-8 absolute top-0 left-0 z-50 m-2"
     >
       {pinStatus === "LOCKED" ? <LockIcon /> : <LockOpenIcon />}

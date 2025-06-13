@@ -1,6 +1,6 @@
 import React from "react";
-import { useTypewriter } from "../hooks/useTypeWriter";
-import { cn } from "../utils/cn";
+import { useTypewriter } from "~/lib/hooks/useTypeWriter";
+import { cn } from "~/lib/utils/cn";
 
 export type TextIconPair = {
   text: string;
