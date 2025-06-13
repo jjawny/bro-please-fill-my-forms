@@ -38,8 +38,12 @@ export default function HeroDemo() {
         pairs={WORDS_AND_ICONS_GROUP_1}
       />
       <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-0", "!h-fit !p-3")}>
-        <h1 className="text-xl select-text whitespace-nowrap font-extrabold">BRO PLEASE, FILL MY FORMS</h1>
+        <HeroTitle />
       </div>
     </div>
   );
+}
+
+function HeroTitle() {
+  return <h1 className="text-xl select-text text-black whitespace-nowrap font-extrabold">BRO PLEASE, FILL MY FORMS</h1>;
 }
