@@ -5,6 +5,7 @@ import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "../
 import { safelyLoadTemporaryDataFromSessionStorage, saveToSessionStorage } from "../utils/chrome-storage-session";
 import { safelyLoadByoKeyDataFromSyncStorage, saveToSyncStorage } from "../utils/chrome-storage-sync";
 import { decryptData, encryptData, hash } from "../utils/crypto";
+import { validateApiKey } from "../utils/geminiApi";
 
 type PinStatus = "SETTING_UP" | "LOCKED" | "UNLOCKED";
 type PinStore = ByoKeyData &
@@ -97,10 +98,10 @@ export const usePinStore = create<PinStore>((set, get) => {
     let messages: string[] = [];
 
     try {
-      const pinFormatted = pin.trim();
-      const apiKeyFormatted = apiKey.trim();
-      const apiKeyHash = await hash(apiKeyFormatted);
-      const encryptApiKeyResponse = await encryptData(apiKeyFormatted, pinFormatted);
+      const cleanPin = pin.trim();
+      const cleanApiKey = apiKey.trim();
+      const apiKeyHash = await hash(cleanApiKey);
+      const encryptApiKeyResponse = await encryptData(cleanApiKey, cleanPin);
 
       messages = messages.concat(encryptApiKeyResponse.messages ?? []);
 
@@ -108,7 +109,12 @@ export const usePinStore = create<PinStore>((set, get) => {
         return { isOk: false, error: encryptApiKeyResponse.error, messages };
       }
 
-      const isApiKeyValid = shouldTestApiKey ? true : get().hasGeminiApiKeyConnectedSuccessfully; // TODO: make API call to validate the key
+      let isApiKeyValid = false;
+
+      if (shouldTestApiKey) {
+        isApiKeyValid = await validateApiKey(cleanApiKey);
+      }
+
       const nextData: ByoKeyData = {
         geminiApiKeyEncrypted: encryptApiKeyResponse.value,
         geminiApiKeyHash: apiKeyHash,
@@ -118,7 +124,7 @@ export const usePinStore = create<PinStore>((set, get) => {
       const saveToSyncStorageResponse = await saveToSyncStorage(ByoKeyDataSchema, nextData);
       messages = messages.concat(saveToSyncStorageResponse.messages ?? []);
 
-      set({ geminiApiKeyDecrypted: apiKeyFormatted, ...nextData });
+      set({ geminiApiKeyDecrypted: cleanApiKey, ...nextData });
 
       return { isOk: true, value: nextData, messages };
     } catch (error) {
@@ -178,7 +184,7 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "Can only unlock when locked" };
         }
 
-        const newPinFormatted = pin.trim();
+        const cleanNewPin = pin.trim();
         const existingEncryptedKey = get().geminiApiKeyEncrypted;
         const existingKeyHash = get().geminiApiKeyHash;
         const hasNothingToUnlock = !existingEncryptedKey || !existingKeyHash;
@@ -188,7 +194,7 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "No data to unlock, please start over" };
         }
 
-        const decryptionResponse = await decryptData(existingEncryptedKey, newPinFormatted);
+        const decryptionResponse = await decryptData(existingEncryptedKey, cleanNewPin);
 
         messages = messages.concat(decryptionResponse.messages ?? []);
 
@@ -198,10 +204,10 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "PIN failed" };
         }
 
-        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: newPinFormatted });
+        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
         messages = messages.concat(saveToSessionStorageResponse.messages ?? []);
 
-        transitionToUnlockedStatus(decryptionResponse.value, newPinFormatted);
+        transitionToUnlockedStatus(decryptionResponse.value, cleanNewPin);
 
         return { isOk: true, value: "Successfully unlocked", messages };
       } catch (error) {
@@ -218,9 +224,9 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "Can only set new PIN during setup" };
         }
 
-        const newPinFormatted = newPin.trim();
+        const cleanNewPin = newPin.trim();
         const apiKeyDecrypted = get().geminiApiKeyDecrypted ?? "";
-        const encryptApiKeyResponse = await encryptApiKey(newPinFormatted, apiKeyDecrypted, false);
+        const encryptApiKeyResponse = await encryptApiKey(cleanNewPin, apiKeyDecrypted, false);
 
         messages = messages.concat(encryptApiKeyResponse.messages ?? []);
 
@@ -228,10 +234,10 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: encryptApiKeyResponse.error, messages };
         }
 
-        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: newPinFormatted });
+        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
         messages = messages.concat(saveToSessionStorageResponse.messages ?? []);
 
-        transitionToUnlockedStatus(apiKeyDecrypted, newPinFormatted);
+        transitionToUnlockedStatus(apiKeyDecrypted, cleanNewPin);
 
         return { isOk: true, value: "Successfully set new PIN", messages };
       } catch (error) {

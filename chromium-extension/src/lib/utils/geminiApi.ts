@@ -1,13 +1,23 @@
+import { GoogleGenAI } from "@google/genai";
 import { GeminiResponse } from "../types/FormField";
 
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+export async function validateApiKey(apiKey: string): Promise<boolean> {
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    await ai.models.list();
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export async function generateFormContent(
   apiKey: string,
   formStructure: any,
-  userPrompt: string
+  userPrompt: string,
 ): Promise<GeminiResponse> {
+  const ai = new GoogleGenAI({ apiKey });
+
   const systemPrompt = `You are a form-filling assistant. Given a form structure and user input, generate appropriate content for each field. 
 
 Rules:
@@ -27,36 +37,17 @@ Respond with only a JSON object in this format:
   "fieldName2": "value2"
 }`;
 
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: systemPrompt,
-            },
-          ],
-        },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Gemini API error: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!generatedText) {
-    throw new Error("No response from Gemini API");
-  }
-
   try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-001",
+      contents: systemPrompt,
+    });
+    const generatedText = response.text;
+
+    if (!generatedText) {
+      throw new Error("No response from Gemini API");
+    }
+
     // Extract JSON from the response (in case there's extra text)
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     const jsonStr = jsonMatch ? jsonMatch[0] : generatedText;
@@ -64,6 +55,6 @@ Respond with only a JSON object in this format:
 
     return { fields: parsedResponse };
   } catch (error) {
-    throw new Error(`Failed to parse Gemini response: ${error}`);
+    throw new Error(`Failed to generate form content: ${error}`);
   }
 }
