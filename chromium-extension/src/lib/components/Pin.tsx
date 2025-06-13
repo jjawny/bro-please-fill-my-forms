@@ -24,22 +24,24 @@ export default function Pin({
   onChange: (value: string) => void;
   onComplete: (value: string) => void;
 }) {
+  const hasError = !!pinHelperText?.errorText;
+  const ariaInvalidLabel = hasError ? "true" : "false";
+
   return (
     <>
       <InputOTP
         maxLength={4}
         pattern={REGEXP_ONLY_DIGITS}
-        className={cn("bg-white")}
         value={value}
         onChange={onChange}
         onComplete={onComplete}
         autoFocus
       >
         <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake")}>
-          <InputOTPSlot className={LARGE_STYLES} index={0} />
-          <InputOTPSlot className={LARGE_STYLES} index={1} />
-          <InputOTPSlot className={LARGE_STYLES} index={2} />
-          <InputOTPSlot className={LARGE_STYLES} index={3} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={0} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={1} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={2} />
+          <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={3} />
         </InputOTPGroup>
       </InputOTP>
       <HelperText pinHelperText={pinHelperText} />
