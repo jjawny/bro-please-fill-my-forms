@@ -4,39 +4,14 @@ import { usePinStore } from "../stores/PinStore";
 import { ScrapedForm } from "../types/FormField";
 import { generateFormContent } from "../utils/geminiApi";
 
-// @ts-ignore
-function OldApp() {
-  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
+export default function Step3() {
+  const [scrapedForm] = useState<ScrapedForm | null>(null);
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [, setErrorMessage] = useState<string>("");
 
   // const { theme, toggleTheme } = useTheme();
   const { geminiApiKeyDecrypted } = usePinStore();
-
-  const scrapeFormFields = () => {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs.length > 0 && tabs[0]?.id) {
-        chrome.runtime.sendMessage(
-          {
-            action: SERVICE_WORKER_ACTIONS.scrapeFormFields,
-            tabId: tabs[0].id,
-          },
-          (response) => {
-            setIsLoading(false);
-            if (response?.success) {
-              setScrapedForm(response.form);
-            } else {
-              setErrorMessage(response?.error || "Failed to scrape form");
-            }
-          },
-        );
-      }
-    });
-  };
 
   const fillForm = async () => {
     if (!scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted) {
@@ -84,31 +59,6 @@ function OldApp() {
 
   return (
     <div>
-      {/* Form Scraping */}
-      <button onClick={scrapeFormFields} disabled={isLoading}>
-        {isLoading ? "Scraping..." : "Scrape Form Fields"}
-      </button>
-
-      {/* Display scraped form info */}
-      {scrapedForm && (
-        <div
-          style={{
-            margin: "10px 0",
-            padding: "10px",
-            border: "1px solid #ccc",
-          }}
-        >
-          <p>Found {scrapedForm.fields.length} form fields:</p>
-          <ul style={{ textAlign: "left", fontSize: "12px" }}>
-            {scrapedForm.fields.map((field, index) => (
-              <li key={index}>
-                {field.label || field.name || field.id} ({field.type})
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {/* User Prompt Input */}
       <div style={{ marginBottom: "10px" }}>
         <textarea
