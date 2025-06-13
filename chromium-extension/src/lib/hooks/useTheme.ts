@@ -14,21 +14,30 @@ export const useTheme = () => {
     document.documentElement.setAttribute("theme", nextTheme);
   };
 
-  useEffect(function listenToSystemThemeChanges() {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", applySystemTheme);
+  useEffect(
+    function listenToSystemThemeChanges() {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      mediaQuery.addEventListener("change", applySystemTheme);
 
-    return () => {
-      mediaQuery.removeEventListener("change", applySystemTheme);
-    };
-  }, []);
+      return () => {
+        mediaQuery.removeEventListener("change", applySystemTheme);
+      };
+    },
+    // TODO: do we need this dep?
+    [theme],
+  );
 
   useEffect(
     function syncTheme() {
-      applySystemTheme();
       const root = document.documentElement;
-      if (theme === Theme.dark) root.setAttribute("theme", Theme.dark);
-      else if (theme === Theme.light) root.setAttribute("theme", Theme.light);
+
+      if (theme === Theme.system) {
+        // For system theme, detect and apply the current system preference
+        applySystemTheme();
+      } else {
+        // For explicit light/dark themes, apply directly
+        root.setAttribute("theme", theme);
+      }
     },
     [theme],
   );

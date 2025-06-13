@@ -95,9 +95,17 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+[theme="light"] {
+  --background-color: #ffffff;
+  --dot-color: #bbbbbb;
+  --pin-background-color: #e6e6e6;
+  --text-color: #242424;
+}
+
 [theme="dark"] {
   --background-color: #242424;
-  --dot-color: #696969;
+  --dot-color: #484848;
+  --pin-background-color: #353535;
   --text-color: #ffffff;
 }
 

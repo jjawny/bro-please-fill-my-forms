@@ -15,9 +15,9 @@ export default function ToggleThemeButton() {
 
   const getThemeIcon = () => {
     switch (theme) {
-      case "LIGHT":
+      case Theme.light:
         return <SunIcon />;
-      case "DARK":
+      case Theme.dark:
         return <MoonIcon />;
       default:
         return <MonitorIcon />;

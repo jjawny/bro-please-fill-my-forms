@@ -2,9 +2,9 @@ import { z } from "zod";
 
 // Better enums
 export const Theme = {
-  light: "LIGHT",
-  dark: "DARK",
-  system: "SYSTEM",
+  light: "light",
+  dark: "dark",
+  system: "system",
 } as const;
 
 // For validation
