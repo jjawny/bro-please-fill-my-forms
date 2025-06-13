@@ -2,7 +2,8 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/lib/ui/shadcn/input-otp";
 import { cn } from "~/lib/utils/cn";
 
-const LARGE_STYLES = "w-16 h-16 text-3xl border-stone-300";
+const LARGE_STYLES = "w-16 h-16 text-3xl";
+
 export type PinHelperText = {
   errorText?: string;
   helperText?: string;
@@ -54,5 +55,5 @@ const HelperText = ({ pinHelperText }: { pinHelperText?: PinHelperText }) => {
     return <span className="text-red-500 pt-2">{pinHelperText.errorText}</span>;
   }
 
-  return <span className="text-stone-500 pt-2">{pinHelperText?.helperText ?? "\u200B"}</span>;
+  return <span className="pt-2 opacity-50">{pinHelperText?.helperText ?? "\u200B"}</span>;
 };
