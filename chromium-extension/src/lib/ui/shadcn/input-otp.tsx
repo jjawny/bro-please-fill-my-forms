@@ -29,7 +29,8 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="input-otp-group"
       className={cn(
         "flex items-center",
-        "bg-[var(--background-color)]",
+        "rounded-[10px]",
+        "bg-[var(--pin-background-color)]",
         className
       )}
       {...props}
