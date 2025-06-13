@@ -36,7 +36,7 @@ type PinStore = ByoKeyData &
      * When "UNLOCKED", users can set the API key
      * Includes hashing, encrypting, and testing the key
      */
-    useNewApiKey: (newKey: string) => Promise<OneOf<string, string>>;
+    setNewApiKey: (newKey: string, shouldTest: boolean) => Promise<OneOf<string, string>>;
     /**
      * Reset all data to defaults and transition to "SETTING_UP"
      */
@@ -125,6 +125,8 @@ export const usePinStore = create<PinStore>((set, get) => {
       messages = messages.concat(saveToSyncStorageResponse.messages ?? []);
 
       set({ geminiApiKeyDecrypted: cleanApiKey, ...nextData });
+
+      console.debug("Encrypted and saved API key successfully:", nextData);
 
       return { isOk: true, value: nextData, messages };
     } catch (error) {
@@ -246,7 +248,7 @@ export const usePinStore = create<PinStore>((set, get) => {
       }
     },
 
-    useNewApiKey: async (newApiKey: string): Promise<OneOf<string, string>> => {
+    setNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<OneOf<string, string>> => {
       let messages: string[] = [];
 
       try {
@@ -260,7 +262,7 @@ export const usePinStore = create<PinStore>((set, get) => {
           return { isOk: false, error: "Please set a PIN first" };
         }
 
-        const encryptApiKeyResponse = await encryptApiKey(pin, newApiKey, true);
+        const encryptApiKeyResponse = await encryptApiKey(pin, newApiKey, shouldTest);
 
         messages = messages.concat(encryptApiKeyResponse.messages ?? []);
 
