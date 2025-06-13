@@ -14,8 +14,6 @@ export default function Step2() {
     setIsLoading(true);
     setErrorMessage("");
 
-    // await useNewApiKey(apiKeyInputValue);
-
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs.length > 0 && tabs[0]?.id) {
         chrome.runtime.sendMessage(

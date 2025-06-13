@@ -5,6 +5,7 @@ import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce";
+import { sleep } from "~/lib/utils/sleep";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
 
@@ -13,30 +14,31 @@ export default function Step1() {
   const [apiKeyInputValue, setApiKeyInputValue] = useState<string>("");
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState<boolean>(false);
-  const [isDirty, setIsDirty] = useState<boolean>(false);
 
-  const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const setNewApiKey = usePinStore((state) => state.setNewApiKey);
+  const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
 
   const debouncedSaveApiKey = useCallback(
     debounce(async (apiKey: string) => {
       try {
+        setIsValidating(true);
+        await sleep(500); // Simulate latency to avoid flash of validation state (better UX)
         const cleanedApiKey = apiKey.trim();
         const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
         await setNewApiKey(cleanedApiKey, shouldTest);
-        setIsDirty(false);
+        setIsApiKeyDirty(false);
       } catch (error) {
         console.error("Failed to set API key:", error);
       } finally {
         setIsValidating(false);
       }
     }, 2_000),
-    [setNewApiKey, setIsDirty, setIsValidating],
+    [setNewApiKey, setIsApiKeyDirty, setIsValidating],
   );
 
   useEffect(() => {
-    setIsValidating(true);
-    setIsDirty(true);
+    setIsValidating(false);
+    setIsApiKeyDirty(true);
     debouncedSaveApiKey(apiKeyInputValue);
   }, [apiKeyInputValue, debouncedSaveApiKey]);
 
@@ -59,12 +61,7 @@ export default function Step1() {
             className="bg-white p-2"
             autoComplete="off"
           />
-          <ApiKeyInputEndAdornment
-            isValidating={isValidating}
-            isDirty={isDirty}
-            hasApiKey={!!apiKeyInputValue}
-            hasGeminiApiKeyConnectedSuccessfully={!!hasGeminiApiKeyConnectedSuccessfully}
-          />
+          <ApiKeyInputEndAdornment isValidating={isValidating} hasApiKey={!!apiKeyInputValue} />
         </form>
         <RippleButton
           title={isVisible ? "Hide value" : "Show value"}
@@ -91,23 +88,19 @@ export default function Step1() {
 
 /**
  * Hints at the state of the API key (order matters)
- * @param args
- * @returns
  */
-function ApiKeyInputEndAdornment(args: {
-  isValidating: boolean;
-  isDirty: boolean;
-  hasApiKey: boolean;
-  hasGeminiApiKeyConnectedSuccessfully: boolean;
-}) {
-  const { isValidating, isDirty, hasApiKey, hasGeminiApiKeyConnectedSuccessfully } = args;
+function ApiKeyInputEndAdornment(args: { isValidating: boolean; hasApiKey: boolean }) {
+  const { isValidating, hasApiKey } = args;
+
+  const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
+  const isApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
 
   const getIcon = () => {
     if (isValidating) {
       return <LoaderCircleIcon className="h-4 w-4 text-stone-500 animate-spin" />;
     }
 
-    if (isDirty || !hasApiKey) {
+    if (isApiKeyDirty || !hasApiKey) {
       return null;
     }
 

@@ -13,6 +13,8 @@ type PinStore = ByoKeyData &
     isInitialized: boolean;
     pinStatus: PinStatus;
     geminiApiKeyDecrypted?: string;
+    isGeminiApiKeyDirty: boolean;
+
     /**
      * Sets the state w any previously saved data
      */
@@ -41,6 +43,10 @@ type PinStore = ByoKeyData &
      * Reset all data to defaults and transition to "SETTING_UP"
      */
     reset: () => Promise<OneOf<string, string>>;
+    /**
+     * Signal to other UI that current API key input has not been saved yet
+     */
+    setIsApiKeyDirty: (isDirty: boolean) => void;
     /**
      * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
      */
@@ -144,6 +150,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     isInitialized: false,
     pinStatus: "LOCKED",
     geminiApiKeyDecrypted: undefined,
+    isGeminiApiKeyDirty: false,
 
     initialize: async () => {
       set({ isInitialized: false });
@@ -292,6 +299,8 @@ export const usePinStore = create<PinStore>((set, get) => {
         return { isOk: false, error: "Failed to reset", messages };
       }
     },
+
+    setIsApiKeyDirty: (isDirty: boolean) => set({ isGeminiApiKeyDirty: isDirty }),
 
     GET_DEBUG_JSON_DUMP: () => JSON.stringify(get(), null, 2),
   };
