@@ -1,9 +1,10 @@
 import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/stores/PinStore";
 import { cn } from "~/lib/utils/cn";
+import { debounce } from "~/lib/utils/debounce";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
 
@@ -17,31 +18,27 @@ export default function Step1() {
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const setNewApiKey = usePinStore((state) => state.setNewApiKey);
 
-  useEffect(
-    function debouncedSaveKey() {
-      setIsValidating(true);
-      setIsDirty(true);
-
-      const timeoutId = setTimeout(async () => {
-        try {
-          const cleanedApiKey = apiKeyInputValue.trim();
-          const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
-          await setNewApiKey(cleanedApiKey, shouldTest);
-          setIsDirty(false);
-        } catch (error) {
-          console.error("Failed to set API key:", error);
-        } finally {
-          setIsValidating(false);
-        }
-      }, 2_000);
-
-      return () => {
-        clearTimeout(timeoutId);
+  const debouncedSaveApiKey = useCallback(
+    debounce(async (apiKey: string) => {
+      try {
+        const cleanedApiKey = apiKey.trim();
+        const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
+        await setNewApiKey(cleanedApiKey, shouldTest);
+        setIsDirty(false);
+      } catch (error) {
+        console.error("Failed to set API key:", error);
+      } finally {
         setIsValidating(false);
-      };
-    },
-    [apiKeyInputValue, setNewApiKey],
+      }
+    }, 2_000),
+    [setNewApiKey, setIsDirty, setIsValidating],
   );
+
+  useEffect(() => {
+    setIsValidating(true);
+    setIsDirty(true);
+    debouncedSaveApiKey(apiKeyInputValue);
+  }, [apiKeyInputValue, debouncedSaveApiKey]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(apiKeyInputValue);
