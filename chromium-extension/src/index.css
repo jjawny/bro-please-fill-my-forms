@@ -1,14 +1,8 @@
-/* ================================
-   TAILWIND IMPORTS
-   ================================ */
-
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 /* ================================
-   SHADCN THEME SYSTEM
+   Theme
    ================================ */
 
 /* default theme = light */
@@ -24,10 +18,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --radius: 0.625rem;
+
+  /* light by default ([theme="light"]) */
+  /* Custom variables */
   --background-color: #ffffff;
   --dot-color: #bbbbbb;
+  --pin-background-color: #e6e6e6;
   --text-color: #242424;
-  --radius: 0.625rem;
+
+  /* Shadcn variables for light theme */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -44,7 +44,7 @@
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --input: oklch(0.3 0 0);
   --ring: oklch(0.65 0.2097 245.65 / 68.82%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -61,7 +61,14 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
+[theme="dark"] {
+  /* Custom variables */
+  --background-color: #242424;
+  --dot-color: #484848;
+  --pin-background-color: #353535;
+  --text-color: #ffffff;
+
+  /* Shadcn variables for dark theme */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -78,7 +85,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: oklch(0.6 0 0);
   --ring: oklch(0.65 0.2097 245.65 / 68.82%);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -93,26 +100,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-}
-
-[theme="light"] {
-  --background-color: #ffffff;
-  --dot-color: #bbbbbb;
-  --pin-background-color: #e6e6e6;
-  --text-color: #242424;
-}
-
-[theme="dark"] {
-  --background-color: #242424;
-  --dot-color: #484848;
-  --pin-background-color: #353535;
-  --text-color: #ffffff;
-}
-
-[theme="system"] {
-  --background-color: var(--background-color);
-  --dot-color: var(--dot-color);
-  --text-color: var(--text-color);
 }
 
 /* ================================
@@ -142,16 +129,6 @@ body,
   transition:
     background-color 0.3s,
     color 0.6s;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
 }
 
 /* ================================
@@ -200,5 +177,4 @@ body,
   * {
     @apply border-border outline-ring/50;
   }
-  /* body styles are handled above in custom styles section */
 }

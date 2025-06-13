@@ -12,8 +12,8 @@ A Chromium **Extension** that **auto-fills** forms based on **natural** language
 1. `npm run build` will dump a [dist](./dist) directory (see [vite.config.ts](./vite.config.ts))
 2. Open your Chromium browser extension page (for example: [chrome://extensions/](chrome://extensions/))
 3. Click <kbd>Load unpacked</kbd> and choose [dist](./dist)
-4. From here, the feedback loop is `npm run build` + reload <img src="readme/reload-extension-guide.png" alt="reload extension" style="max-height: 256px;">
-5. `npm run dev` to edit the popup UI like a normal web app (note any event handlers using the _chrome_ obj will sh!t itself)
+4. Make changes and repeat `npm run build` + reload <img src="readme/reload-extension-guide.png" alt="reload extension" style="max-height: 256px;">
+5. `npm run dev` to edit the popup UI like a normal web app (faster feedback loop), ignore console errors from **chrome-storage-sync.ts** and **chrome-storage-session.ts** (expected as not running as a Chrome extension ∴ no access to these storages ∴ will sh!t itself)
 
 To view console logs:
 
