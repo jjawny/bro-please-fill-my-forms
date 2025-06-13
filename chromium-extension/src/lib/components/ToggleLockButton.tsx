@@ -3,16 +3,17 @@ import { usePinStore } from "~/lib/stores/PinStore";
 import { RippleButton } from "../ui/shadcn/ripple";
 
 export default function ToggleLockButton() {
-  const { pinStatus, lock } = usePinStore();
-
-  if (pinStatus === "SETTING_UP") {
-    return null;
-  }
+  const pinStatus = usePinStore((state) => state.pinStatus);
+  const lock = usePinStore((state) => state.lock);
 
   const handleClick = async () => {
     const lockResponse = await lock();
     console.debug("Lock response:", lockResponse);
   };
+
+  if (pinStatus === "SETTING_UP") {
+    return null;
+  }
 
   return (
     <RippleButton

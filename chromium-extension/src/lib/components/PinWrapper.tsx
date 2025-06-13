@@ -8,15 +8,13 @@ import ConfirmDialog from "./ConfirmDialog";
  * A wrapper for <Pin> with heavier business logic
  */
 export default function PinWrapper() {
-  const {
-    isInitialized,
-    unlock,
-    pin: savedPin,
-    pinStatus,
-    setNewPin: setupPin,
-    reset,
-    // GET_DEBUG_JSON_DUMP,
-  } = usePinStore();
+  const isInitialized = usePinStore((state) => state.isInitialized);
+  const unlock = usePinStore((state) => state.unlock);
+  const savedPin = usePinStore((state) => state.pin);
+  const pinStatus = usePinStore((state) => state.pinStatus);
+  const setupPin = usePinStore((state) => state.setNewPin);
+  const reset = usePinStore((state) => state.reset);
+  const GET_DEBUG_JSON_DUMP = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");

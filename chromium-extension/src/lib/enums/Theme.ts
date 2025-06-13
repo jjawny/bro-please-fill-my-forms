@@ -12,6 +12,3 @@ export const ThemeSchema = z.enum([Theme.light, Theme.dark, Theme.system]);
 
 // For type safety
 export type ThemeType = (typeof Theme)[keyof typeof Theme];
-
-// Mostly for UI
-export const ThemeOptions = Object.values(Theme);
