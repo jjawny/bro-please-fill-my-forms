@@ -51,7 +51,7 @@ function LockedView() {
 
 function UnlockedView() {
   return (
-    <div className="flex flex-col gap-3 pt-20 w-full">
+    <div className="flex flex-col gap-6 pt-20 w-full">
       <Step1 />
       <Step2 />
       <Step3 />

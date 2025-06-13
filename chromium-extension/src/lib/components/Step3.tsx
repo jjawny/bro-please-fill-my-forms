@@ -59,6 +59,7 @@ export default function Step3() {
 
   return (
     <div>
+      <h2 className="text-start">3. Fill Fields with AI</h2>
       {/* User Prompt Input */}
       <div style={{ marginBottom: "10px" }}>
         <textarea
