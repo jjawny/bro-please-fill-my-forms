@@ -5,6 +5,7 @@ import { ScrapedForm } from "../types/FormField";
 import { generateFormContent } from "../utils/geminiApi";
 import ByoApiKey from "./ByoApiKey";
 
+// @ts-ignore
 function OldApp() {
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
   const [userPrompt, setUserPrompt] = useState<string>("");

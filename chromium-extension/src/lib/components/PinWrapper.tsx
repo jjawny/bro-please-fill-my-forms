@@ -14,7 +14,7 @@ export default function PinWrapper() {
   const pinStatus = usePinStore((state) => state.pinStatus);
   const setupPin = usePinStore((state) => state.setNewPin);
   const reset = usePinStore((state) => state.reset);
-  const GET_DEBUG_JSON_DUMP = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
+  // const GET_DEBUG_JSON_DUMP = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");
