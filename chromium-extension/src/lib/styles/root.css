@@ -67,7 +67,7 @@
   --text-color: #242424;
   --background-color: #ffffff;
   --dot-color: #eaeaea;
-  --pin-background-color: #f3f3f3;
+  --pin-background-color: #ffffff;
 
   /* Shadcn variables */
   --background: oklch(1 0 0);
@@ -127,7 +127,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(0.55 0 0);
+  --input: oklch(47.478% 0.00005 271.152);
   --ring: oklch(0.7808 0.1579 226.59 / 73.3%);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

@@ -38,7 +38,7 @@ export default function Pin({
         onComplete={onComplete}
         autoFocus
       >
-        <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake")}>
+        <InputOTPGroup className={cn(isPlayShakeAnimation && "animate-shake", "shadow-sm")}>
           <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={0} />
           <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={1} />
           <InputOTPSlot aria-invalid={ariaInvalidLabel} className={LARGE_STYLES} index={2} />

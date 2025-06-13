@@ -27,7 +27,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <div className="app-container-background"></div>
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />

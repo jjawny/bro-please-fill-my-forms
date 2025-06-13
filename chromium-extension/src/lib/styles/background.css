@@ -7,16 +7,21 @@
   overflow: hidden;
 }
 
-.app-container-background {
+.app-container::after {
+  content: "";
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
-  background-size: 16px 16px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
-  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
-  pointer-events: none;
+  bottom: auto;
+  left: auto;
+  right: 0;
+  top: 0;
+  height: 500px;
+  width: 500px;
+  transform: translateX(20%) translateY(-10%);
+  border-radius: 9999px;
+  background-color: rgba(109, 228, 244, 0.169);
+  opacity: 0.5;
+  filter: blur(80px);
+  z-index: 0;
 }
 
 .app-container-content {
