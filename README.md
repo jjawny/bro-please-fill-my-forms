@@ -17,6 +17,7 @@ A Chromium **Extension** that **auto-fills** forms based on **natural** language
 ## Edit popup UI fast
 1. `cp .env.example .env` and set **VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL** to **true** to avoid errors galore, these errors are expected when not running as a Chrome Extension as no access to *chrome.storage.x* ∴ will sh!t itself
 2. `npm run dev` to edit the popup UI like a normal web app (faster feedback loop)
+3. ❗️ Don't forget to turn all mock env vars OFF before `npm run build`
 
 ## Viewing console logs
 - ⚛️ Component logs? inspect the popup
