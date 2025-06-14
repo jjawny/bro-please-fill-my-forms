@@ -31,7 +31,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<OneOf<Tempo
       return { isOk: true, value: defaults, messages };
     }
 
-    messages.push("Successfully loaded TemporaryData");
+    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
     return { isOk: true, value: validationResponse.data, messages };
   } catch (error: unknown) {
     const errorMessage = logError(error, "Failed to load TemporaryData, failing back to defaults");
@@ -68,7 +68,7 @@ export async function saveToSessionStorage<T extends ZodType>(
 
     await chrome.storage.session.set(cleanedData);
 
-    messages.push("Successfully saved");
+    messages.push(`Successfully saved ${JSON.stringify(cleanedData)}`);
     return { isOk: true, value: cleanedData, messages };
   } catch (error: unknown) {
     const errorMessage = logError(error, "Failed to save");

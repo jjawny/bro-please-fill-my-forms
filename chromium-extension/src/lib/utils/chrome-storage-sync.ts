@@ -40,7 +40,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData,
       return { isOk: true, value: defaults, messages };
     }
 
-    messages.push("Successfully loaded ByoKeyData");
+    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
     return { isOk: true, value: validationResponse.data, messages };
   } catch (error: unknown) {
     const errorMessage = logError(error, "Failed to load ByoKeyData, failing back to defaults");
@@ -76,7 +76,7 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPr
       return { isOk: true, value: defaults, messages };
     }
 
-    messages.push("Successfully loaded UserPreferences");
+    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
     return { isOk: true, value: validationResponse.data, messages };
   } catch (error: unknown) {
     const errorMessage = logError(error, "Failed to load UserPreferences");
@@ -86,7 +86,7 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPr
 }
 
 /**
- * Saves data for to live between multiple browser session
+ * Saves data for to live between multiple browser sessions
  * If the user is logged into Chrome, chrome.storage.sync will attempt to sync across devices
  * If the user is NOT logged into Chrome, this will behave like chrome.storage.local
  * Quota: 8KB per item, 100KB total
@@ -111,11 +111,11 @@ export async function saveToSyncStorage<T extends ZodType>(
     }
 
     const validatedData = validationResponse.data;
-    const cleanedData = convertUndefinedToNullOneLevelDeep(validatedData);
+    const cleanedData = convertUndefinedToNullOneLevelDeep<T>(validatedData);
 
-    await chrome.storage.session.set(cleanedData);
+    await chrome.storage.sync.set(cleanedData);
 
-    messages.push("Successfully saved");
+    messages.push(`Successfully saved ${JSON.stringify(cleanedData)}`);
     return { isOk: true, value: cleanedData, messages };
   } catch (error: unknown) {
     const errorMessage = logError(error, "Failed to save");
