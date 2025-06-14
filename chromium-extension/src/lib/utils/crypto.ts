@@ -1,5 +1,6 @@
 import { API_KEY_PREFIX_SEPARATOR } from "~/lib/constants/globals";
 import { OneOf } from "~/lib/types/OneOf";
+import { logError } from "./console-helpers";
 
 /**
  * 
@@ -13,8 +14,8 @@ Proper salt and IV handling: Each encryption uses a random salt and initializati
 Base64 encoding: Encoded the combined salt, IV, and encrypted data for storage
 The native Web Crypto API provides better security, performance, and doesn't require external dependencies. The encryption process now uses industry-standard practices with proper key derivation and authenticated encryption.
  */
-export const encryptData = async (data: string, pin: string): Promise<OneOf<string, string>> => {
-  let messages: string[] = [];
+export async function encryptData(data: string, pin: string): Promise<OneOf<string, string>> {
+  let messages = ["Begin encrypting data"];
 
   try {
     // 1. Prepend a randomly generated prefix (for tougher security + placeholder text to decrypt if data is empty)
@@ -39,16 +40,18 @@ export const encryptData = async (data: string, pin: string): Promise<OneOf<stri
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
     const finalEncryptedData = btoa(String.fromCharCode(...combined));
 
-    console.debug("Successfully encrypted data:", finalEncryptedData);
+    const successMessage = "Successfully encrypted data";
+    messages.push(successMessage);
     return { isOk: true, value: finalEncryptedData, messages };
-  } catch (error) {
-    console.error(`Failed to encrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-    return { isOk: false, error: "Failed to encrypt data", messages };
+  } catch (error: unknown) {
+    const errorMessage = logError(error, "Failed to encrypt data");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
   }
-};
+}
 
-export const decryptData = async (encryptedData: string, pin: string): Promise<OneOf<string, string>> => {
-  let messages: string[] = [];
+export async function decryptData(encryptedData: string, pin: string): Promise<OneOf<string, string>> {
+  let messages = ["Begin decrypting data"];
 
   try {
     // 1. Decode the base64
@@ -78,29 +81,34 @@ export const decryptData = async (encryptedData: string, pin: string): Promise<O
 
     if (hasPrefix) messages.push(`Removed prefix: ${decryptedValue.slice(0, separatorIndex)}`);
 
-    console.debug("Successfully decrypted data:", originalData ?? "<EMPTY>");
+    const successMessage = "Successfully decrypted data";
+    messages.push(successMessage);
     return { isOk: true, value: originalData, messages };
   } catch (error) {
-    const isExpectedError = error instanceof DOMException && error.name === "InvalidAccessError";
-    if (!isExpectedError) {
-      console.warn(`Failed to decrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
-    } else {
-      console.error(`Failed to decrypt data, reason: ${error instanceof Error ? error.message : "Unknown"}`, error);
+    // Handle expected errors
+    const isDecryptionFailed = error instanceof DOMException && error.name === "InvalidAccessError";
+    if (isDecryptionFailed) {
+      const errorMessage = "Invalid PIN";
+      messages.push(errorMessage);
+      return { isOk: false, error: errorMessage, messages };
     }
-    return { isOk: false, error: "Failed to decrypt data", messages };
-  }
-};
 
-export const hash = async (data: string): Promise<string> => {
+    const errorMessage = logError(error, "Failed to decrypt data");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
+  }
+}
+
+export async function hash(data: string): Promise<string> {
   const encoder = new TextEncoder();
   const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
   return hash;
-};
+}
 
-const deriveKey = async (pin: string, salt: Uint8Array): Promise<CryptoKey> => {
+async function deriveKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(pin), { name: "PBKDF2" }, false, [
     "deriveKey",
@@ -114,4 +122,4 @@ const deriveKey = async (pin: string, salt: Uint8Array): Promise<CryptoKey> => {
   );
 
   return derivedKey;
-};
+}
