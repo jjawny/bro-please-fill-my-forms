@@ -1,16 +1,42 @@
 import { GoogleGenAI } from "@google/genai";
 import { GeminiResponse } from "~/lib/types/FormField";
+import { OneOf } from "~/lib/types/OneOf";
+import { logError } from "./console-helpers";
 
-export async function validateApiKey(apiKey: string): Promise<boolean> {
+export async function validateApiKey(apiKey: string): Promise<OneOf<boolean, string>> {
+  let messages = ["Begin validating Gemini API key"];
+
   try {
     const ai = new GoogleGenAI({ apiKey });
+    // Equivalent to a ping/health check, will throw if API key is invalid or network issue
     await ai.models.list();
-    return true;
-  } catch (error) {
-    return false;
+
+    const successMessage = "Gemini API key is valid";
+    messages.push(successMessage);
+    return { isOk: true, value: true, messages };
+  } catch (error: unknown) {
+    // Handle expected errors
+
+    // GOTCHA:
+    //  Known issue; Google's GenAI lib does not export strongly-typed errors
+    //  See https://github.com/googleapis/js-genai/issues/455
+    // console.debug(`[INSPECT] Google GenAI error type: '${typeof error}', error:`, error);
+
+    const WORKAROUND_apiKeyInvalidError = "API_KEY_INVALID";
+    const WORKAROUND_isApiKeyInvalid = (error as any).message.includes(WORKAROUND_apiKeyInvalidError);
+    if (WORKAROUND_isApiKeyInvalid) {
+      const errorMessage = "Invalid Gemini API key";
+      messages.push(errorMessage);
+      return { isOk: true, value: false, messages };
+    }
+
+    const errorMessage = logError(error, "Failed to check Gemini API key");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
   }
 }
 
+// TODO:
 export async function generateFormContent(
   apiKey: string,
   formStructure: any,
