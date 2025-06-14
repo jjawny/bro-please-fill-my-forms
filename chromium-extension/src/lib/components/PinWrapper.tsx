@@ -52,9 +52,9 @@ export default function PinWrapper() {
       const setupPinResponse = await setupPin(pin);
 
       if (setupPinResponse.isOk) {
-        console.debug("PIN setup successful");
+        console.debug(setupPinResponse.value, setupPinResponse.messages);
       } else {
-        console.error("PIN setup failed:", setupPinResponse.error);
+        console.warn(setupPinResponse.error, setupPinResponse.messages);
         setIsShaking(true);
         setPinError(setupPinResponse.error);
       }
@@ -64,9 +64,9 @@ export default function PinWrapper() {
       const unlockResponse = await unlock(pin);
 
       if (unlockResponse.isOk) {
-        console.debug("Unlock successful");
+        console.debug(unlockResponse.value, unlockResponse.messages);
       } else {
-        console.error("Unlock failed:", unlockResponse.error);
+        console.warn(unlockResponse.error, unlockResponse.messages);
         setIsShaking(true);
         setPinError(unlockResponse.error);
       }
@@ -80,14 +80,14 @@ export default function PinWrapper() {
 
     const resetResponse = await reset();
 
-    if (!resetResponse.isOk) {
-      setPinError(resetResponse.error);
-      console.warn(resetResponse.error, resetResponse.messages);
-      // TODO: toast or set fatal error?
-    } else {
-      setPinValue("");
+    if (resetResponse.isOk) {
       console.debug(resetResponse.value, resetResponse.messages);
       // TODO: toast or set fatal error?
+      setPinValue("");
+    } else {
+      console.warn(resetResponse.error, resetResponse.messages);
+      // TODO: toast or set fatal error?
+      setPinError(resetResponse.error);
     }
   };
 
