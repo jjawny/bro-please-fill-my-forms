@@ -12,6 +12,11 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData,
   let messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
 
   try {
+    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+      messages.push("[MOCKED] Successfully loaded ByoKeyData");
+      return { isOk: true, value: getDefaultByoKeyData(), messages };
+    }
+
     const itemKeys: (keyof ByoKeyData)[] = [
       "geminiApiKeyEncrypted",
       "geminiApiKeyHash",
@@ -51,6 +56,11 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPr
   let messages = ["Begin loading UserPreferences from chrome.storage.sync"];
 
   try {
+    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+      messages.push("[MOCKED] Successfully loaded UserPreferences");
+      return { isOk: true, value: getDefaultUserPreferences(), messages };
+    }
+
     const itemKeys: (keyof UserPreferences)[] = ["theme"];
     const items = await chrome.storage.sync.get(itemKeys);
     const userPreferences: UserPreferences = { theme: items.theme };
@@ -88,6 +98,11 @@ export async function saveToSyncStorage<T extends ZodType>(
   let messages = ["Begin saving to chrome.storage.sync"];
 
   try {
+    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+      messages.push("[MOCKED] Successfully saved");
+      return { isOk: true, value: data, messages };
+    }
+
     const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {

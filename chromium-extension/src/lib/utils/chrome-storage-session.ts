@@ -11,6 +11,11 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<OneOf<Tempo
   let messages = ["Begin loading TemporaryData from chrome.storage.session"];
 
   try {
+    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+      messages.push("[MOCKED] Successfully loaded TemporaryData");
+      return { isOk: true, value: getDefaultTemporaryData(), messages };
+    }
+
     const itemKeys: (keyof TemporaryData)[] = ["pin"];
     const items = await chrome.storage.session.get(itemKeys);
     const temporaryData: TemporaryData = { pin: items.pin };
@@ -46,6 +51,11 @@ export async function saveToSessionStorage<T extends ZodType>(
   let messages = ["Begin saving to chrome.storage.session"];
 
   try {
+    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+      messages.push("[MOCKED] Successfully saved");
+      return { isOk: true, value: data, messages };
+    }
+
     const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {

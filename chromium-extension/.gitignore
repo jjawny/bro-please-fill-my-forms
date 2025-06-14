@@ -26,3 +26,6 @@ dist-ssr
 # Additional
 tsconfig.node.tsbuildinfo
 tsconfig.app.tsbuildinfo
+
+# APP-SPECIFIC
+.env
