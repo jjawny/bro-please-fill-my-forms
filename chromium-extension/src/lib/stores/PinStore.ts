@@ -10,6 +10,7 @@ import { validateApiKey } from "~/lib/utils/geminiApi";
 
 type PinMode = "SETTING_UP" | "LOCKED" | "UNLOCKED";
 
+//#region STORE DEFINITION
 type PinStore = ByoKeyData &
   TemporaryData & {
     isInitialized: boolean;
@@ -61,8 +62,10 @@ type PinStore = ByoKeyData &
      */
     GET_DEBUG_JSON_DUMP: () => string;
   };
+//#endregion
 
 export const usePinStore = create<PinStore>((set, get) => {
+  //#region PRIVATE
   const transitionToLockedMode = async (otherState?: Partial<PinStore>): Promise<OneOf<string, string>> => {
     let messages = ["Begin transitioning to locked mode"];
 
@@ -170,49 +173,66 @@ export const usePinStore = create<PinStore>((set, get) => {
     apiKey: string,
     shouldTestApiKey: boolean = false,
   ): Promise<OneOf<ByoKeyData, string>> => {
-    let messages: string[] = [];
+    let messages = ["Begin encrypting and saving API key"];
 
     try {
       const cleanPin = pin.trim();
       const cleanApiKey = apiKey.trim();
-      const apiKeyHash = await hash(cleanApiKey);
+      const cleanApiKeyHash = await hash(cleanApiKey);
       const encryptApiKeyResponse = await encryptData(cleanApiKey, cleanPin);
 
-      messages = messages.concat(encryptApiKeyResponse.messages ?? []);
+      messages = messages.concat(encryptApiKeyResponse.messages);
 
       if (!encryptApiKeyResponse.isOk) {
         return { isOk: false, error: encryptApiKeyResponse.error, messages };
       }
 
-      let isApiKeyValid = false;
+      let isApiKeyValid = null;
 
       if (shouldTestApiKey) {
-        isApiKeyValid = await validateApiKey(cleanApiKey);
+        const validateApiKeyResponse = await validateApiKey(cleanApiKey);
+        messages = messages.concat(validateApiKeyResponse.messages);
+
+        if (!validateApiKeyResponse.isOk) {
+          const failMessage = "Failed to validate API key";
+          messages.push(failMessage);
+          return { isOk: false, error: failMessage, messages };
+        }
+
+        isApiKeyValid = validateApiKeyResponse.value;
       }
 
       const nextData: ByoKeyData = {
         geminiApiKeyEncrypted: encryptApiKeyResponse.value,
-        geminiApiKeyHash: apiKeyHash,
-        hasGeminiApiKeyConnectedSuccessfully: isApiKeyValid ?? false,
+        geminiApiKeyHash: cleanApiKeyHash,
+        hasGeminiApiKeyConnectedSuccessfully: isApiKeyValid,
       };
 
       const saveToSyncStorageResponse = await saveToSyncStorage(ByoKeyDataSchema, nextData);
-      messages = messages.concat(saveToSyncStorageResponse.messages ?? []);
+
+      messages = messages.concat(saveToSyncStorageResponse.messages);
+
+      if (!saveToSyncStorageResponse.isOk) {
+        const failMessage = "Failed to save encrypted API key";
+        messages.push(failMessage);
+        return { isOk: false, error: failMessage, messages };
+      }
 
       set({ geminiApiKeyDecrypted: cleanApiKey, ...nextData });
 
-      console.debug("Encrypted and saved API key successfully:", nextData);
-
+      const successMessage = "Successfully encrypted and saved API key";
+      messages.push(successMessage);
       return { isOk: true, value: nextData, messages };
     } catch (error) {
-      console.error(
-        `Failed to encrypt and save API key, reason: ${error instanceof Error ? error.message : "Unknown"}`,
-        error,
-      );
-      return { isOk: false, error: "Failed to encrypt and save API key", messages };
+      const errorMessage = logError(error, "Failed to encrypt and save API key");
+      messages.push(errorMessage);
+      return { isOk: false, error: errorMessage, messages };
     }
   };
 
+  //#endregion
+
+  //#region PUBLIC
   return {
     ...getDefaultByoKeyData(),
     ...getDefaultTemporaryData(),
@@ -488,4 +508,5 @@ export const usePinStore = create<PinStore>((set, get) => {
 
     GET_DEBUG_JSON_DUMP: () => JSON.stringify(get(), null, 2),
   };
+  //#endregion
 });
