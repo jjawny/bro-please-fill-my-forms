@@ -20,18 +20,20 @@ export default function Step1() {
 
   const debouncedSaveApiKey = useCallback(
     debounce(async (apiKey: string) => {
-      try {
-        setIsValidating(true);
-        await sleep(500); // Simulate latency to avoid flash of validation state (better UX)
-        const cleanedApiKey = apiKey.trim();
-        const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
-        await setNewApiKey(cleanedApiKey, shouldTest);
-        setIsApiKeyDirty(false);
-      } catch (error) {
-        console.error("Failed to set API key:", error);
-      } finally {
-        setIsValidating(false);
+      setIsValidating(true);
+      await sleep(500); // Simulate latency to avoid flash of validation state (better UX)
+      const cleanedApiKey = apiKey.trim();
+      const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
+      const setApiKeyResponse = await setNewApiKey(cleanedApiKey, shouldTest);
+      if (!setApiKeyResponse.isOk) {
+        console.warn(setApiKeyResponse.error, setApiKeyResponse.messages);
+        // TODO: toast or set fatal error?
+      } else {
+        console.debug(setApiKeyResponse.value, setApiKeyResponse.messages);
+        // TODO: toast or set fatal error?
       }
+      setIsApiKeyDirty(false);
+      setIsValidating(false);
     }, 2_000),
     [setNewApiKey, setIsApiKeyDirty, setIsValidating],
   );

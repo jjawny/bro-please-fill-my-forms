@@ -14,24 +14,33 @@ export default function PinWrapper() {
   const pinMode = usePinStore((state) => state.pinMode);
   const setupPin = usePinStore((state) => state.setNewPin);
   const reset = usePinStore((state) => state.reset);
+
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const hasAttemptedAutoUnlock = useRef<boolean>(false);
 
-  useEffect(
-    function autoUnlock() {
+  useEffect(() => {
+    const autoUnlock = async () => {
       // 1. Initialize the store to load any previously saved data
       // 2. If a PIN is saved (session storage), attempt to unlock with it
       // 3. The unlock fn will change the pinMode to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
       if (!hasAttemptedAutoUnlock.current && isInitialized && savedPin) {
         hasAttemptedAutoUnlock.current = true;
-        unlock(savedPin);
+        const unlockResponse = await unlock(savedPin);
+        if (!unlockResponse.isOk) {
+          console.warn(unlockResponse.error, unlockResponse.messages);
+          // TODO: toast or set fatal error?
+        } else {
+          console.debug(unlockResponse.value, unlockResponse.messages);
+          // TODO: toast or set fatal error?
+        }
       }
-    },
-    [isInitialized, savedPin],
-  );
+    };
+    autoUnlock();
+  }, [isInitialized, savedPin]);
 
   const handlePinSubmit = async (pin: string) => {
     setIsSubmitting(true);
@@ -71,15 +80,15 @@ export default function PinWrapper() {
 
     const resetResponse = await reset();
 
-    if (resetResponse.isOk) {
+    if (!resetResponse.isOk) {
+      setPinError(resetResponse.error);
+      console.warn(resetResponse.error, resetResponse.messages);
+      // TODO: toast or set fatal error?
+    } else {
       setPinValue("");
-      console.log("PIN reset successful");
-      return;
+      console.debug(resetResponse.value, resetResponse.messages);
+      // TODO: toast or set fatal error?
     }
-
-    console.error("PIN reset failed:", resetResponse.error);
-    setPinError(resetResponse.error);
-    return;
   };
 
   const helperText = pinMode === "SETTING_UP" ? "Set your new PIN" : "Enter your PIN to unlock";

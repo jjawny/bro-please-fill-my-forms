@@ -30,15 +30,23 @@ export default function App() {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
         if (!initStoreResponse.isOk) {
-          console.error(initStoreResponse.error, initStoreResponse.messages);
+          console.warn(initStoreResponse.error, initStoreResponse.messages);
           setPinStoreFatalError(initStoreResponse.error);
+          // TODO: toast instead of fatal error?
+        } else {
+          console.debug(initStoreResponse.value, initStoreResponse.messages);
+          // TODO: toast or set fatal error?
         }
       }
       if (!isUserPreferencesStoreInitialized) {
         const initStoreResponse = await initializeUserPreferencesStore();
         if (!initStoreResponse.isOk) {
-          console.error(initStoreResponse.error, initStoreResponse.messages);
+          console.warn(initStoreResponse.error, initStoreResponse.messages);
           setUserPreferencesStoreFatalError(initStoreResponse.error);
+          // TODO: toast instead of fatal error?
+        } else {
+          console.debug(initStoreResponse.value, initStoreResponse.messages);
+          // TODO: toast or set fatal error?
         }
       }
     };

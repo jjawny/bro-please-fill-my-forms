@@ -8,7 +8,13 @@ export default function ToggleLockButton() {
 
   const handleClick = async () => {
     const lockResponse = await lock();
-    console.debug("Lock response:", lockResponse);
+    if (!lockResponse.isOk) {
+      console.warn(lockResponse.error, lockResponse.messages);
+      // TODO: toast or set fatal error?
+    } else {
+      console.debug(lockResponse.value, lockResponse.messages);
+      // TODO: toast or set fatal error?
+    }
   };
 
   if (pinMode === "SETTING_UP") {

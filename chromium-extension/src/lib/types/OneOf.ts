@@ -18,6 +18,7 @@
  *
  *  - What are the entry points?
  *     99% of code execution/the stack trace will start from an event handlers/useEffect hooks/service workers (ignoring network-driven types; web sockets/SSE/polling)
+ *     when we handle OneOfs in entry points, we console.debug/warn (not console.error as these errors are all handled)
  *
  *  - Why not new up a dedicated OneOf object?
  *     using the pure type (creating object literals) has better perf (less memory) just GPT "Performance of creating object literals from my OneOf type vs using a dedicated OneOf class"

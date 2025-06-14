@@ -6,11 +6,18 @@ import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 export default function ToggleThemeButton() {
   const { theme, setTheme } = useUserPreferencesStore();
 
-  const handleThemeChange = () => {
+  const handleThemeChange = async () => {
     const themes = [Theme.light, Theme.dark, Theme.system];
     const currIndex = themes.indexOf(theme);
     const nextIndex = (currIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    const setThemeResponse = await setTheme(themes[nextIndex]);
+    if (!setThemeResponse.isOk) {
+      console.warn(setThemeResponse.error, setThemeResponse.messages);
+      // TODO: toast or set fatal error?
+    } else {
+      console.debug(setThemeResponse.value, setThemeResponse.messages);
+      // TODO: toast or set fatal error?
+    }
   };
 
   const getThemeIcon = () => {
