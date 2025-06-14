@@ -28,4 +28,5 @@ To view console logs:
 TODO:
 
 - [ ] UI/event handlers/etc to console debug OneOf messages and toast errors/success message
+- [ ] fix size build warning "(!) Some chunks are larger than 500 kB after minification"
 - [ ] delete components.json when done as its pretty broken
