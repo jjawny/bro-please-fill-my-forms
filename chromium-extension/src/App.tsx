@@ -26,7 +26,7 @@ export default function App() {
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
-    const initStores = async () => {
+    const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
         if (!initStoreResponse.isOk) {
@@ -38,6 +38,13 @@ export default function App() {
           // TODO: toast or set fatal error?
         }
       }
+    };
+
+    initStore();
+  }, [isPinStoreInitialized, initializePinStore]);
+
+  useEffect(() => {
+    const initStore = async () => {
       if (!isUserPreferencesStoreInitialized) {
         const initStoreResponse = await initializeUserPreferencesStore();
         if (!initStoreResponse.isOk) {
@@ -51,8 +58,8 @@ export default function App() {
       }
     };
 
-    initStores();
-  }, [isPinStoreInitialized, isUserPreferencesStoreInitialized, initializePinStore, initializeUserPreferencesStore]);
+    initStore();
+  }, [isUserPreferencesStoreInitialized, initializeUserPreferencesStore]);
 
   return (
     <div className="app-container">
