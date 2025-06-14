@@ -17,6 +17,7 @@ type PinStore = ByoKeyData &
     pinMode: PinMode;
     geminiApiKeyDecrypted?: string;
     isGeminiApiKeyDirty: boolean;
+    fatalError?: string;
 
     /**
      * Sets the state w any previously saved data
@@ -56,6 +57,11 @@ type PinStore = ByoKeyData &
      * Signal to other UI that current API key input has not been saved yet
      */
     setIsApiKeyDirty: (isDirty: boolean) => OneOf<string, string>;
+
+    /**
+     * Signal to other UI that a fatal error has occurred
+     */
+    setFatalError: (error?: string) => OneOf<string, string>;
 
     /**
      * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
@@ -240,6 +246,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     pinMode: "LOCKED",
     geminiApiKeyDecrypted: undefined,
     isGeminiApiKeyDirty: false,
+    fatalError: undefined,
 
     initialize: async (): Promise<OneOf<string, string>> => {
       let messages = ["Begin initializing PinStore"];
@@ -501,6 +508,21 @@ export const usePinStore = create<PinStore>((set, get) => {
         return { isOk: true, value: successMessage, messages };
       } catch (error: unknown) {
         const errorMessage = logError(error, "Failed to set isGeminiApiKeyDirty");
+        messages.push(errorMessage);
+        return { isOk: false, error: errorMessage, messages };
+      }
+    },
+
+    setFatalError: (error?: string): OneOf<string, string> => {
+      let messages = ["Begin setting fatalError"];
+
+      try {
+        set({ fatalError: error });
+        const successMessage = "Successfully set fatalError";
+        messages.push(successMessage);
+        return { isOk: true, value: successMessage, messages };
+      } catch (error: unknown) {
+        const errorMessage = logError(error, "Failed to set fatalError");
         messages.push(errorMessage);
         return { isOk: false, error: errorMessage, messages };
       }

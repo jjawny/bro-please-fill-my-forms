@@ -7,6 +7,7 @@ import { logError } from "~/lib/utils/console-helpers";
 
 type UserPreferencesStore = UserPreferences & {
   isInitialized: boolean;
+  fatalError?: string;
 
   /**
    * Sets the state w any previously saved data
@@ -17,11 +18,22 @@ type UserPreferencesStore = UserPreferences & {
    * Sets the theme in-memory and in browser storage
    */
   setTheme: (theme: ThemeType) => Promise<OneOf<string, string>>;
+
+  /**
+   * Signal to other UI that a fatal error has occurred
+   */
+  setFatalError: (error?: string) => OneOf<string, string>;
+
+  /**
+   * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
+   */
+  GET_DEBUG_JSON_DUMP: () => string;
 };
 
-export const useUserPreferencesStore = create<UserPreferencesStore>((set) => ({
+export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) => ({
   ...getDefaultUserPreferences(),
   isInitialized: false,
+  fatalError: undefined,
 
   initialize: async (): Promise<OneOf<string, string>> => {
     let messages = ["Begin initializing UserPreferencesStore"];
@@ -79,4 +91,21 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set) => ({
       return { isOk: false, error: errorMessage, messages };
     }
   },
+
+  setFatalError: (error?: string): OneOf<string, string> => {
+    let messages = ["Begin setting fatalError"];
+
+    try {
+      set({ fatalError: error });
+      const successMessage = "Successfully set fatalError";
+      messages.push(successMessage);
+      return { isOk: true, value: successMessage, messages };
+    } catch (error: unknown) {
+      const errorMessage = logError(error, "Failed to set fatalError");
+      messages.push(errorMessage);
+      return { isOk: false, error: errorMessage, messages };
+    }
+  },
+
+  GET_DEBUG_JSON_DUMP: () => JSON.stringify(get(), null, 2),
 }));
