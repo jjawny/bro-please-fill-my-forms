@@ -104,11 +104,11 @@ function ApiKeyInputEndAdornment(args: { isValidating: boolean; hasApiKey: boole
       return null;
     }
 
-    if (hasGeminiApiKeyConnectedSuccessfully) {
+    if (hasGeminiApiKeyConnectedSuccessfully === true) {
       return <CheckIcon className="h-4 w-4 text-green-500" />;
     }
 
-    if (!hasGeminiApiKeyConnectedSuccessfully) {
+    if (hasGeminiApiKeyConnectedSuccessfully === false) {
       return <XIcon className="h-4 w-4 text-red-500" />;
     }
   };
