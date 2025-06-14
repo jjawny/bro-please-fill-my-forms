@@ -14,7 +14,6 @@ export default function PinWrapper() {
   const pinMode = usePinStore((state) => state.pinMode);
   const setupPin = usePinStore((state) => state.setNewPin);
   const reset = usePinStore((state) => state.reset);
-  // const GET_DEBUG_JSON_DUMP = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");
@@ -91,7 +90,6 @@ export default function PinWrapper() {
 
   return (
     <>
-      {/* <pre className="text-left text-xs max-w-[400px] overflow-x-scroll">{GET_DEBUG_JSON_DUMP()}</pre> */}
       <Pin
         isPlayShakeAnimation={isShaking}
         pinHelperText={isSubmitting ? undefined : pinHelperText}
