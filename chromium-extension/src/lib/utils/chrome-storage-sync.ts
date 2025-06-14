@@ -1,7 +1,8 @@
 import z, { ZodError, ZodTypeAny } from "zod";
+import { OneOf } from "~/lib/types/OneOf";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "../types/ByoKeyData";
-import { OneOf } from "../types/OneOf";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "../types/UserPreferences";
+import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
 
 /**
  * Notes:
@@ -12,7 +13,11 @@ import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } fro
  */
 export async function safelyLoadByoKeyDataFromSyncStorage(): Promise<ByoKeyData> {
   try {
-    const itemKeys: (keyof ByoKeyData)[] = ["geminiApiKeyEncrypted", "geminiApiKeyHash", "hasGeminiApiKeyConnectedSuccessfully"];
+    const itemKeys: (keyof ByoKeyData)[] = [
+      "geminiApiKeyEncrypted",
+      "geminiApiKeyHash",
+      "hasGeminiApiKeyConnectedSuccessfully",
+    ];
     const items = await chrome.storage.sync.get(itemKeys);
     const byoKeyData: ByoKeyData = {
       geminiApiKeyEncrypted: items.geminiApiKeyEncrypted,
@@ -34,7 +39,10 @@ export async function safelyLoadByoKeyDataFromSyncStorage(): Promise<ByoKeyData>
     const validationData = validationResponse.data;
     return validationData;
   } catch (error: unknown) {
-    console.error(`Failed to load ByoKeyData from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    console.error(
+      `Failed to load ByoKeyData from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`,
+      error,
+    );
     return getDefaultByoKeyData();
   }
 }
@@ -62,7 +70,10 @@ export async function safelyLoadUserPreferencesFromSyncStorage(): Promise<UserPr
     const validatedData = validationResponse.data;
     return validatedData;
   } catch (error: unknown) {
-    console.error(`Failed to load UserPreferences from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    console.error(
+      `Failed to load UserPreferences from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`,
+      error,
+    );
     return getDefaultUserPreferences();
   }
 }
@@ -73,7 +84,10 @@ export async function safelyLoadUserPreferencesFromSyncStorage(): Promise<UserPr
  * @param data
  * @returns
  */
-export async function saveToSyncStorage<T extends ZodTypeAny>(schema: T, data: z.infer<T>): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+export async function saveToSyncStorage<T extends ZodTypeAny>(
+  schema: T,
+  data: z.infer<T>,
+): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
   try {
     const validationResponse = schema.safeParse(data);
 
@@ -82,8 +96,9 @@ export async function saveToSyncStorage<T extends ZodTypeAny>(schema: T, data: z
     }
 
     const validatedData = validationResponse.data;
+    const cleanedData = convertUndefinedToNullOneLevelDeep(validatedData);
 
-    await chrome.storage.sync.set(validatedData);
+    await chrome.storage.session.set(cleanedData);
 
     return { isOk: true, value: validatedData };
   } catch (error: unknown) {

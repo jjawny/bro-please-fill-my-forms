@@ -1,6 +1,7 @@
 import z, { ZodError, ZodTypeAny } from "zod";
 import { OneOf } from "../types/OneOf";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "../types/TemporaryData";
+import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
 
 /**
  * Notes:
@@ -26,12 +27,18 @@ export async function safelyLoadTemporaryDataFromSessionStorage(): Promise<Tempo
     const validatedData = validationResponse.data;
     return validatedData;
   } catch (error: unknown) {
-    console.error(`Failed to load TemporaryData from chrome.storage.session, reason ${error instanceof Error ? error.message : "Unknown"}`, error);
+    console.error(
+      `Failed to load TemporaryData from chrome.storage.session, reason ${error instanceof Error ? error.message : "Unknown"}`,
+      error,
+    );
     return getDefaultTemporaryData();
   }
 }
 
-export async function saveToSessionStorage<T extends ZodTypeAny>(schema: T, data: z.infer<T>): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+export async function saveToSessionStorage<T extends ZodTypeAny>(
+  schema: T,
+  data: z.infer<T>,
+): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
   try {
     const validationResponse = schema.safeParse(data);
 
@@ -40,8 +47,9 @@ export async function saveToSessionStorage<T extends ZodTypeAny>(schema: T, data
     }
 
     const validatedData = validationResponse.data;
+    const cleanedData = convertUndefinedToNullOneLevelDeep(validatedData);
 
-    await chrome.storage.session.set(validatedData);
+    await chrome.storage.session.set(cleanedData);
 
     return { isOk: true, value: validatedData };
   } catch (error: unknown) {
