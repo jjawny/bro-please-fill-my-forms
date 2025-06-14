@@ -1,5 +1,5 @@
-import { API_KEY_PREFIX_SEPARATOR } from "../constants/globals";
-import { OneOf } from "../types/OneOf";
+import { API_KEY_PREFIX_SEPARATOR } from "~/lib/constants/globals";
+import { OneOf } from "~/lib/types/OneOf";
 
 /**
  * 

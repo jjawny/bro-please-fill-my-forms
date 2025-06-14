@@ -1,17 +1,16 @@
-import z, { ZodError, ZodTypeAny } from "zod";
+import z, { ZodError, ZodType } from "zod/v4";
+import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/types/ByoKeyData";
 import { OneOf } from "~/lib/types/OneOf";
-import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "../types/ByoKeyData";
-import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "../types/UserPreferences";
+import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/types/UserPreferences";
+import { logError } from "./console-helpers";
 import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
 
 /**
- * Notes:
- *  - 8kb per item, 100kb total
- *  - If the user is logged into Chrome, chrome.storage.sync will attempt to sync across devices
- *  - If the user is NOT logged into Chrome, this will behave like chrome.storage.local
- * @returns Previously saved UserData
+ * Loads ByoKeyData from chrome.storage.sync
  */
-export async function safelyLoadByoKeyDataFromSyncStorage(): Promise<ByoKeyData> {
+export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData, string>> {
+  let messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
+
   try {
     const itemKeys: (keyof ByoKeyData)[] = [
       "geminiApiKeyEncrypted",
@@ -24,75 +23,76 @@ export async function safelyLoadByoKeyDataFromSyncStorage(): Promise<ByoKeyData>
       geminiApiKeyHash: items.geminiApiKeyHash,
       hasGeminiApiKeyConnectedSuccessfully: items.isGeminiApiKeyConnectedSuccessfully ?? false,
     };
-
-    console.debug(`Loaded ByoKeyData from chrome.storage.sync`, byoKeyData);
-
     const validationResponse = ByoKeyDataSchema.safeParse(byoKeyData);
 
     // Fallback to defaults and attempt to heal corrupt data
     if (!validationResponse.success) {
       const defaults = getDefaultByoKeyData();
       await saveToSyncStorage(ByoKeyDataSchema, defaults);
-      return defaults;
+      messages.push(
+        `ByoKeyData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+      );
+      return { isOk: true, value: defaults, messages };
     }
 
-    const validationData = validationResponse.data;
-    return validationData;
+    messages.push("Successfully loaded ByoKeyData");
+    return { isOk: true, value: validationResponse.data, messages };
   } catch (error: unknown) {
-    console.error(
-      `Failed to load ByoKeyData from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`,
-      error,
-    );
-    return getDefaultByoKeyData();
+    const errorMessage = logError(error, "Failed to load ByoKeyData, failing back to defaults");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
   }
 }
 
 /**
- * @returns Previously saved UserPreferences
+ * Loads UserPreferences from chrome.storage.sync
  */
-export async function safelyLoadUserPreferencesFromSyncStorage(): Promise<UserPreferences> {
+export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPreferences, string>> {
+  let messages = ["Begin loading UserPreferences from chrome.storage.sync"];
+
   try {
     const itemKeys: (keyof UserPreferences)[] = ["theme"];
     const items = await chrome.storage.sync.get(itemKeys);
     const userPreferences: UserPreferences = { theme: items.theme };
-
-    console.debug(`Loaded UserPreferences from chrome.storage.sync`, userPreferences);
-
     const validationResponse = UserPreferencesSchema.safeParse(userPreferences);
 
     // Fallback to defaults and attempt to heal corrupt data
     if (!validationResponse.success) {
       const defaults = getDefaultUserPreferences();
       await saveToSyncStorage(UserPreferencesSchema, defaults);
-      return defaults;
+      messages.push(
+        `UserPreferences failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+      );
+      return { isOk: true, value: defaults, messages };
     }
 
-    const validatedData = validationResponse.data;
-    return validatedData;
+    messages.push("Successfully loaded UserPreferences");
+    return { isOk: true, value: validationResponse.data, messages };
   } catch (error: unknown) {
-    console.error(
-      `Failed to load UserPreferences from chrome.storage.sync, reason ${error instanceof Error ? error.message : "Unknown"}`,
-      error,
-    );
-    return getDefaultUserPreferences();
+    const errorMessage = logError(error, "Failed to load UserPreferences");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
   }
 }
 
 /**
- * generic save to sync storage
- * @param schema
- * @param data
- * @returns
+ * Saves data for to live between multiple browser session
+ * If the user is logged into Chrome, chrome.storage.sync will attempt to sync across devices
+ * If the user is NOT logged into Chrome, this will behave like chrome.storage.local
+ * Quota: 8KB per item, 100KB total
  */
-export async function saveToSyncStorage<T extends ZodTypeAny>(
+export async function saveToSyncStorage<T extends ZodType>(
   schema: T,
   data: z.infer<T>,
 ): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+  let messages = ["Begin saving to chrome.storage.sync"];
+
   try {
     const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {
-      return { isOk: false, error: validationResponse.error };
+      messages.push(`Unable to save as validation failed: ${z.prettifyError(validationResponse.error)}`);
+      return { isOk: false, error: validationResponse.error, messages };
     }
 
     const validatedData = validationResponse.data;
@@ -100,12 +100,11 @@ export async function saveToSyncStorage<T extends ZodTypeAny>(
 
     await chrome.storage.session.set(cleanedData);
 
-    return { isOk: true, value: validatedData };
+    messages.push("Successfully saved");
+    return { isOk: true, value: cleanedData, messages };
   } catch (error: unknown) {
-    console.error(
-      `Failed to save '${JSON.stringify(data)}' to chrome.storage.sync, reason: ${error instanceof Error ? error.message : "Unknown"}`,
-      error,
-    );
-    return { isOk: false, error: "Failed to save to chrome.storage.sync" };
+    const errorMessage = logError(error, "Failed to save");
+    messages.push(errorMessage);
+    return { isOk: false, error: errorMessage, messages };
   }
 }

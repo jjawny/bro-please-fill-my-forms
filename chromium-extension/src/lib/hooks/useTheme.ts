@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Theme, ThemeType } from "../enums/Theme";
-import { useUserPreferencesStore } from "../stores/UserPreferencesStore";
+import { Theme, ThemeType } from "~/lib/enums/Theme";
+import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 
 export const useTheme = () => {
   const theme = useUserPreferencesStore((state) => state.theme);

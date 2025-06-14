@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Theme, ThemeSchema } from "~/lib/enums/Theme";
 
 export const UserPreferencesSchema = z.object({ theme: ThemeSchema });

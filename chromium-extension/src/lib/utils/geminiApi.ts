@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { GeminiResponse } from "../types/FormField";
+import { GeminiResponse } from "~/lib/types/FormField";
 
 export async function validateApiKey(apiKey: string): Promise<boolean> {
   try {

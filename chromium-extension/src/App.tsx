@@ -14,7 +14,7 @@ import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
   const isPinStoreInitialized = usePinStore((state) => state.isInitialized);
-  const pinStatus = usePinStore((state) => state.pinStatus);
+  const pinMode = usePinStore((state) => state.pinMode);
 
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
@@ -33,7 +33,7 @@ export default function App() {
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />
-        {pinStatus !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
+        {pinMode !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
       </div>
       <Footer />
     </div>

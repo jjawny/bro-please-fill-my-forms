@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { SERVICE_WORKER_ACTIONS } from "../service-workers/service-worker-actions";
-import { usePinStore } from "../stores/PinStore";
-import { ScrapedForm } from "../types/FormField";
-import { generateFormContent } from "../utils/geminiApi";
+import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
+import { usePinStore } from "~/lib/stores/PinStore";
+import { ScrapedForm } from "~/lib/types/FormField";
+import { generateFormContent } from "~/lib/utils/geminiApi";
 
 export default function Step3() {
   const [scrapedForm] = useState<ScrapedForm | null>(null);

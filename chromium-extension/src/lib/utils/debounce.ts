@@ -1,3 +1,6 @@
+/**
+ * See https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore?tab=readme-ov-file#_debounce
+ */
 export function debounce<T extends (...args: any[]) => void>(
   func: T,
   wait: number,

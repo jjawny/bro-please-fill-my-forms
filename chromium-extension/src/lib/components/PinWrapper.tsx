@@ -11,7 +11,7 @@ export default function PinWrapper() {
   const isInitialized = usePinStore((state) => state.isInitialized);
   const unlock = usePinStore((state) => state.unlock);
   const savedPin = usePinStore((state) => state.pin);
-  const pinStatus = usePinStore((state) => state.pinStatus);
+  const pinMode = usePinStore((state) => state.pinMode);
   const setupPin = usePinStore((state) => state.setNewPin);
   const reset = usePinStore((state) => state.reset);
   // const GET_DEBUG_JSON_DUMP = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
@@ -25,7 +25,7 @@ export default function PinWrapper() {
     function autoUnlock() {
       // 1. Initialize the store to load any previously saved data
       // 2. If a PIN is saved (session storage), attempt to unlock with it
-      // 3. The unlock fn will change the pinStatus to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
+      // 3. The unlock fn will change the pinMode to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
       if (!hasAttemptedAutoUnlock.current && isInitialized && savedPin) {
         hasAttemptedAutoUnlock.current = true;
         unlock(savedPin);
@@ -40,7 +40,7 @@ export default function PinWrapper() {
     setPinError(undefined);
     setPinValue("");
 
-    if (pinStatus === "SETTING_UP") {
+    if (pinMode === "SETTING_UP") {
       const setupPinResponse = await setupPin(pin);
 
       if (setupPinResponse.isOk) {
@@ -52,7 +52,7 @@ export default function PinWrapper() {
       }
     }
 
-    if (pinStatus === "LOCKED") {
+    if (pinMode === "LOCKED") {
       const unlockResponse = await unlock(pin);
 
       if (unlockResponse.isOk) {
@@ -83,7 +83,7 @@ export default function PinWrapper() {
     return;
   };
 
-  const helperText = pinStatus === "SETTING_UP" ? "Set your new PIN" : "Enter your PIN to unlock";
+  const helperText = pinMode === "SETTING_UP" ? "Set your new PIN" : "Enter your PIN to unlock";
   const pinHelperText: PinHelperText = {
     errorText: pinError,
     helperText: helperText,
@@ -99,7 +99,7 @@ export default function PinWrapper() {
         onChange={setPinValue}
         onComplete={handlePinSubmit}
       />
-      {pinStatus !== "SETTING_UP" && (
+      {pinMode !== "SETTING_UP" && (
         <ConfirmDialog
           title="Are you sure you want to reset your PIN?"
           description="You will need to set an API key again"
