@@ -14,18 +14,36 @@ import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
   const isPinStoreInitialized = usePinStore((state) => state.isInitialized);
+  const setPinStoreFatalError = usePinStore((state) => state.setFatalError);
   const pinMode = usePinStore((state) => state.pinMode);
 
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
+  const setUserPreferencesStoreFatalError = useUserPreferencesStore((state) => state.setFatalError);
 
   // Start listen to theme changes (ONCE at top of component tree)
   useTheme();
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
-    if (!isPinStoreInitialized) initializePinStore();
-    if (!isUserPreferencesStoreInitialized) initializeUserPreferencesStore();
+    const initStores = async () => {
+      if (!isPinStoreInitialized) {
+        const initStoreResponse = await initializePinStore();
+        if (!initStoreResponse.isOk) {
+          console.error(initStoreResponse.error, initStoreResponse.messages);
+          setPinStoreFatalError(initStoreResponse.error);
+        }
+      }
+      if (!isUserPreferencesStoreInitialized) {
+        const initStoreResponse = await initializeUserPreferencesStore();
+        if (!initStoreResponse.isOk) {
+          console.error(initStoreResponse.error, initStoreResponse.messages);
+          setUserPreferencesStoreFatalError(initStoreResponse.error);
+        }
+      }
+    };
+
+    initStores();
   }, [isPinStoreInitialized, isUserPreferencesStoreInitialized, initializePinStore, initializeUserPreferencesStore]);
 
   return (
