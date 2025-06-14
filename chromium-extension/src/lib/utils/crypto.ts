@@ -86,7 +86,7 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
     return { isOk: true, value: originalData, messages };
   } catch (error) {
     // Handle expected errors
-    const isDecryptionFailed = error instanceof DOMException && error.name === "InvalidAccessError";
+    const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
     if (isDecryptionFailed) {
       const errorMessage = "Invalid PIN";
       messages.push(errorMessage);
