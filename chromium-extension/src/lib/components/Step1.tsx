@@ -8,6 +8,7 @@ import { debounce } from "~/lib/utils/debounce";
 import { sleep } from "~/lib/utils/sleep";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
+const SAVE_API_KEY_DEBOUNCE_DELAY_MS = 2_000;
 
 export default function Step1() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -24,7 +25,8 @@ export default function Step1() {
     if (!isFirstRender.current) return;
     isFirstRender.current = false;
 
-    // This component should be rendered after a successful unlock; the decrypted key should be available immediately
+    // This component should be rendered after a successful unlock; the...
+    //  decrypted key should be available immediately
     const geminiApiKeyDecrypted = usePinStore.getState().geminiApiKeyDecrypted;
     if (geminiApiKeyDecrypted) {
       setApiKeyInputValue(geminiApiKeyDecrypted);
@@ -34,10 +36,13 @@ export default function Step1() {
   const debouncedSaveApiKey = useCallback(
     debounce(async (apiKey: string) => {
       setIsValidating(true);
+
       await sleep(500); // Simulate latency to avoid flash of validation state (better UX)
+
       const cleanedApiKey = apiKey.trim();
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
       const setApiKeyResponse = await setNewApiKey(cleanedApiKey, shouldTest);
+
       if (!setApiKeyResponse.isOk) {
         console.warn(setApiKeyResponse.error, setApiKeyResponse.messages);
         // TODO: toast or set fatal error?
@@ -45,9 +50,10 @@ export default function Step1() {
         console.debug(setApiKeyResponse.value, setApiKeyResponse.messages);
         // TODO: toast or set fatal error?
       }
+
       setIsApiKeyDirty(false);
       setIsValidating(false);
-    }, 2_000),
+    }, SAVE_API_KEY_DEBOUNCE_DELAY_MS),
     [setNewApiKey, setIsApiKeyDirty, setIsValidating],
   );
 
@@ -116,14 +122,14 @@ function ApiKeyInputEndAdornment(args: { isValidating: boolean; hasApiKey: boole
   const { isValidating, hasApiKey } = args;
 
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
-  const isApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
+  const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
 
   const getIcon = () => {
     if (isValidating) {
       return <LoaderCircleIcon className="h-4 w-4 text-stone-500 animate-spin" />;
     }
 
-    if (isApiKeyDirty || !hasApiKey) {
+    if (isGeminiApiKeyDirty || !hasApiKey) {
       return null;
     }
 
