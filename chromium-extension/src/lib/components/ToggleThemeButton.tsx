@@ -1,12 +1,12 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { Theme } from "~/lib/enums/Theme";
-import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
+import { useTheme } from "~/lib/hooks/useTheme";
 
 export default function ToggleThemeButton() {
-  const { theme, setTheme } = useUserPreferencesStore();
+  const { theme, setTheme } = useTheme();
 
-  const handleThemeChange = async () => {
+  const handleToggleTheme = async () => {
     const themes = [Theme.LIGHT, Theme.DARK, Theme.SYSTEM];
     const currIndex = themes.indexOf(theme);
     const nextIndex = (currIndex + 1) % themes.length;
@@ -37,7 +37,7 @@ export default function ToggleThemeButton() {
       size="icon"
       variant="secondary"
       aria-label={`Switch from ${theme.toLowerCase()} theme`}
-      onClick={handleThemeChange}
+      onClick={handleToggleTheme}
       className="size-8 absolute top-0 right-0 z-50 m-2"
     >
       {getThemeIcon()}

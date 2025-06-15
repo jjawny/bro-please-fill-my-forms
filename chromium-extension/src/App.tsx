@@ -9,7 +9,6 @@ import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
-import { useTheme } from "~/lib/hooks/useTheme";
 
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
@@ -20,9 +19,6 @@ export default function App() {
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
   const setUserPreferencesStoreFatalError = useUserPreferencesStore((state) => state.setFatalError);
-
-  // Start listen to theme changes (ONCE at top of component tree)
-  useTheme();
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {

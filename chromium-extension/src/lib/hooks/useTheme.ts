@@ -1,48 +1,40 @@
 import { useEffect } from "react";
-import { Theme, ThemeType } from "~/lib/enums/Theme";
+import { Theme } from "~/lib/enums/Theme";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 
 export const useTheme = () => {
   const theme = useUserPreferencesStore((state) => state.theme);
   const setTheme = useUserPreferencesStore((state) => state.setTheme);
 
-  const applySystemTheme = (e: MediaQueryListEvent | null = null) => {
-    if (theme !== Theme.SYSTEM) return;
+  const applyTheme = () => {
+    const root = document.documentElement;
 
-    const isDarkMode = e ? e.matches : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const nextTheme = isDarkMode ? Theme.DARK : Theme.LIGHT;
-    document.documentElement.setAttribute("theme", nextTheme);
+    if (theme === Theme.SYSTEM) {
+      const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const systemTheme = isDarkMode ? Theme.DARK : Theme.LIGHT;
+      root.setAttribute("theme", systemTheme);
+    } else {
+      root.setAttribute("theme", theme);
+    }
   };
 
+  // Apply the theme ASAP upon selection
+  useEffect(applyTheme, [theme]);
+
+  // When system theme is selected; listen to system theme changes
   useEffect(
     function listenToSystemThemeChanges() {
+      if (theme !== Theme.SYSTEM) return;
+
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      mediaQuery.addEventListener("change", applySystemTheme);
+      mediaQuery.addEventListener("change", applyTheme);
 
       return () => {
-        mediaQuery.removeEventListener("change", applySystemTheme);
+        mediaQuery.removeEventListener("change", applyTheme);
       };
     },
-    // TODO: do we need this dep?
     [theme],
   );
 
-  useEffect(
-    function syncTheme() {
-      const root = document.documentElement;
-
-      if (theme === Theme.SYSTEM) {
-        // For system theme, detect and apply the current system preference
-        applySystemTheme();
-      } else {
-        // For explicit light/dark themes, apply directly
-        root.setAttribute("theme", theme);
-      }
-    },
-    [theme],
-  );
-
-  const toggleTheme = (theme: ThemeType) => setTheme(theme);
-
-  return { theme, toggleTheme };
+  return { theme, setTheme };
 };
