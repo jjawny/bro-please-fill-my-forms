@@ -10,6 +10,6 @@ export const getDefaultByoKeyData = (): ByoKeyData => {
   return {
     geminiApiKeyEncrypted: null,
     geminiApiKeyHash: null,
-    hasGeminiApiKeyConnectedSuccessfully: false,
+    hasGeminiApiKeyConnectedSuccessfully: null,
   };
 };
