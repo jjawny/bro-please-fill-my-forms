@@ -1,8 +1,8 @@
 import { Theme } from "~/lib/enums/Theme";
 import { useTheme } from "~/lib/hooks/useTheme";
+import { usePinStore } from "~/lib/stores/PinStore";
+import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 import { cn } from "~/lib/utils/cn";
-import { usePinStore } from "../stores/PinStore";
-import { useUserPreferencesStore } from "../stores/UserPreferencesStore";
 import githubLogo from "/images/github-logo.svg";
 
 export default function Footer() {
