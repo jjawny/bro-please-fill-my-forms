@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
-import { usePinStore } from "~/lib/stores/PinStore";
 import { ScrapedForm } from "~/lib/types/FormField";
 import { generateFormContent } from "~/lib/utils/geminiApi";
 

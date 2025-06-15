@@ -1,5 +1,5 @@
-import { usePinStore } from "~/lib/stores/PinStore";
-import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 
 const SHARED_STYLES = "text-left select-text z-[9999] text-xs max-w-[200px] overflow-x-scroll";
 

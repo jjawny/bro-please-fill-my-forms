@@ -1,7 +1,7 @@
 import { Theme } from "~/lib/enums/Theme";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useTheme } from "~/lib/hooks/useTheme";
-import { usePinStore } from "~/lib/stores/PinStore";
-import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 import { cn } from "~/lib/utils/cn";
 import githubLogo from "/images/github-logo.svg";
 

@@ -2,7 +2,7 @@ import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
-import { usePinStore } from "~/lib/stores/PinStore";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce";
 import { sleep } from "~/lib/utils/sleep";

@@ -1,7 +1,7 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { Theme } from "~/lib/enums/Theme";
-import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
+import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 
 export default function ToggleThemeButton() {
   const { theme, setTheme } = useUserPreferencesStore();

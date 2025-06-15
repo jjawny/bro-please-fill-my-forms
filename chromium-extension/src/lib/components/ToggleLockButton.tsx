@@ -1,6 +1,6 @@
 import { LockIcon, LockOpenIcon } from "lucide-react";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
-import { usePinStore } from "~/lib/stores/PinStore";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 
 export default function ToggleLockButton() {
   const pinMode = usePinStore((state) => state.pinMode);

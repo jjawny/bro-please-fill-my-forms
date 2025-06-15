@@ -7,9 +7,9 @@ import Step2 from "~/lib/components/Step2";
 import Step3 from "~/lib/components/Step3";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
+import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useTheme } from "~/lib/hooks/useTheme";
-import { usePinStore } from "~/lib/stores/PinStore";
-import { useUserPreferencesStore } from "~/lib/stores/UserPreferencesStore";
 
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
