@@ -40,7 +40,7 @@ export async function encryptData(data: string, pin: string): Promise<OneOf<stri
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
     const finalEncryptedData = btoa(String.fromCharCode(...combined));
 
-    const successMessage = "Successfully encrypted data";
+    const successMessage = `Successfully encrypted data ${JSON.stringify(finalEncryptedData)}`;
     messages.push(successMessage);
     return { isOk: true, value: finalEncryptedData, messages };
   } catch (error: unknown) {
@@ -56,11 +56,11 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
   try {
     // 1. Decode the base64
     const decoder = new TextDecoder();
-    const combined = new Uint8Array(
-      atob(encryptedData)
-        .split("")
-        .map((char) => char.charCodeAt(0)),
-    );
+    const binaryString = atob(encryptedData);
+    const combined = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      combined[i] = binaryString.charCodeAt(i);
+    }
 
     // 2. Extract salt, iv, and encrypted data
     const salt = combined.slice(0, 16);
@@ -75,15 +75,15 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
     // 4. Remove any randomly generated prefix
     const separatorIndex = decryptedValue.indexOf(API_KEY_PREFIX_SEPARATOR);
     const hasPrefix = separatorIndex !== -1;
-    const originalData = hasPrefix
+    const cleanDecryptedData = hasPrefix
       ? decryptedValue.slice(separatorIndex + API_KEY_PREFIX_SEPARATOR.length)
       : decryptedValue;
 
     if (hasPrefix) messages.push(`Removed prefix: ${decryptedValue.slice(0, separatorIndex)}`);
 
-    const successMessage = "Successfully decrypted data";
+    const successMessage = `Successfully decrypted data ${JSON.stringify(cleanDecryptedData)}`;
     messages.push(successMessage);
-    return { isOk: true, value: originalData, messages };
+    return { isOk: true, value: cleanDecryptedData, messages };
   } catch (error) {
     // Handle expected errors
     const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
