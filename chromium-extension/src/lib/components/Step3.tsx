@@ -39,7 +39,7 @@ export default function Step3() {
             {
               action: SERVICE_WORKER_ACTIONS.fillFormFields,
               tabId: tabs[0].id,
-              formData: response.fields,
+              formData: response.isOk ? response.value.fields : null,
               scrapedForm: scrapedForm,
             },
             (fillResponse) => {

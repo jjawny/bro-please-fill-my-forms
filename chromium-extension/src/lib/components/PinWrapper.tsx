@@ -31,10 +31,10 @@ export default function PinWrapper() {
         hasAttemptedAutoUnlock.current = true;
         const unlockResponse = await unlock(savedPin);
         if (!unlockResponse.isOk) {
-          console.warn(unlockResponse.error, unlockResponse.messages);
+          console.warn(unlockResponse.uiMessage, unlockResponse.messages);
           // TODO: toast or set fatal error?
         } else {
-          console.debug(unlockResponse.value, unlockResponse.messages);
+          console.debug(unlockResponse.uiMessage, unlockResponse.value, unlockResponse.messages);
           // TODO: toast or set fatal error?
         }
       }
@@ -52,11 +52,11 @@ export default function PinWrapper() {
       const setupPinResponse = await setupPin(pin);
 
       if (setupPinResponse.isOk) {
-        console.debug(setupPinResponse.value, setupPinResponse.messages);
+        console.debug(setupPinResponse.uiMessage, setupPinResponse.value, setupPinResponse.messages);
       } else {
-        console.warn(setupPinResponse.error, setupPinResponse.messages);
+        console.warn(setupPinResponse.uiMessage, setupPinResponse.messages);
         setIsShaking(true);
-        setPinError(setupPinResponse.error);
+        setPinError(setupPinResponse.uiMessage);
       }
     }
 
@@ -64,11 +64,11 @@ export default function PinWrapper() {
       const unlockResponse = await unlock(pin);
 
       if (unlockResponse.isOk) {
-        console.debug(unlockResponse.value, unlockResponse.messages);
+        console.debug(unlockResponse.uiMessage, unlockResponse.value, unlockResponse.messages);
       } else {
-        console.warn(unlockResponse.error, unlockResponse.messages);
+        console.warn(unlockResponse.uiMessage, unlockResponse.messages);
         setIsShaking(true);
-        setPinError(unlockResponse.error);
+        setPinError(unlockResponse.uiMessage);
       }
     }
 
@@ -81,13 +81,13 @@ export default function PinWrapper() {
     const resetResponse = await reset();
 
     if (resetResponse.isOk) {
-      console.debug(resetResponse.value, resetResponse.messages);
+      console.debug(resetResponse.uiMessage, resetResponse.value, resetResponse.messages);
       // TODO: toast or set fatal error?
       setPinValue("");
     } else {
-      console.warn(resetResponse.error, resetResponse.messages);
+      console.warn(resetResponse.uiMessage, resetResponse.messages);
       // TODO: toast or set fatal error?
-      setPinError(resetResponse.error);
+      setPinError(resetResponse.uiMessage);
     }
   };
 

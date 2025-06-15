@@ -44,10 +44,10 @@ export default function Step1() {
       const setApiKeyResponse = await setNewApiKey(cleanedApiKey, shouldTest);
 
       if (!setApiKeyResponse.isOk) {
-        console.warn(setApiKeyResponse.error, setApiKeyResponse.messages);
+        console.warn(setApiKeyResponse.uiMessage, setApiKeyResponse.messages);
         // TODO: toast or set fatal error?
       } else {
-        console.debug(setApiKeyResponse.value, setApiKeyResponse.messages);
+        console.debug(setApiKeyResponse.uiMessage, setApiKeyResponse.value, setApiKeyResponse.messages);
         // TODO: toast or set fatal error?
       }
 

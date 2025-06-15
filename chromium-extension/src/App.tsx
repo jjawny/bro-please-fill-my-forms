@@ -26,11 +26,11 @@ export default function App() {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
         if (!initStoreResponse.isOk) {
-          console.warn(initStoreResponse.error, initStoreResponse.messages);
-          setPinStoreFatalError(initStoreResponse.error);
+          console.warn(initStoreResponse.uiMessage, initStoreResponse.messages);
+          setPinStoreFatalError(initStoreResponse.uiMessage);
           // TODO: toast instead of fatal error?
         } else {
-          console.debug(initStoreResponse.value, initStoreResponse.messages);
+          console.debug(initStoreResponse.uiMessage, initStoreResponse.value, initStoreResponse.messages);
           // TODO: toast or set fatal error?
         }
       }
@@ -44,11 +44,11 @@ export default function App() {
       if (!isUserPreferencesStoreInitialized) {
         const initStoreResponse = await initializeUserPreferencesStore();
         if (!initStoreResponse.isOk) {
-          console.warn(initStoreResponse.error, initStoreResponse.messages);
-          setUserPreferencesStoreFatalError(initStoreResponse.error);
+          console.warn(initStoreResponse.uiMessage, initStoreResponse.messages);
+          setUserPreferencesStoreFatalError(initStoreResponse.uiMessage);
           // TODO: toast instead of fatal error?
         } else {
-          console.debug(initStoreResponse.value, initStoreResponse.messages);
+          console.debug(initStoreResponse.uiMessage, initStoreResponse.value, initStoreResponse.messages);
           // TODO: toast or set fatal error?
         }
       }
