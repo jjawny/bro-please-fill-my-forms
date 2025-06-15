@@ -26,7 +26,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData,
     const byoKeyData: ByoKeyData = {
       geminiApiKeyEncrypted: items.geminiApiKeyEncrypted,
       geminiApiKeyHash: items.geminiApiKeyHash,
-      hasGeminiApiKeyConnectedSuccessfully: items.isGeminiApiKeyConnectedSuccessfully ?? false,
+      hasGeminiApiKeyConnectedSuccessfully: items.hasGeminiApiKeyConnectedSuccessfully,
     };
     const validationResponse = ByoKeyDataSchema.safeParse(byoKeyData);
 
