@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { ScrapedForm } from "~/lib/models/FormField";
 import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
-import { ScrapedForm } from "~/lib/types/FormField";
 import { RippleButton } from "./shadcn/ripple";
 
 export default function Step2() {

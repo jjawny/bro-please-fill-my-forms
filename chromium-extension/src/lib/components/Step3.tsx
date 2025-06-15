@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { ScrapedForm } from "~/lib/models/FormField";
 import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
-import { ScrapedForm } from "~/lib/types/FormField";
 import { generateFormContent } from "~/lib/utils/geminiApi";
 
 export default function Step3() {

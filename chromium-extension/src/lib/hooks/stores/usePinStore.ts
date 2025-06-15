@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/types/ByoKeyData";
-import { OneOf } from "~/lib/types/OneOf";
-import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/types/TemporaryData";
+import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
+import { OneOf } from "~/lib/models/OneOf";
+import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { loadTemporaryDataFromSessionStorage, saveToSessionStorage } from "~/lib/utils/chrome-storage-session";
 import { loadByoKeyDataFromSyncStorage, saveToSyncStorage } from "~/lib/utils/chrome-storage-sync";
 import { logError } from "~/lib/utils/console-helpers";

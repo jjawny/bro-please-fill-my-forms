@@ -7,10 +7,10 @@ export const useTheme = () => {
   const setTheme = useUserPreferencesStore((state) => state.setTheme);
 
   const applySystemTheme = (e: MediaQueryListEvent | null = null) => {
-    if (theme !== Theme.system) return;
+    if (theme !== Theme.SYSTEM) return;
 
     const isDarkMode = e ? e.matches : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const nextTheme = isDarkMode ? Theme.dark : Theme.light;
+    const nextTheme = isDarkMode ? Theme.DARK : Theme.LIGHT;
     document.documentElement.setAttribute("theme", nextTheme);
   };
 
@@ -31,7 +31,7 @@ export const useTheme = () => {
     function syncTheme() {
       const root = document.documentElement;
 
-      if (theme === Theme.system) {
+      if (theme === Theme.SYSTEM) {
         // For system theme, detect and apply the current system preference
         applySystemTheme();
       } else {

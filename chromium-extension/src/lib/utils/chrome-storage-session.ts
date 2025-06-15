@@ -1,6 +1,6 @@
 import z, { ZodError, ZodType } from "zod/v4";
-import { OneOf } from "~/lib/types/OneOf";
-import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/types/TemporaryData";
+import { OneOf } from "~/lib/models/OneOf";
+import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { logError } from "./console-helpers";
 import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
 

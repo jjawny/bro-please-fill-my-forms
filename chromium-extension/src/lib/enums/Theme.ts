@@ -1,14 +1,11 @@
 import { z } from "zod/v4";
 
-// Better enums
 export const Theme = {
-  light: "light",
-  dark: "dark",
-  system: "system",
+  LIGHT: "light",
+  DARK: "dark",
+  SYSTEM: "system",
 } as const;
 
-// For validation
-export const ThemeSchema = z.enum([Theme.light, Theme.dark, Theme.system]);
+export const ThemeSchema = z.enum([Theme.LIGHT, Theme.DARK, Theme.SYSTEM]); // for validation
 
-// For type safety
-export type ThemeType = (typeof Theme)[keyof typeof Theme];
+export type ThemeType = (typeof Theme)[keyof typeof Theme]; // for type safety

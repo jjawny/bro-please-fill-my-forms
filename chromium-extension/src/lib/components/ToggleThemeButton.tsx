@@ -7,7 +7,7 @@ export default function ToggleThemeButton() {
   const { theme, setTheme } = useUserPreferencesStore();
 
   const handleThemeChange = async () => {
-    const themes = [Theme.light, Theme.dark, Theme.system];
+    const themes = [Theme.LIGHT, Theme.DARK, Theme.SYSTEM];
     const currIndex = themes.indexOf(theme);
     const nextIndex = (currIndex + 1) % themes.length;
     const setThemeResponse = await setTheme(themes[nextIndex]);
@@ -22,9 +22,9 @@ export default function ToggleThemeButton() {
 
   const getThemeIcon = () => {
     switch (theme) {
-      case Theme.light:
+      case Theme.LIGHT:
         return <SunIcon />;
-      case Theme.dark:
+      case Theme.DARK:
         return <MoonIcon />;
       default:
         return <MonitorIcon />;

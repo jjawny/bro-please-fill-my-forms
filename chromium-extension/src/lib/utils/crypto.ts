@@ -1,4 +1,4 @@
-import { OneOf } from "~/lib/types/OneOf";
+import { OneOf } from "~/lib/models/OneOf";
 import { logError } from "./console-helpers";
 
 /**

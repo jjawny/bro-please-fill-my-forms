@@ -16,7 +16,7 @@ export default function Footer() {
         <img
           src={githubLogo}
           alt="GitHub repo"
-          className={cn("select-none pointer-events-auto h-4", theme !== Theme.dark && "invert")}
+          className={cn("select-none pointer-events-auto h-4", theme !== Theme.DARK && "invert")}
         />
       </a>
       {/* TODO: make this nice for the user

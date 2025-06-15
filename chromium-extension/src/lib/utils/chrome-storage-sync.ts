@@ -1,7 +1,7 @@
 import z, { ZodError, ZodType } from "zod/v4";
-import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/types/ByoKeyData";
-import { OneOf } from "~/lib/types/OneOf";
-import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/types/UserPreferences";
+import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
+import { OneOf } from "~/lib/models/OneOf";
+import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { logError } from "./console-helpers";
 import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
 
