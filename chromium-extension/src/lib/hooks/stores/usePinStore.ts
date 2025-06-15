@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
-import { OneOf } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import {
   loadTemporaryDataFromSessionStorage,
@@ -26,46 +26,46 @@ type PinStore = ByoKeyData &
     /**
      * Sets the state w any previously saved data
      */
-    initialize: () => Promise<OneOf<string, string>>;
+    initialize: () => Promise<ErrOr>;
 
     /**
      * When "UNLOCKED", attempts to transition to "LOCKED"
      */
-    lock: () => Promise<OneOf<string, string>>;
+    lock: () => Promise<ErrOr>;
 
     /**
      * When "LOCKED", attempts to transition to "UNLOCKED"
      * Success = PIN is able to decrypt the data
      * Upon success, the pin is saved in-memory and in temporary browser storage (for auto-unlock within the same browser session)
      */
-    unlock: (pin: string) => Promise<OneOf<string, string>>;
+    unlock: (pin: string) => Promise<ErrOr>;
 
     /**
      * When "SETTING_UP", users can set the PIN
      * Includes re-encryping the existing/dummy API key
      */
-    setNewPin: (newPin: string) => Promise<OneOf<string, string>>;
+    setNewPin: (newPin: string) => Promise<ErrOr>;
 
     /**
      * When "UNLOCKED", users can set the API key
      * Includes hashing, encrypting, and testing the key
      */
-    setNewApiKey: (newKey: string, shouldTest: boolean) => Promise<OneOf<string, string>>;
+    setNewApiKey: (newKey: string, shouldTest: boolean) => Promise<ErrOr>;
 
     /**
      * Reset all data to defaults and transition to "SETTING_UP"
      */
-    reset: () => Promise<OneOf<string, string>>;
+    reset: () => Promise<ErrOr>;
 
     /**
      * Signal to other UI that current API key input has not been saved yet
      */
-    setIsApiKeyDirty: (isDirty: boolean) => OneOf<string, string>;
+    setIsApiKeyDirty: (isDirty: boolean) => ErrOr;
 
     /**
      * Signal to other UI that a fatal error has occurred
      */
-    setFatalError: (error?: string) => OneOf<string, string>;
+    setFatalError: (error?: string) => ErrOr;
 
     /**
      * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
@@ -76,7 +76,7 @@ type PinStore = ByoKeyData &
 
 export const usePinStore = create<PinStore>((set, get) => {
   //#region PRIVATE
-  const transitionToLockedMode = async (otherState?: Partial<PinStore>): Promise<OneOf<string, string>> => {
+  const transitionToLockedMode = async (otherState?: Partial<PinStore>): Promise<ErrOr> => {
     let messages = ["Begin transitioning to locked mode"];
 
     try {
@@ -98,13 +98,9 @@ export const usePinStore = create<PinStore>((set, get) => {
         ...otherState,
       });
 
-      const successMessage = "Successfully transition to locked mode";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully transition to locked mode" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to transition to locked mode");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to transition to locked mode") });
     }
   };
 
@@ -112,7 +108,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     geminiApiKeyDecrypted: string,
     pinUsed: string,
     otherState?: Partial<PinStore>,
-  ): OneOf<string, string> => {
+  ): ErrOr => {
     let messages = ["Begin transitioning to unlocked mode"];
 
     try {
@@ -123,17 +119,13 @@ export const usePinStore = create<PinStore>((set, get) => {
         ...otherState,
       });
 
-      const successMessage = "Successfully transitioned to unlocked mode";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully transitioned to unlocked mode" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to transition to unlocked mode");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to transition to unlocked mode") });
     }
   };
 
-  const transitionToSetUpMode = async (otherState?: Partial<PinStore>): Promise<OneOf<string, string>> => {
+  const transitionToSetUpMode = async (otherState?: Partial<PinStore>): Promise<ErrOr> => {
     let messages = ["Begin transitioning to setup mode"];
 
     try {
@@ -145,9 +137,11 @@ export const usePinStore = create<PinStore>((set, get) => {
       messages = messages.concat(saveToSyncStorageResponse.messages);
 
       if (!saveToSyncStorageResponse.isOk) {
-        const failMessage = "Failed to transition to setup mode";
-        messages.push(failMessage);
-        return { isOk: false, error: failMessage, messages };
+        return err({
+          messages,
+          uiMessage: saveToSyncStorageResponse.uiMessage,
+          isAddUiMessageToMessages: false,
+        });
       }
 
       const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, defaultTemporaryData);
@@ -155,9 +149,11 @@ export const usePinStore = create<PinStore>((set, get) => {
       messages = messages.concat(saveToSessionStorageResponse.messages);
 
       if (!saveToSessionStorageResponse.isOk) {
-        const failMessage = "Failed to transition to setup mode";
-        messages.push(failMessage);
-        return { isOk: false, error: failMessage, messages };
+        return err({
+          messages,
+          uiMessage: saveToSessionStorageResponse.uiMessage,
+          isAddUiMessageToMessages: false,
+        });
       }
 
       set({
@@ -168,13 +164,9 @@ export const usePinStore = create<PinStore>((set, get) => {
         ...otherState,
       });
 
-      const successMessage = "Successfully transitioned to setup mode";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully transitioned to setup mode" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to transition to setup mode");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to transition to setup mode") });
     }
   };
 
@@ -182,7 +174,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     pin: string,
     apiKey: string,
     shouldTestApiKey: boolean = false,
-  ): Promise<OneOf<ByoKeyData, string>> => {
+  ): Promise<ErrOr<ByoKeyData>> => {
     let messages = ["Begin encrypting and saving API key"];
 
     try {
@@ -194,7 +186,7 @@ export const usePinStore = create<PinStore>((set, get) => {
       messages = messages.concat(encryptApiKeyResponse.messages);
 
       if (!encryptApiKeyResponse.isOk) {
-        return { isOk: false, error: encryptApiKeyResponse.error, messages };
+        return err({ messages, uiMessage: encryptApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
       }
 
       let isApiKeyValid = null;
@@ -204,9 +196,7 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(validateApiKeyResponse.messages);
 
         if (!validateApiKeyResponse.isOk) {
-          const failMessage = "Failed to validate API key";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: validateApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
         isApiKeyValid = validateApiKeyResponse.value;
@@ -223,20 +213,14 @@ export const usePinStore = create<PinStore>((set, get) => {
       messages = messages.concat(saveToSyncStorageResponse.messages);
 
       if (!saveToSyncStorageResponse.isOk) {
-        const failMessage = "Failed to save encrypted API key";
-        messages.push(failMessage);
-        return { isOk: false, error: failMessage, messages };
+        return err({ messages, uiMessage: saveToSyncStorageResponse.uiMessage, isAddUiMessageToMessages: false });
       }
 
       set({ geminiApiKeyDecrypted: cleanApiKey, ...nextData });
 
-      const successMessage = "Successfully encrypted and saved API key";
-      messages.push(successMessage);
-      return { isOk: true, value: nextData, messages };
+      return ok({ messages, uiMessage: "Successfully encrypted and saved API key", value: nextData });
     } catch (error) {
-      const errorMessage = logError(error, "Failed to encrypt and save API key");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to encrypt and save API key") });
     }
   };
 
@@ -252,7 +236,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     isGeminiApiKeyDirty: false,
     fatalError: undefined,
 
-    initialize: async (): Promise<OneOf<string, string>> => {
+    initialize: async (): Promise<ErrOr> => {
       let messages = ["Begin initializing PinStore"];
 
       try {
@@ -262,23 +246,21 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         messages = messages.concat(loadByoKeyDataResponse.messages);
 
-        // Fallback to defaults
-        let byoKeyData = getDefaultByoKeyData();
-
-        if (loadByoKeyDataResponse.isOk) {
-          byoKeyData = loadByoKeyDataResponse.value;
+        if (!loadByoKeyDataResponse.isOk) {
+          return err({ messages, uiMessage: loadByoKeyDataResponse.uiMessage, isAddUiMessageToMessages: false });
         }
+
+        const byoKeyData = loadByoKeyDataResponse.value;
 
         const loadTemporaryDataResponse = await loadTemporaryDataFromSessionStorage();
 
         messages = messages.concat(loadTemporaryDataResponse.messages);
 
-        // Fallback to defaults
-        let temporaryData = getDefaultTemporaryData();
-
-        if (loadTemporaryDataResponse.isOk) {
-          temporaryData = loadTemporaryDataResponse.value;
+        if (!loadTemporaryDataResponse.isOk) {
+          return err({ messages, uiMessage: loadTemporaryDataResponse.uiMessage, isAddUiMessageToMessages: false });
         }
+
+        const temporaryData = loadTemporaryDataResponse.value;
 
         const hasApiKeySaved = byoKeyData.geminiApiKeyEncrypted && byoKeyData.geminiApiKeyHash;
 
@@ -290,24 +272,18 @@ export const usePinStore = create<PinStore>((set, get) => {
           ...temporaryData,
         });
 
-        const successMessage = "Successfully initialized PinStore";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully initialized PinStore" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to initialize PinStore");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to initialize PinStore") });
       }
     },
 
-    lock: async (): Promise<OneOf<string, string>> => {
+    lock: async (): Promise<ErrOr> => {
       let messages = ["Begin locking"];
 
       try {
         if (get().pinMode !== "UNLOCKED") {
-          const failMessage = "Can only unlock when locked";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Can only lock when unlocked" });
         }
 
         const transitionToLockedModeResponse = await transitionToLockedMode();
@@ -315,29 +291,25 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(transitionToLockedModeResponse.messages);
 
         if (!transitionToLockedModeResponse.isOk) {
-          const failMessage = "Failed to lock";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({
+            messages,
+            uiMessage: transitionToLockedModeResponse.uiMessage,
+            isAddUiMessageToMessages: false,
+          });
         }
 
-        const successMessage = "Successfully locked";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully locked" });
       } catch (error) {
-        const errorMessage = logError(error, "Failed to lock");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to lock") });
       }
     },
 
-    unlock: async (pin: string): Promise<OneOf<string, string>> => {
+    unlock: async (pin: string): Promise<ErrOr> => {
       let messages = ["Begin unlocking"];
 
       try {
         if (get().pinMode !== "LOCKED") {
-          const failMessage = "Can only unlock when locked";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Can only unlock when locked" });
         }
 
         const cleanNewPin = pin.trim();
@@ -346,21 +318,21 @@ export const usePinStore = create<PinStore>((set, get) => {
         const hasNothingToUnlock = !existingEncryptedKey || !existingKeyHash;
 
         if (hasNothingToUnlock) {
-          const failMessage = "Nothing to unlock, please reset to start over";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Nothing to unlock, please reset to start over" });
         }
 
         const decryptionResponse = await decryptData(existingEncryptedKey, cleanNewPin);
 
         messages = messages.concat(decryptionResponse.messages);
 
-        // Decryption can fail if the PIN was incorrect OR for other reasons
-        // For simplicity and security, just respond w "PIN failed" for all of these cases
-        if (!decryptionResponse.isOk || (await hash(decryptionResponse.value)) !== existingKeyHash) {
-          const failMessage = "PIN failed";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+        if (!decryptionResponse.isOk) {
+          return err({ messages, uiMessage: decryptionResponse.uiMessage, isAddUiMessageToMessages: false });
+        }
+
+        const currKeyHash = await hash(decryptionResponse.value);
+
+        if (currKeyHash !== existingKeyHash) {
+          return err({ messages, uiMessage: "PIN failed" });
         }
 
         const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
@@ -369,7 +341,7 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         if (!saveToSessionStorageResponse.isOk) {
           messages.push("Failed to save PIN for future auto-unlocks");
-          // continue
+          // continue as not fatal
         }
 
         const transitionToUnlockedModeResponse = transitionToUnlockedMode(decryptionResponse.value, cleanNewPin);
@@ -377,29 +349,25 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(transitionToUnlockedModeResponse.messages);
 
         if (!transitionToUnlockedModeResponse.isOk) {
-          const failMessage = "Failed to unlock";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({
+            messages,
+            uiMessage: transitionToUnlockedModeResponse.uiMessage,
+            isAddUiMessageToMessages: false,
+          });
         }
 
-        const successMessage = "Successfully unlocked";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully unlocked" });
       } catch (error) {
-        const errorMessage = logError(error, "Failed to unlock");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to unlock") });
       }
     },
 
-    setNewPin: async (newPin: string): Promise<OneOf<string, string>> => {
+    setNewPin: async (newPin: string): Promise<ErrOr> => {
       let messages = ["Begin setting new PIN"];
 
       try {
         if (get().pinMode !== "SETTING_UP") {
-          const failMessage = "Can only set new PIN during setup";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Can only set new PIN during setup" });
         }
 
         const cleanNewPin = newPin.trim();
@@ -409,7 +377,7 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(encryptApiKeyResponse.messages);
 
         if (!encryptApiKeyResponse.isOk) {
-          return { isOk: false, error: encryptApiKeyResponse.error, messages };
+          return err({ messages, uiMessage: encryptApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
         const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
@@ -417,9 +385,7 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(saveToSessionStorageResponse.messages);
 
         if (!saveToSessionStorageResponse.isOk) {
-          const failMessage = "Failed to save new PIN";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
         const transitionToUnlockedModeResponse = transitionToUnlockedMode(apiKeyDecrypted, cleanNewPin);
@@ -427,37 +393,31 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(transitionToUnlockedModeResponse.messages);
 
         if (!transitionToUnlockedModeResponse.isOk) {
-          const failMessage = "Failed to save new PIN";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({
+            messages,
+            uiMessage: transitionToUnlockedModeResponse.uiMessage,
+            isAddUiMessageToMessages: false,
+          });
         }
 
-        const successMessage = "Successfully set new PIN";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully set new PIN" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to set new PIN");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to set new PIN") });
       }
     },
 
-    setNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<OneOf<string, string>> => {
+    setNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<ErrOr> => {
       let messages = ["Begin setting new API key"];
 
       try {
         if (get().pinMode !== "UNLOCKED") {
-          const failMessage = "Can only set new API key when unlocked";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Can only set new API key when unlocked" });
         }
 
         const pin = get().pin;
 
         if (!pin) {
-          const failMessage = "Please set a PIN first";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: "Please set a PIN first" });
         }
 
         const encryptApiKeyResponse = await encryptApiKey(pin, newApiKey, shouldTest);
@@ -465,20 +425,16 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(encryptApiKeyResponse.messages);
 
         if (!encryptApiKeyResponse.isOk) {
-          return { isOk: false, error: encryptApiKeyResponse.error, messages };
+          return err({ messages, uiMessage: encryptApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
-        const successMessage = "Successfully set new API key";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully set new API key" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to set new API key");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to set new API key") });
       }
     },
 
-    reset: async (): Promise<OneOf<string, string>> => {
+    reset: async (): Promise<ErrOr> => {
       let messages = ["Begin resetting"];
 
       try {
@@ -487,48 +443,34 @@ export const usePinStore = create<PinStore>((set, get) => {
         messages = messages.concat(transitionToSetUpModeResponse.messages);
 
         if (!transitionToSetUpModeResponse.isOk) {
-          const failMessage = "Failed to reset";
-          messages.push(failMessage);
-          return { isOk: false, error: failMessage, messages };
+          return err({ messages, uiMessage: transitionToSetUpModeResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
-        const successMessage = "Successfully reset";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully reset" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to reset");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to reset") });
       }
     },
 
-    setIsApiKeyDirty: (isDirty: boolean): OneOf<string, string> => {
+    setIsApiKeyDirty: (isDirty: boolean): ErrOr => {
       let messages = ["Begin setting isGeminiApiKeyDirty"];
 
       try {
         set({ isGeminiApiKeyDirty: isDirty });
-        const successMessage = "Successfully set isGeminiApiKeyDirty";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully set isGeminiApiKeyDirty" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to set isGeminiApiKeyDirty");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to set isGeminiApiKeyDirty") });
       }
     },
 
-    setFatalError: (error?: string): OneOf<string, string> => {
+    setFatalError: (error?: string): ErrOr => {
       let messages = ["Begin setting fatalError"];
 
       try {
         set({ fatalError: error });
-        const successMessage = "Successfully set fatalError";
-        messages.push(successMessage);
-        return { isOk: true, value: successMessage, messages };
+        return ok({ messages, uiMessage: "Successfully set fatalError" });
       } catch (error: unknown) {
-        const errorMessage = logError(error, "Failed to set fatalError");
-        messages.push(errorMessage);
-        return { isOk: false, error: errorMessage, messages };
+        return err({ messages, uiMessage: logError(error, "Failed to set fatalError") });
       }
     },
 

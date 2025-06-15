@@ -1,4 +1,4 @@
-import { OneOf } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { logError } from "~/lib/utils/log-utils";
 
 /**
@@ -24,7 +24,7 @@ Proper salt and IV handling: Each encryption uses a random salt and initializati
 Base64 encoding: Encoded the combined salt, IV, and encrypted data for storage
 The native Web Crypto API provides better security, performance, and doesn't require external dependencies. The encryption process now uses industry-standard practices with proper key derivation and authenticated encryption.
  */
-export async function encryptData(data: string, pin: string): Promise<OneOf<string, string>> {
+export async function encryptData(data: string, pin: string): Promise<ErrOr<string>> {
   let messages = ["Begin encrypting data"];
 
   try {
@@ -50,17 +50,17 @@ export async function encryptData(data: string, pin: string): Promise<OneOf<stri
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
     const finalEncryptedData = btoa(String.fromCharCode(...combined));
 
-    const successMessage = `Successfully encrypted data ${JSON.stringify(finalEncryptedData)}`;
-    messages.push(successMessage);
-    return { isOk: true, value: finalEncryptedData, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully encrypted data ${JSON.stringify(finalEncryptedData)}`,
+      value: finalEncryptedData,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to encrypt data");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to encrypt data") });
   }
 }
 
-export async function decryptData(encryptedData: string, pin: string): Promise<OneOf<string, string>> {
+export async function decryptData(encryptedData: string, pin: string): Promise<ErrOr<string>> {
   let messages = ["Begin decrypting data"];
 
   try {
@@ -91,21 +91,20 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
 
     if (hasPrefix) messages.push(`Removed prefix: ${decryptedValue.slice(0, separatorIndex)}`);
 
-    const successMessage = `Successfully decrypted data ${JSON.stringify(cleanDecryptedData)}`;
-    messages.push(successMessage);
-    return { isOk: true, value: cleanDecryptedData, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully decrypted data ${JSON.stringify(cleanDecryptedData)}`,
+      value: cleanDecryptedData,
+    });
   } catch (error) {
     // Handle expected errors
     const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
+
     if (isDecryptionFailed) {
-      const errorMessage = "Invalid PIN";
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: "Invalid PIN" });
     }
 
-    const errorMessage = logError(error, "Failed to decrypt data");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to decrypt data") });
   }
 }
 

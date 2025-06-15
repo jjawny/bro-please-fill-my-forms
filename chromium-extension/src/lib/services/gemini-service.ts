@@ -1,9 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { GeminiResponse } from "~/lib/models/FormField";
-import { OneOf } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { logError } from "~/lib/utils/log-utils";
 
-export async function validateApiKey(apiKey: string): Promise<OneOf<boolean, string>> {
+export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
   let messages = ["Begin validating Gemini API key"];
 
   try {
@@ -11,9 +11,7 @@ export async function validateApiKey(apiKey: string): Promise<OneOf<boolean, str
     // Equivalent to a ping/health check, will throw if API key is invalid or network issue
     await ai.models.list();
 
-    const successMessage = "Gemini API key is valid";
-    messages.push(successMessage);
-    return { isOk: true, value: true, messages };
+    return ok({ messages, uiMessage: "Gemini API key is valid", value: true });
   } catch (error: unknown) {
     // Handle expected errors
 
@@ -21,18 +19,13 @@ export async function validateApiKey(apiKey: string): Promise<OneOf<boolean, str
     //  Known issue; Google's GenAI lib does not export strongly-typed errors
     //  See https://github.com/googleapis/js-genai/issues/455
     // console.debug(`[INSPECT] Google GenAI error type: '${typeof error}', error:`, error);
-
     const WORKAROUND_apiKeyInvalidError = "API_KEY_INVALID";
     const WORKAROUND_isApiKeyInvalid = (error as any).message.includes(WORKAROUND_apiKeyInvalidError);
     if (WORKAROUND_isApiKeyInvalid) {
-      const errorMessage = "Invalid Gemini API key";
-      messages.push(errorMessage);
-      return { isOk: true, value: false, messages };
+      return ok({ messages, uiMessage: "Invalid Gemini API key", value: false });
     }
 
-    const errorMessage = logError(error, "Failed to check Gemini API key");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to check Gemini API key") });
   }
 }
 
@@ -41,10 +34,13 @@ export async function generateFormContent(
   apiKey: string,
   formStructure: any,
   userPrompt: string,
-): Promise<GeminiResponse> {
-  const ai = new GoogleGenAI({ apiKey });
+): Promise<ErrOr<GeminiResponse>> {
+  let messages = ["Begin completing form content"];
 
-  const systemPrompt = `You are a form-filling assistant. Given a form structure and user input, generate appropriate content for each field. 
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+
+    const systemPrompt = `You are a form-filling assistant. Given a form structure and user input, generate appropriate content for each field. 
 
 Rules:
 1. Only fill fields that make sense based on the user's prompt
@@ -63,7 +59,6 @@ Respond with only a JSON object in this format:
   "fieldName2": "value2"
 }`;
 
-  try {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-001",
       contents: systemPrompt,
@@ -71,7 +66,7 @@ Respond with only a JSON object in this format:
     const generatedText = response.text;
 
     if (!generatedText) {
-      throw new Error("No response from Gemini API");
+      return err({ messages, uiMessage: "No response from Gemini API" });
     }
 
     // Extract JSON from the response (in case there's extra text)
@@ -79,8 +74,8 @@ Respond with only a JSON object in this format:
     const jsonStr = jsonMatch ? jsonMatch[0] : generatedText;
     const parsedResponse = JSON.parse(jsonStr);
 
-    return { fields: parsedResponse };
-  } catch (error) {
-    throw new Error(`Failed to generate form content: ${error}`);
+    return ok({ messages, uiMessage: "Successfully generated form content", value: { fields: parsedResponse } });
+  } catch (error: unknown) {
+    return err({ messages, uiMessage: logError(error, "Failed to generate form content") });
   }
 }

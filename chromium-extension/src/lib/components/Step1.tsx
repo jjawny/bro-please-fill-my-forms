@@ -118,9 +118,7 @@ export default function Step1() {
 /**
  * Hints at the state of the API key (order matters)
  */
-function ApiKeyInputEndAdornment(args: { isValidating: boolean; hasApiKey: boolean }) {
-  const { isValidating, hasApiKey } = args;
-
+function ApiKeyInputEndAdornment({ isValidating, hasApiKey }: { isValidating: boolean; hasApiKey: boolean }) {
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
 

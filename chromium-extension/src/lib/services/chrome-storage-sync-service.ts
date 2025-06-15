@@ -1,6 +1,6 @@
-import z, { ZodError, ZodType } from "zod/v4";
+import z, { ZodType } from "zod/v4";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
-import { OneOf } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
@@ -8,13 +8,12 @@ import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
 /**
  * Loads ByoKeyData from chrome.storage.sync
  */
-export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData, string>> {
+export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>> {
   let messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      messages.push("[MOCKED] Successfully loaded ByoKeyData");
-      return { isOk: true, value: getDefaultByoKeyData(), messages };
+      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded ByoKeyData", value: getDefaultByoKeyData() });
     }
 
     const itemKeys: (keyof ByoKeyData)[] = [
@@ -34,31 +33,36 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<OneOf<ByoKeyData,
     if (!validationResponse.success) {
       const defaults = getDefaultByoKeyData();
       await saveToSyncStorage(ByoKeyDataSchema, defaults);
-      messages.push(
-        `ByoKeyData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
-      );
-      return { isOk: true, value: defaults, messages };
+      return ok({
+        messages,
+        uiMessage: `ByoKeyData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+        value: defaults,
+      });
     }
 
-    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
-    return { isOk: true, value: validationResponse.data, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully loaded ${JSON.stringify(validationResponse.data)}`,
+      value: validationResponse.data,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to load ByoKeyData, failing back to defaults");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to load ByoKeyData, failing back to defaults") });
   }
 }
 
 /**
  * Loads UserPreferences from chrome.storage.sync
  */
-export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPreferences, string>> {
+export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPreferences>> {
   let messages = ["Begin loading UserPreferences from chrome.storage.sync"];
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      messages.push("[MOCKED] Successfully loaded UserPreferences");
-      return { isOk: true, value: getDefaultUserPreferences(), messages };
+      return ok({
+        messages,
+        uiMessage: "[MOCKED] Successfully loaded UserPreferences",
+        value: getDefaultUserPreferences(),
+      });
     }
 
     const itemKeys: (keyof UserPreferences)[] = ["theme"];
@@ -70,18 +74,20 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPr
     if (!validationResponse.success) {
       const defaults = getDefaultUserPreferences();
       await saveToSyncStorage(UserPreferencesSchema, defaults);
-      messages.push(
-        `UserPreferences failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
-      );
-      return { isOk: true, value: defaults, messages };
+      return ok({
+        messages,
+        uiMessage: `UserPreferences failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+        value: defaults,
+      });
     }
 
-    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
-    return { isOk: true, value: validationResponse.data, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully loaded ${JSON.stringify(validationResponse.data)}`,
+      value: validationResponse.data,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to load UserPreferences");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to load UserPreferences") });
   }
 }
 
@@ -91,35 +97,37 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<OneOf<UserPr
  * If the user is NOT logged into Chrome, this will behave like chrome.storage.local
  * Quota: 8KB per item, 100KB total
  */
-export async function saveToSyncStorage<T extends ZodType>(
-  schema: T,
-  data: z.infer<T>,
-): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+export async function saveToSyncStorage<TSchema extends ZodType>(
+  schema: TSchema,
+  data: z.infer<TSchema>,
+): Promise<ErrOr<z.infer<TSchema>>> {
   let messages = ["Begin saving to chrome.storage.sync"];
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      messages.push("[MOCKED] Successfully saved");
-      return { isOk: true, value: data, messages };
+      return ok({ messages, uiMessage: "[MOCKED] Successfully saved", value: data });
     }
 
     const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {
-      messages.push(`Unable to save as validation failed: ${z.prettifyError(validationResponse.error)}`);
-      return { isOk: false, error: validationResponse.error, messages };
+      return err({
+        messages,
+        uiMessage: `Unable to save as validation failed: ${z.prettifyError(validationResponse.error)}`,
+      });
     }
 
     const validatedData = validationResponse.data;
-    const cleanedData = convertUndefinedToNullOneLevelDeep<T>(validatedData);
+    const cleanedData = convertUndefinedToNullOneLevelDeep<z.infer<TSchema>>(validatedData);
 
     await chrome.storage.sync.set(cleanedData);
 
-    messages.push(`Successfully saved ${JSON.stringify(cleanedData)}`);
-    return { isOk: true, value: cleanedData, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully saved ${JSON.stringify(cleanedData)}`,
+      value: cleanedData,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to save");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to save") });
   }
 }

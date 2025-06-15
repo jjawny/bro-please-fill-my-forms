@@ -1,5 +1,5 @@
-import z, { ZodError, ZodType } from "zod/v4";
-import { OneOf } from "~/lib/models/OneOf";
+import z, { ZodType } from "zod/v4";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
@@ -7,13 +7,12 @@ import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
 /**
  * Loads TemporaryData from chrome.storage.session
  */
-export async function loadTemporaryDataFromSessionStorage(): Promise<OneOf<TemporaryData, string>> {
+export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<TemporaryData>> {
   let messages = ["Begin loading TemporaryData from chrome.storage.session"];
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      messages.push("[MOCKED] Successfully loaded TemporaryData");
-      return { isOk: true, value: getDefaultTemporaryData(), messages };
+      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded TemporaryData", value: getDefaultTemporaryData() });
     }
 
     const itemKeys: (keyof TemporaryData)[] = ["pin"];
@@ -25,18 +24,20 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<OneOf<Tempo
     if (!validationResponse.success) {
       const defaults = getDefaultTemporaryData();
       await saveToSessionStorage(TemporaryDataSchema, defaults);
-      messages.push(
-        `TemporaryData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
-      );
-      return { isOk: true, value: defaults, messages };
+      return ok({
+        messages,
+        uiMessage: `TemporaryData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+        value: defaults,
+      });
     }
 
-    messages.push(`Successfully loaded ${JSON.stringify(validationResponse.data)}`);
-    return { isOk: true, value: validationResponse.data, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully loaded ${JSON.stringify(validationResponse.data)}`,
+      value: validationResponse.data,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to load TemporaryData, failing back to defaults");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to load TemporaryData, failing back to defaults") });
   }
 }
 
@@ -47,20 +48,21 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<OneOf<Tempo
 export async function saveToSessionStorage<T extends ZodType>(
   schema: T,
   data: z.infer<T>,
-): Promise<OneOf<T, ZodError<z.infer<T>> | string>> {
+): Promise<ErrOr<z.infer<T>>> {
   let messages = ["Begin saving to chrome.storage.session"];
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      messages.push("[MOCKED] Successfully saved");
-      return { isOk: true, value: data, messages };
+      return ok({ messages, uiMessage: "[MOCKED] Successfully saved", value: data });
     }
 
     const validationResponse = schema.safeParse(data);
 
     if (!validationResponse.success) {
-      messages.push(`Unable to save as validation failed: ${z.prettifyError(validationResponse.error)}`);
-      return { isOk: false, error: validationResponse.error, messages };
+      return err({
+        messages,
+        uiMessage: `Unable to save as validation failed: ${z.prettifyError(validationResponse.error)}`,
+      });
     }
 
     const validatedData = validationResponse.data;
@@ -68,11 +70,12 @@ export async function saveToSessionStorage<T extends ZodType>(
 
     await chrome.storage.session.set(cleanedData);
 
-    messages.push(`Successfully saved ${JSON.stringify(cleanedData)}`);
-    return { isOk: true, value: cleanedData, messages };
+    return ok({
+      messages,
+      uiMessage: `Successfully saved ${JSON.stringify(cleanedData)}`,
+      value: cleanedData,
+    });
   } catch (error: unknown) {
-    const errorMessage = logError(error, "Failed to save");
-    messages.push(errorMessage);
-    return { isOk: false, error: errorMessage, messages };
+    return err({ messages, uiMessage: logError(error, "Failed to save") });
   }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useTypewriter(args: {
+export function useTypewriter(params: {
   words: string[];
   typingSpeed?: number;
   deletingSpeed?: number;
@@ -15,7 +15,7 @@ export function useTypewriter(args: {
     pauseTime = 1000,
     pauseTimeAfterTyping,
     pauseTimeAfterDeleting,
-  } = args;
+  } = params;
 
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);

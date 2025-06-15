@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ThemeType } from "~/lib/enums/Theme";
-import { OneOf } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { loadUserPreferencesFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
 import { logError } from "~/lib/utils/log-utils";
@@ -12,17 +12,17 @@ type UserPreferencesStore = UserPreferences & {
   /**
    * Sets the state w any previously saved data
    */
-  initialize: () => Promise<OneOf<string, string>>;
+  initialize: () => Promise<ErrOr>;
 
   /**
    * Sets the theme in-memory and in browser storage
    */
-  setTheme: (theme: ThemeType) => Promise<OneOf<string, string>>;
+  setTheme: (theme: ThemeType) => Promise<ErrOr>;
 
   /**
    * Signal to other UI that a fatal error has occurred
    */
-  setFatalError: (error?: string) => OneOf<string, string>;
+  setFatalError: (error?: string) => ErrOr;
 
   /**
    * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
@@ -35,7 +35,7 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
   isInitialized: false,
   fatalError: undefined,
 
-  initialize: async (): Promise<OneOf<string, string>> => {
+  initialize: async (): Promise<ErrOr> => {
     let messages = ["Begin initializing UserPreferencesStore"];
 
     try {
@@ -45,26 +45,21 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
 
       messages = messages.concat(loadUserPreferencesResponse.messages);
 
-      // Fallback to defaults
-      let userPreferences = getDefaultUserPreferences();
-
-      if (loadUserPreferencesResponse.isOk) {
-        userPreferences = loadUserPreferencesResponse.value;
+      if (!loadUserPreferencesResponse.isOk) {
+        return err({ messages, uiMessage: loadUserPreferencesResponse.uiMessage, isAddUiMessageToMessages: false });
       }
+
+      const userPreferences = loadUserPreferencesResponse.value;
 
       set({ isInitialized: true, ...userPreferences });
 
-      const successMessage = "Successfully initialized UserPreferencesStore";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully initialized UserPreferencesStore" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to initialize UserPreferencesStore");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to initialize UserPreferencesStore") });
     }
   },
 
-  setTheme: async (theme: ThemeType): Promise<OneOf<string, string>> => {
+  setTheme: async (theme: ThemeType): Promise<ErrOr> => {
     let messages = ["Begin setting Theme"];
 
     try {
@@ -75,35 +70,29 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
       messages = messages.concat(saveToBrowserStorageResponse.messages);
 
       if (!saveToBrowserStorageResponse.isOk) {
-        const failMessage = "Failed to set Theme";
-        messages.push(failMessage);
-        return { isOk: false, error: failMessage, messages };
+        return err({
+          messages,
+          uiMessage: saveToBrowserStorageResponse.uiMessage,
+          isAddUiMessageToMessages: false,
+        });
       }
 
       set({ ...nextState });
 
-      const successMessage = "Successfully set Theme";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully set Theme" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to set Theme");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to set Theme") });
     }
   },
 
-  setFatalError: (error?: string): OneOf<string, string> => {
+  setFatalError: (error?: string): ErrOr => {
     let messages = ["Begin setting fatalError"];
 
     try {
       set({ fatalError: error });
-      const successMessage = "Successfully set fatalError";
-      messages.push(successMessage);
-      return { isOk: true, value: successMessage, messages };
+      return ok({ messages, uiMessage: "Successfully set fatalError" });
     } catch (error: unknown) {
-      const errorMessage = logError(error, "Failed to set fatalError");
-      messages.push(errorMessage);
-      return { isOk: false, error: errorMessage, messages };
+      return err({ messages, uiMessage: logError(error, "Failed to set fatalError") });
     }
   },
 
