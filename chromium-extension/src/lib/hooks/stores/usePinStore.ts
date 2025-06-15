@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
-import { err, ErrOr, ok } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import {
   loadTemporaryDataFromSessionStorage,

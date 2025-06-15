@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { GeminiResponse } from "~/lib/models/FormField";
-import { err, ErrOr, ok } from "~/lib/models/OneOf";
 import { logError } from "~/lib/utils/log-utils";
 
 export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {

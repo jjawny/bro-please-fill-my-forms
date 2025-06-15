@@ -1,4 +1,4 @@
-import { err, ErrOr, ok } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
 
 /**

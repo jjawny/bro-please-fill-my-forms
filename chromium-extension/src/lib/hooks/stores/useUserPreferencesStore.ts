@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ThemeType } from "~/lib/enums/Theme";
-import { err, ErrOr, ok } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { loadUserPreferencesFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
 import { logError } from "~/lib/utils/log-utils";

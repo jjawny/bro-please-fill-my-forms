@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod/v4";
-import { err, ErrOr, ok } from "~/lib/models/OneOf";
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
@@ -12,7 +12,11 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
 
   try {
     if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
-      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded TemporaryData", value: getDefaultTemporaryData() });
+      return ok({
+        messages,
+        uiMessage: "[MOCKED] Successfully loaded TemporaryData",
+        value: getDefaultTemporaryData(),
+      });
     }
 
     const itemKeys: (keyof TemporaryData)[] = ["pin"];
@@ -45,10 +49,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
  * Saves data for the lifetime of the browser session (shared between tabs)
  * Quota: 10MB total
  */
-export async function saveToSessionStorage<T extends ZodType>(
-  schema: T,
-  data: z.infer<T>,
-): Promise<ErrOr<z.infer<T>>> {
+export async function saveToSessionStorage<T extends ZodType>(schema: T, data: z.infer<T>): Promise<ErrOr<z.infer<T>>> {
   let messages = ["Begin saving to chrome.storage.session"];
 
   try {
