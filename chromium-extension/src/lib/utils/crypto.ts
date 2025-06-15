@@ -1,6 +1,16 @@
-import { API_KEY_PREFIX_SEPARATOR } from "~/lib/constants/globals";
 import { OneOf } from "~/lib/types/OneOf";
 import { logError } from "./console-helpers";
+
+/**
+ * Notes:
+ *  - Because we do not persist the PIN long-term, we need a way to validate the submitted PIN w/o the PIN
+ *  - Successful validation = able to decrypt the API key + hash matches
+ *  - If a user saves a blank API key, we still need a value to hash and decrypt later
+ *  - This value should be random so it's useless to derive the PIN
+ *  - The only known value is a separator so we can strip the prefix from the decrypted value
+ *  - For simplicity, always add a random prefix before encrypted and always strip it later
+ */
+const DATA_PREFIX_SEPARATOR = "$$$";
 
 /**
  * 
@@ -23,7 +33,7 @@ export async function encryptData(data: string, pin: string): Promise<OneOf<stri
     const prefix = Array.from(prefixBytes)
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
-    const dataWithPrefix = prefix + API_KEY_PREFIX_SEPARATOR + data;
+    const dataWithPrefix = prefix + DATA_PREFIX_SEPARATOR + data;
     messages.push(`Added prefix: ${prefix}`);
 
     // 2. Encode and encrypt using AES-GCM
@@ -73,10 +83,10 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
     const decryptedValue = decoder.decode(decrypted);
 
     // 4. Remove any randomly generated prefix
-    const separatorIndex = decryptedValue.indexOf(API_KEY_PREFIX_SEPARATOR);
+    const separatorIndex = decryptedValue.indexOf(DATA_PREFIX_SEPARATOR);
     const hasPrefix = separatorIndex !== -1;
     const cleanDecryptedData = hasPrefix
-      ? decryptedValue.slice(separatorIndex + API_KEY_PREFIX_SEPARATOR.length)
+      ? decryptedValue.slice(separatorIndex + DATA_PREFIX_SEPARATOR.length)
       : decryptedValue;
 
     if (hasPrefix) messages.push(`Removed prefix: ${decryptedValue.slice(0, separatorIndex)}`);
