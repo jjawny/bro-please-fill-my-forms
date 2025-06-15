@@ -1,8 +1,8 @@
 import z, { ZodError, ZodType } from "zod/v4";
 import { OneOf } from "~/lib/models/OneOf";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
-import { logError } from "./console-helpers";
-import { convertUndefinedToNullOneLevelDeep } from "./object-helpers";
+import { logError } from "~/lib/utils/log";
+import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/objects";
 
 /**
  * Loads TemporaryData from chrome.storage.session

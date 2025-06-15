@@ -1,4 +1,5 @@
 const FALLBACK_ERROR_MESSAGE = "Unknown";
+
 /**
  * Consistent way to log errors to console
  * Might be redundant; more useful if we have an external telemetry service

@@ -1,5 +1,5 @@
 import { OneOf } from "~/lib/models/OneOf";
-import { logError } from "./console-helpers";
+import { logError } from "~/lib/utils/log";
 
 /**
  * Notes:
@@ -107,15 +107,6 @@ export async function decryptData(encryptedData: string, pin: string): Promise<O
     messages.push(errorMessage);
     return { isOk: false, error: errorMessage, messages };
   }
-}
-
-export async function hash(data: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(data));
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-
-  return hash;
 }
 
 async function deriveKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
