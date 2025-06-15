@@ -2,12 +2,15 @@ import { create } from "zustand";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
 import { OneOf } from "~/lib/models/OneOf";
 import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
-import { loadTemporaryDataFromSessionStorage, saveToSessionStorage } from "~/lib/services/chrome-storage-session";
-import { loadByoKeyDataFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync";
-import { decryptData, encryptData } from "~/lib/services/crypto";
+import {
+  loadTemporaryDataFromSessionStorage,
+  saveToSessionStorage,
+} from "~/lib/services/chrome-storage-session-service";
+import { loadByoKeyDataFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
+import { decryptData, encryptData } from "~/lib/services/crypto-service";
 import { validateApiKey } from "~/lib/services/gemini-service";
-import { hash } from "~/lib/utils/hash";
-import { logError } from "~/lib/utils/log";
+import { hash } from "~/lib/utils/hash-utils";
+import { logError } from "~/lib/utils/log-utils";
 
 type PinMode = "SETTING_UP" | "LOCKED" | "UNLOCKED";
 

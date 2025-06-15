@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { ThemeType } from "~/lib/enums/Theme";
 import { OneOf } from "~/lib/models/OneOf";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
-import { loadUserPreferencesFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync";
-import { logError } from "~/lib/utils/log";
+import { loadUserPreferencesFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
+import { logError } from "~/lib/utils/log-utils";
 
 type UserPreferencesStore = UserPreferences & {
   isInitialized: boolean;

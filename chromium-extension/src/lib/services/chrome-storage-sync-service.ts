@@ -2,8 +2,8 @@ import z, { ZodError, ZodType } from "zod/v4";
 import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
 import { OneOf } from "~/lib/models/OneOf";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
-import { logError } from "~/lib/utils/log";
-import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/objects";
+import { logError } from "~/lib/utils/log-utils";
+import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
 
 /**
  * Loads ByoKeyData from chrome.storage.sync

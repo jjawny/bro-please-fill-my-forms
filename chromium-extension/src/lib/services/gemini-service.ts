@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { GeminiResponse } from "~/lib/models/FormField";
 import { OneOf } from "~/lib/models/OneOf";
-import { logError } from "./console-helpers";
+import { logError } from "~/lib/utils/log-utils";
 
 export async function validateApiKey(apiKey: string): Promise<OneOf<boolean, string>> {
   let messages = ["Begin validating Gemini API key"];

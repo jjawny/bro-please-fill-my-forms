@@ -4,8 +4,8 @@ import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { cn } from "~/lib/utils/cn";
-import { debounce } from "~/lib/utils/debounce";
-import { sleep } from "~/lib/utils/sleep";
+import { debounce } from "~/lib/utils/debounce-utils";
+import { sleep } from "~/lib/utils/sleep-utils";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
 const SAVE_API_KEY_DEBOUNCE_DELAY_MS = 2_000;
