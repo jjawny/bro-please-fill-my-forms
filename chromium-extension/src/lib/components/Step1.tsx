@@ -1,5 +1,5 @@
 import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/stores/PinStore";
@@ -15,8 +15,21 @@ export default function Step1() {
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
+  const isFirstRender = useRef<boolean>(true);
+
   const setNewApiKey = usePinStore((state) => state.setNewApiKey);
   const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
+
+  useEffect(function setInitialApiKeyInputValueOnceOnMount() {
+    if (!isFirstRender.current) return;
+    isFirstRender.current = false;
+
+    // This component should be rendered after a successful unlock; the decrypted key should be available immediately
+    const geminiApiKeyDecrypted = usePinStore.getState().geminiApiKeyDecrypted;
+    if (geminiApiKeyDecrypted) {
+      setApiKeyInputValue(geminiApiKeyDecrypted);
+    }
+  }, []);
 
   const debouncedSaveApiKey = useCallback(
     debounce(async (apiKey: string) => {
@@ -38,11 +51,19 @@ export default function Step1() {
     [setNewApiKey, setIsApiKeyDirty, setIsValidating],
   );
 
-  useEffect(() => {
-    setIsValidating(false);
-    setIsApiKeyDirty(true);
-    debouncedSaveApiKey(apiKeyInputValue);
-  }, [apiKeyInputValue, debouncedSaveApiKey]);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      setApiKeyInputValue(newValue);
+
+      if (!isFirstRender.current) {
+        setIsValidating(false);
+        setIsApiKeyDirty(true);
+        debouncedSaveApiKey(newValue);
+      }
+    },
+    [debouncedSaveApiKey, setIsApiKeyDirty],
+  );
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(apiKeyInputValue);
@@ -59,7 +80,7 @@ export default function Step1() {
             type={isVisible ? "text" : "password"}
             placeholder="Gemini API Key"
             value={apiKeyInputValue}
-            onChange={(e) => setApiKeyInputValue(e.target.value)}
+            onChange={handleInputChange}
             className="bg-white p-2"
             autoComplete="off"
           />
