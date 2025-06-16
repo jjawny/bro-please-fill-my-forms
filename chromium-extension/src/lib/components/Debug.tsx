@@ -1,6 +1,7 @@
 import { CodeIcon } from "lucide-react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
+import { useKeyboardShortcuts } from "~/lib/hooks/useKeyboardShortcuts";
 import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 
@@ -8,14 +9,30 @@ export default function Debug() {
   const pinStoreJson = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const userPreferencesStoreJson = useUserPreferencesStore((state) => state.GET_DEBUG_JSON_DUMP);
 
+  const logPinStoreJson = () => console.debug("PinStore:", pinStoreJson());
+  const logUserPreferencesJson = () => console.debug("UserPreferences:", userPreferencesStoreJson());
+
+  useKeyboardShortcuts([
+    {
+      keys: ["control", "1"],
+      callback: logPinStoreJson,
+      description: "Log PinStore",
+    },
+    {
+      keys: ["control", "2"],
+      callback: logUserPreferencesJson,
+      description: "Log UserPreferences",
+    },
+  ]);
+
   const menuItems: MenuItem[] = [
     {
       label: "Log PinStore",
-      onClick: () => console.debug("PinStore:", pinStoreJson()),
+      onClick: logPinStoreJson,
     },
     {
       label: "Log UserPreferencesStore",
-      onClick: () => console.debug("UserPreferencesStore:", userPreferencesStoreJson()),
+      onClick: logUserPreferencesJson,
     },
   ];
 
