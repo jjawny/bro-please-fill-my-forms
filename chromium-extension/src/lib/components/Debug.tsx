@@ -19,6 +19,10 @@ export default function Debug() {
     },
   ];
 
+  if (import.meta.env.VITE_SHOW_DEBUG_MENU === "false") {
+    return null;
+  }
+
   return (
     <MenuWrapper
       side="left"
