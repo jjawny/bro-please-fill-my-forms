@@ -6,6 +6,14 @@ import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 
 export default function Debug() {
+  if (import.meta.env.VITE_SHOW_DEBUG_MENU === "false") {
+    return null;
+  }
+
+  return <DebugMenu />;
+}
+
+function DebugMenu() {
   const pinStoreJson = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const userPreferencesStoreJson = useUserPreferencesStore((state) => state.GET_DEBUG_JSON_DUMP);
 
@@ -37,10 +45,6 @@ export default function Debug() {
       shortcut: "⌃2",
     },
   ];
-
-  if (import.meta.env.VITE_SHOW_DEBUG_MENU === "false") {
-    return null;
-  }
 
   return (
     <MenuWrapper
