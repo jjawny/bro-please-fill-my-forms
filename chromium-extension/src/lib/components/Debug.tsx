@@ -29,10 +29,12 @@ export default function Debug() {
     {
       label: "Log PinStore",
       onClick: logPinStoreJson,
+      shortcut: "⌃1",
     },
     {
       label: "Log UserPreferencesStore",
       onClick: logUserPreferencesJson,
+      shortcut: "⌃2",
     },
   ];
 

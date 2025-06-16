@@ -6,6 +6,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/lib/components/shadcn/dropdown-menu";
 
@@ -13,6 +14,7 @@ export type MenuItem = {
   label: string;
   onClick?: () => void;
   disabled?: boolean;
+  shortcut?: string;
 };
 
 export default function MenuWrapper({
@@ -31,6 +33,7 @@ export default function MenuWrapper({
           {items.map((item, index) => (
             <DropdownMenuItem key={index} onClick={item.onClick} disabled={item.disabled}>
               {item.label}
+              {item.shortcut && <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>}
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
