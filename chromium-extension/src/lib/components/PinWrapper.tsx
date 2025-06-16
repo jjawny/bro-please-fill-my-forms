@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
-import ConfirmDialog from "./ConfirmDialog";
+import DialogWrapper from "./DialogWrapper";
 
 /**
  * A wrapper for <Pin> with heavier business logic
@@ -107,7 +107,7 @@ export default function PinWrapper() {
         onComplete={handlePinSubmit}
       />
       {pinMode !== "SETTING_UP" && (
-        <ConfirmDialog
+        <DialogWrapper
           title="Are you sure you want to reset your PIN?"
           description="You will need to set an API key again"
           confirmLabel="Reset"

@@ -9,6 +9,7 @@ import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
+import Debug from "./lib/components/Debug";
 
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
@@ -62,6 +63,7 @@ export default function App() {
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />
+        <Debug />
         {pinMode !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
       </div>
       <Footer />

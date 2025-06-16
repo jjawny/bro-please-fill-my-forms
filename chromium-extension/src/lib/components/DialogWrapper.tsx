@@ -13,7 +13,7 @@ import {
 } from "~/lib/components/shadcn/alert-dialog";
 import { buttonVariants } from "~/lib/components/shadcn/button";
 
-export default function ConfirmDialog({
+export default function DialogWrapper({
   trigger,
   title,
   description,
