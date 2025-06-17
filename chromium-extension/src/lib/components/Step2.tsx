@@ -94,7 +94,7 @@ export default function Step2() {
         value={userPrompt}
         onChange={(e) => setUserPrompt(e.target.value)}
         placeholder="Form content"
-        rows={4}
+        rows={5}
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
       <RippleButton onClick={fillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
