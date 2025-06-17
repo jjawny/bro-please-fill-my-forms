@@ -1,6 +1,6 @@
 # NEED A BETTER NAME
 
-A Chromium **Extension** that **auto-fills** forms based on **natural** language (pro-tip: use **dictation**! 🎙️)
+A Chromium **Extension** (a.k.a CRX) that **auto-fills** forms based on **natural** language (pro-tip: use **dictation**! 🎙️)
 
 # Use
 1. BYO keys; generate your Google Gemini API Key [here](https://aistudio.google.com/apikey) (free quota)
