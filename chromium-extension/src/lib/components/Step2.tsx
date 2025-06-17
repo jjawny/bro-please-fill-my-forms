@@ -10,82 +10,75 @@ import { Textarea } from "./shadcn/textarea";
 
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [, setErrorMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // TOOD: display the scrapedForm somewhere so the user can click a pop-up to see it
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
-
-  // const { theme, toggleTheme } = useTheme();
-  const { geminiApiKeyDecrypted } = usePinStore();
+  const geminiApiKeyDecrypted = usePinStore((state) => state.geminiApiKeyDecrypted);
 
   const scrapeAndFillForm = async () => {
     if (userPrompt.trim() === "" || !geminiApiKeyDecrypted) {
-      setErrorMessage("Please enter a prompt and set your Gemini API key");
+      console.debug("User prompt and Gemini API key required");
       return;
     }
 
-    setIsLoading(true);
-    setErrorMessage("");
+    setIsSubmitting(true);
 
-    try {
-      // 1. Get the active tab
-      const getActiveTabResponse = await getActiveTab();
+    // 1. Get the active tab
+    const getActiveTabResponse = await getActiveTab();
 
-      logResponse(getActiveTabResponse);
+    logResponse(getActiveTabResponse);
 
-      if (!getActiveTabResponse.isOk) {
-        setGlobalError(getActiveTabResponse.uiMessage);
-        return;
-      }
-
-      const tabId = getActiveTabResponse.value.id;
-
-      if (!tabId) {
-        setGlobalError("No active tab found");
-        return;
-      }
-
-      // 2. Scrape form fields
-      const scrapeResponse = await scrapeFormFields(tabId);
-      if (!scrapeResponse.isOk) {
-        throw new Error(scrapeResponse.uiMessage || "Failed to scrape form");
-      }
-
-      const scrapedFormData = scrapeResponse.value;
-      setScrapedForm(scrapedFormData);
-
-      // Generate AI content
-      const formStructure = scrapedFormData.fields.map((field: FormField) => ({
-        name: field.name || field.id,
-        type: field.type,
-        label: field.label,
-        placeholder: field.placeholder,
-        options: field.options,
-      }));
-
-      const aiResponse = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
-
-      if (!aiResponse.isOk) {
-        throw new Error(aiResponse.uiMessage);
-      }
-
-      // Fill form fields
-      const fillResponse = await fillFormFields(tabId, aiResponse.value.fields, scrapedFormData);
-      if (!fillResponse.isOk) {
-        throw new Error(fillResponse.uiMessage || "Failed to fill form");
-      }
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
+    if (!getActiveTabResponse.isOk) {
+      setGlobalError(getActiveTabResponse.uiMessage);
+      return;
     }
+
+    const tabId = getActiveTabResponse.value.id;
+
+    if (!tabId) {
+      setGlobalError("No active tab found");
+      return;
+    }
+
+    // 2. Scrape form fields
+    const scrapeResponse = await scrapeFormFields(tabId);
+    if (!scrapeResponse.isOk) {
+      throw new Error(scrapeResponse.uiMessage || "Failed to scrape form");
+    }
+
+    const scrapedFormData = scrapeResponse.value;
+    setScrapedForm(scrapedFormData);
+
+    // Generate AI content
+    const formStructure = scrapedFormData.fields.map((field: FormField) => ({
+      name: field.name || field.id,
+      type: field.type,
+      label: field.label,
+      placeholder: field.placeholder,
+      options: field.options,
+    }));
+
+    const aiResponse = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
+
+    if (!aiResponse.isOk) {
+      throw new Error(aiResponse.uiMessage);
+    }
+
+    // Fill form fields
+    const fillResponse = await fillFormFields(tabId, aiResponse.value.fields, scrapedFormData);
+    if (!fillResponse.isOk) {
+      throw new Error(fillResponse.uiMessage || "Failed to fill form");
+    }
+
+    setIsSubmitting(false);
   };
 
-  const isSubmitButtonDisabled = isLoading || !userPrompt.trim() || !geminiApiKeyDecrypted || isGeminiApiKeyDirty;
+  const isSubmitButtonDisabled = isSubmitting || !userPrompt.trim() || !geminiApiKeyDecrypted || isGeminiApiKeyDirty;
 
   return (
     <div>
@@ -97,7 +90,7 @@ export default function Step2() {
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
       <RippleButton onClick={scrapeAndFillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
-        {isLoading ? "Processing..." : "Fill Form"}
+        {isSubmitting ? "Processing..." : "Fill Form"}
       </RippleButton>
     </div>
   );
