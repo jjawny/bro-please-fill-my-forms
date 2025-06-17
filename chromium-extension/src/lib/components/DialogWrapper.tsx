@@ -35,7 +35,7 @@ export default function DialogWrapper({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      {/* Force small width for Chrome Extension UI */}
+      {/* Force small width for CRX UI */}
       <AlertDialogContent className="!max-w-xs">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

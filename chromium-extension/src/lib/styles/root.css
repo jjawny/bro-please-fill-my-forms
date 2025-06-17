@@ -148,7 +148,7 @@
 html,
 body,
 #root {
-  /* Fixed pixels size for Chromium Extensions */
+  /* Fixed pixels size for CRX */
   width: 400px;
   height: 400px;
   margin: 0;

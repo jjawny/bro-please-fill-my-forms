@@ -1,7 +1,7 @@
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 
 /**
- * Place to log misc/generic/global errors rather than using toasts (as this is an extension)
+ * Place to log misc/generic/global errors rather than using toasts (as this is a CRX)
  */
 export default function Footer() {
   const globalError = useGlobalStore((state) => state.globalError);
