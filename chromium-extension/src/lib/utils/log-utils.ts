@@ -17,7 +17,7 @@ export function logError(error: unknown, prefix?: string): string {
 /**
  * Centralised way to log response objects (ErrOrs)
  */
-export function logResponse(response: ErrOr) {
+export function logResponse<T>(response: ErrOr<T>): void {
   if (!response.isOk) {
     console.warn(response.uiMessage, response.messages);
     return;
