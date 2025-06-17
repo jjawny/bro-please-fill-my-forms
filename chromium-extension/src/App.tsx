@@ -10,6 +10,7 @@ import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import Debug from "./lib/components/Debug";
+import GitHubLink from "./lib/components/GitHubLink";
 
 export default function App() {
   const initializePinStore = usePinStore((state) => state.initialize);
@@ -64,6 +65,7 @@ export default function App() {
         <ToggleLockButton />
         <ToggleThemeButton />
         <Debug />
+        <GitHubLink />
         {pinMode !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
         <Footer />
       </div>
