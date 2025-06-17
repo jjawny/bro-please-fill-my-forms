@@ -2,12 +2,16 @@ import { useState } from "react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
+import { generateFormContent } from "~/lib/services/gemini-service";
+import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 
 export default function Step2() {
-  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
+  const [userPrompt, setUserPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [, setErrorMessage] = useState<string>("");
+
+  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
 
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
 
@@ -35,33 +39,67 @@ export default function Step2() {
     });
   };
 
-  return (
-    <Textarea className="bg-white text-black" placeholder="Type your message here." />
-    // <div>
-    //   <h2 className="text-start">2. Find Form Fields on Current Page</h2>
-    //   <RippleButton disabled={isLoading} onClick={scrapeFormFields} className="w-full h-7">
-    //     Find Fields (merge with step 3)
-    //   </RippleButton>
+  // const { theme, toggleTheme } = useTheme();
+  const { geminiApiKeyDecrypted } = usePinStore();
 
-    //   {/* Display scraped form info */}
-    //   {scrapedForm && (
-    //     <div
-    //       style={{
-    //         margin: "10px 0",
-    //         padding: "10px",
-    //         border: "1px solid #ccc",
-    //       }}
-    //     >
-    //       <p>Found {scrapedForm.fields.length} form fields:</p>
-    //       <ul style={{ textAlign: "left", fontSize: "12px" }}>
-    //         {scrapedForm.fields.map((field, index) => (
-    //           <li key={index}>
-    //             {field.label || field.name || field.id} ({field.type})
-    //           </li>
-    //         ))}
-    //       </ul>
-    //     </div>
-    //   )}
-    // </div>
+  const fillForm = async () => {
+    if (!scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted) {
+      setErrorMessage("Please scrape form, enter a prompt, and set your Gemini API key");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      const formStructure = scrapedForm.fields.map((field) => ({
+        name: field.name || field.id,
+        type: field.type,
+        label: field.label,
+        placeholder: field.placeholder,
+        options: field.options,
+      }));
+
+      const response = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
+
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length > 0 && tabs[0]?.id) {
+          chrome.runtime.sendMessage(
+            {
+              action: SERVICE_WORKER_ACTIONS.fillFormFields,
+              tabId: tabs[0].id,
+              formData: response.isOk ? response.value.fields : null,
+              scrapedForm: scrapedForm,
+            },
+            (fillResponse) => {
+              setIsLoading(false);
+              if (!fillResponse?.success) {
+                setErrorMessage(fillResponse?.error || "Failed to fill form");
+              }
+            },
+          );
+        }
+      });
+    } catch (error) {
+      setIsLoading(false);
+      setErrorMessage(error instanceof Error ? error.message : "An error occurred");
+    }
+  };
+
+  const isSubmitButtonDisabled = isLoading || !userPrompt.trim() || !geminiApiKeyDecrypted || isGeminiApiKeyDirty;
+
+  return (
+    <div>
+      <Textarea
+        value={userPrompt}
+        onChange={(e) => setUserPrompt(e.target.value)}
+        placeholder="Form content"
+        rows={4}
+        className="bg-white text-black resize-none ![field-sizing:initial]"
+      />
+      <RippleButton onClick={fillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
+        {isLoading ? "Filling Form..." : "Fill Form with AI"}
+      </RippleButton>
+    </div>
   );
 }

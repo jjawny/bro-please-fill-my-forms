@@ -4,7 +4,6 @@ import Hero from "~/lib/components/Hero";
 import PinWrapper from "~/lib/components/PinWrapper";
 import Step1 from "~/lib/components/Step1";
 import Step2 from "~/lib/components/Step2";
-import Step3 from "~/lib/components/Step3";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
@@ -85,7 +84,6 @@ function UnlockedView() {
     <div className="flex flex-col gap-6 pt-20 w-full px-1 overflow-y-scroll">
       <Step1 />
       <Step2 />
-      <Step3 />
     </div>
   );
 }
