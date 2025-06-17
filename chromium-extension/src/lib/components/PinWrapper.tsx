@@ -54,10 +54,9 @@ export default function PinWrapper() {
     if (pinMode === "SETTING_UP") {
       const setupPinResponse = await setupPin(pin);
 
-      if (setupPinResponse.isOk) {
-        console.debug(setupPinResponse.uiMessage, setupPinResponse.value, setupPinResponse.messages);
-      } else {
-        console.warn(setupPinResponse.uiMessage, setupPinResponse.messages);
+      logResponse(setupPinResponse);
+
+      if (!setupPinResponse.isOk) {
         setIsShaking(true);
         setPinError(setupPinResponse.uiMessage);
       }
@@ -66,10 +65,9 @@ export default function PinWrapper() {
     if (pinMode === "LOCKED") {
       const unlockResponse = await unlock(pin);
 
-      if (unlockResponse.isOk) {
-        console.debug(unlockResponse.uiMessage, unlockResponse.value, unlockResponse.messages);
-      } else {
-        console.warn(unlockResponse.uiMessage, unlockResponse.messages);
+      logResponse(unlockResponse);
+
+      if (!unlockResponse.isOk) {
         setIsShaking(true);
         setPinError(unlockResponse.uiMessage);
       }
