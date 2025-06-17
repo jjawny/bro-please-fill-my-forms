@@ -82,7 +82,7 @@ function LockedView() {
 
 function UnlockedView() {
   return (
-    <div className="flex flex-col gap-6 pt-20 w-full overflow-scroll">
+    <div className="flex flex-col gap-6 pt-20 w-full px-1 overflow-y-scroll">
       <Step1 />
       <Step2 />
       <Step3 />
