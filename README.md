@@ -18,6 +18,7 @@ A Chromium **Extension** that **auto-fills** forms based on **natural** language
 1. `npm run dev` to edit the popup UI like a normal web app (faster feedback loop)
 2. ❗️ Because running locally (not as an extension) does not grant access to *chrome.storage.**, app will sh!t itself. To combat this, the chrome storage services will check if we're in development mode and mock storage CRUD ops as successful. `npm run dev` = development mode, `npm run build` = production mode
 3. During development, use shortcuts `⌃1` and `⌃2`, which will log JSON of the Zustand stores to the browser console
+4. Before deploying to prod, `cp .env.example .env` and set **VITE_HIDE_DEBUG_LOGS** = **true**
 
 ## Viewing console logs
 - ⚛️ Component logs? inspect the popup

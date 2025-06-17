@@ -2,9 +2,11 @@ import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce-utils";
+import { logResponse } from "~/lib/utils/log-utils";
 import { sleep } from "~/lib/utils/sleep-utils";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
@@ -18,6 +20,8 @@ export default function Step1() {
 
   const isFirstRender = useRef<boolean>(true);
 
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+
   const setNewApiKey = usePinStore((state) => state.setNewApiKey);
   const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
 
@@ -25,7 +29,7 @@ export default function Step1() {
     if (!isFirstRender.current) return;
     isFirstRender.current = false;
 
-    // This component should be rendered after a successful unlock; the...
+    // This component should be rendered after a successful unlock; the~/lib.
     //  decrypted key should be available immediately
     const geminiApiKeyDecrypted = usePinStore.getState().geminiApiKeyDecrypted;
     if (geminiApiKeyDecrypted) {
@@ -43,12 +47,10 @@ export default function Step1() {
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
       const setApiKeyResponse = await setNewApiKey(cleanedApiKey, shouldTest);
 
+      logResponse(setApiKeyResponse);
+
       if (!setApiKeyResponse.isOk) {
-        console.warn(setApiKeyResponse.uiMessage, setApiKeyResponse.messages);
-        // TODO: toast or set global error?
-      } else {
-        console.debug(setApiKeyResponse.uiMessage, setApiKeyResponse.value, setApiKeyResponse.messages);
-        // TODO: toast or set global error?
+        setGlobalError(setApiKeyResponse.uiMessage);
       }
 
       setIsApiKeyDirty(false);

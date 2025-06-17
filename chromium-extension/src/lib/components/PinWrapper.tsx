@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { logResponse } from "~/lib/utils/log-utils";
 import DialogWrapper from "./DialogWrapper";
 
 /**
  * A wrapper for <Pin> with heavier business logic
  */
 export default function PinWrapper() {
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+
   const isInitialized = usePinStore((state) => state.isInitialized);
   const unlock = usePinStore((state) => state.unlock);
   const savedPin = usePinStore((state) => state.pin);
@@ -30,12 +34,11 @@ export default function PinWrapper() {
       if (!hasAttemptedAutoUnlock.current && isInitialized && savedPin) {
         hasAttemptedAutoUnlock.current = true;
         const unlockResponse = await unlock(savedPin);
+
+        logResponse(unlockResponse);
+
         if (!unlockResponse.isOk) {
-          console.warn(unlockResponse.uiMessage, unlockResponse.messages);
-          // TODO: toast or set global error?
-        } else {
-          console.debug(unlockResponse.uiMessage, unlockResponse.value, unlockResponse.messages);
-          // TODO: toast or set global error?
+          setGlobalError(unlockResponse.uiMessage);
         }
       }
     };
@@ -80,13 +83,11 @@ export default function PinWrapper() {
 
     const resetResponse = await reset();
 
+    logResponse(resetResponse);
+
     if (resetResponse.isOk) {
-      console.debug(resetResponse.uiMessage, resetResponse.value, resetResponse.messages);
-      // TODO: toast or set global error?
       setPinValue("");
     } else {
-      console.warn(resetResponse.uiMessage, resetResponse.messages);
-      // TODO: toast or set global error?
       setPinError(resetResponse.uiMessage);
     }
   };

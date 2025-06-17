@@ -1,3 +1,5 @@
+import { ErrOr } from "~/lib/models/ErrOr";
+
 const FALLBACK_ERROR_MESSAGE = "Unknown";
 
 /**
@@ -10,4 +12,19 @@ export function logError(error: unknown, prefix?: string): string {
     prefix?.trim() !== "" ? `${prefix}, reason: ${cleanErrorMessage}` : `Error: ${cleanErrorMessage}`;
   console.error(finalMessage, error);
   return finalMessage;
+}
+
+/**
+ * Centralised way to log response objects (ErrOrs)
+ */
+export function logResponse(response: ErrOr) {
+  if (!response.isOk) {
+    console.warn(response.uiMessage, response.messages);
+    return;
+  }
+
+  if (import.meta.env.VITE_HIDE_DEBUG_LOGS === "false") {
+    console.debug(response.uiMessage, response.messages);
+    return;
+  }
 }

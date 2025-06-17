@@ -1,22 +1,25 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { Theme } from "~/lib/enums/Theme";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { useTheme } from "~/lib/hooks/useTheme";
+import { logResponse } from "~/lib/utils/log-utils";
 
 export default function ToggleThemeButton() {
   const { theme, setTheme } = useTheme();
+
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
   const handleToggleTheme = async () => {
     const themes = [Theme.LIGHT, Theme.DARK, Theme.SYSTEM];
     const currIndex = themes.indexOf(theme);
     const nextIndex = (currIndex + 1) % themes.length;
     const setThemeResponse = await setTheme(themes[nextIndex]);
+
+    logResponse(setThemeResponse);
+
     if (!setThemeResponse.isOk) {
-      console.warn(setThemeResponse.uiMessage, setThemeResponse.messages);
-      // TODO: toast or set global error?
-    } else {
-      console.debug(setThemeResponse.uiMessage, setThemeResponse.value, setThemeResponse.messages);
-      // TODO: toast or set global error?
+      setGlobalError(setThemeResponse.uiMessage);
     }
   };
 

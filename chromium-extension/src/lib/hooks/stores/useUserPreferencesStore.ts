@@ -7,7 +7,6 @@ import { logError } from "~/lib/utils/log-utils";
 
 type UserPreferencesStore = UserPreferences & {
   isInitialized: boolean;
-  globalError?: string;
 
   /**
    * Sets the state w any previously saved data
@@ -20,11 +19,6 @@ type UserPreferencesStore = UserPreferences & {
   setTheme: (theme: ThemeType) => Promise<ErrOr>;
 
   /**
-   * Signal to other UI that a global error has occurred
-   */
-  setGlobalError: (error?: string) => ErrOr;
-
-  /**
    * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
    */
   GET_DEBUG_JSON_DUMP: () => string;
@@ -33,7 +27,6 @@ type UserPreferencesStore = UserPreferences & {
 export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) => ({
   ...getDefaultUserPreferences(),
   isInitialized: false,
-  globalError: undefined,
 
   initialize: async (): Promise<ErrOr> => {
     let messages = ["Begin initializing UserPreferencesStore"];
@@ -82,17 +75,6 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
       return ok({ messages, uiMessage: "Successfully set Theme" });
     } catch (error: unknown) {
       return err({ messages, uiMessage: logError(error, "Failed to set Theme") });
-    }
-  },
-
-  setGlobalError: (error?: string): ErrOr => {
-    let messages = ["Begin setting globalError"];
-
-    try {
-      set({ globalError: error });
-      return ok({ messages, uiMessage: "Successfully set globalError" });
-    } catch (error: unknown) {
-      return err({ messages, uiMessage: logError(error, "Failed to set globalError") });
     }
   },
 

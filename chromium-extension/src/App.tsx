@@ -11,29 +11,29 @@ import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import Debug from "./lib/components/Debug";
 import GitHubLink from "./lib/components/GitHubLink";
+import { useGlobalStore } from "./lib/hooks/stores/useGlobalStore";
+import { logResponse } from "./lib/utils/log-utils";
 
 export default function App() {
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+
   const initializePinStore = usePinStore((state) => state.initialize);
   const isPinStoreInitialized = usePinStore((state) => state.isInitialized);
-  const setPinStoreGlobalError = usePinStore((state) => state.setGlobalError);
   const pinMode = usePinStore((state) => state.pinMode);
 
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
-  const setUserPreferencesStoreGlobalError = useUserPreferencesStore((state) => state.setGlobalError);
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
     const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
+
+        logResponse(initStoreResponse);
+
         if (!initStoreResponse.isOk) {
-          console.warn(initStoreResponse.uiMessage, initStoreResponse.messages);
-          setPinStoreGlobalError(initStoreResponse.uiMessage);
-          // TODO: toast instead of global error?
-        } else {
-          console.debug(initStoreResponse.uiMessage, initStoreResponse.value, initStoreResponse.messages);
-          // TODO: toast or set global error?
+          setGlobalError(initStoreResponse.uiMessage);
         }
       }
     };
@@ -45,13 +45,11 @@ export default function App() {
     const initStore = async () => {
       if (!isUserPreferencesStoreInitialized) {
         const initStoreResponse = await initializeUserPreferencesStore();
+
+        logResponse(initStoreResponse);
+
         if (!initStoreResponse.isOk) {
-          console.warn(initStoreResponse.uiMessage, initStoreResponse.messages);
-          setUserPreferencesStoreGlobalError(initStoreResponse.uiMessage);
-          // TODO: toast instead of global error?
-        } else {
-          console.debug(initStoreResponse.uiMessage, initStoreResponse.value, initStoreResponse.messages);
-          // TODO: toast or set global error?
+          setGlobalError(initStoreResponse.uiMessage);
         }
       }
     };

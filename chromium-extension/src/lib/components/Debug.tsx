@@ -1,8 +1,8 @@
 import { CodeIcon } from "lucide-react";
+import { ModifierKey } from "~/lib/enums/ModifierKey";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useKeyboardShortcuts } from "~/lib/hooks/useKeyboardShortcuts";
-import { ModifierKey } from "../enums/ModifierKey";
 import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 

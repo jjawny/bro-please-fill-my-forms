@@ -1,19 +1,22 @@
 import { LockIcon, LockOpenIcon } from "lucide-react";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
+import { logResponse } from "~/lib/utils/log-utils";
 
 export default function ToggleLockButton() {
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+
   const pinMode = usePinStore((state) => state.pinMode);
   const lock = usePinStore((state) => state.lock);
 
   const handleClick = async () => {
     const lockResponse = await lock();
+
+    logResponse(lockResponse);
+
     if (!lockResponse.isOk) {
-      console.warn(lockResponse.uiMessage, lockResponse.messages);
-      // TODO: toast or set global error?
-    } else {
-      console.debug(lockResponse.uiMessage, lockResponse.value, lockResponse.messages);
-      // TODO: toast or set global error?
+      setGlobalError(lockResponse.uiMessage);
     }
   };
 

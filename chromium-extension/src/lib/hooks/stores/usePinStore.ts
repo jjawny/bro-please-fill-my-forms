@@ -21,7 +21,6 @@ type PinStore = ByoKeyData &
     pinMode: PinMode;
     geminiApiKeyDecrypted?: string;
     isGeminiApiKeyDirty: boolean;
-    globalError?: string;
 
     /**
      * Sets the state w any previously saved data
@@ -61,11 +60,6 @@ type PinStore = ByoKeyData &
      * Signal to other UI that current API key input has not been saved yet
      */
     setIsApiKeyDirty: (isDirty: boolean) => ErrOr;
-
-    /**
-     * Signal to other UI that a global error has occurred
-     */
-    setGlobalError: (error?: string) => ErrOr;
 
     /**
      * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
@@ -234,7 +228,6 @@ export const usePinStore = create<PinStore>((set, get) => {
     pinMode: "LOCKED",
     geminiApiKeyDecrypted: undefined,
     isGeminiApiKeyDirty: false,
-    globalError: undefined,
 
     initialize: async (): Promise<ErrOr> => {
       let messages = ["Begin initializing PinStore"];
@@ -460,17 +453,6 @@ export const usePinStore = create<PinStore>((set, get) => {
         return ok({ messages, uiMessage: "Successfully set isGeminiApiKeyDirty" });
       } catch (error: unknown) {
         return err({ messages, uiMessage: logError(error, "Failed to set isGeminiApiKeyDirty") });
-      }
-    },
-
-    setGlobalError: (error?: string): ErrOr => {
-      let messages = ["Begin setting globalError"];
-
-      try {
-        set({ globalError: error });
-        return ok({ messages, uiMessage: "Successfully set globalError" });
-      } catch (error: unknown) {
-        return err({ messages, uiMessage: logError(error, "Failed to set globalError") });
       }
     },
 

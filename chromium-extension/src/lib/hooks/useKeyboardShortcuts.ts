@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { ModifierKey, ModifierKeyValues } from "../enums/ModifierKey";
+import { ModifierKey, ModifierKeyValues } from "~/lib/enums/ModifierKey";
 
 export type KeyboardShortcut = {
   keys: string[];
