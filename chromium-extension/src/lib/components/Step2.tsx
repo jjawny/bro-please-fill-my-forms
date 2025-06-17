@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
-import { ScrapedForm } from "~/lib/models/FormField";
-import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
+import { FormField, ScrapedForm } from "~/lib/models/FormField";
+import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
 import { generateFormContent } from "~/lib/services/gemini-service";
+import { useGlobalStore } from "../hooks/stores/useGlobalStore";
+import { logResponse } from "../utils/log-utils";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 
@@ -13,38 +15,16 @@ export default function Step2() {
 
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
 
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
-
-  const scrapeFormFields = () => {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs.length > 0 && tabs[0]?.id) {
-        chrome.runtime.sendMessage(
-          {
-            action: SERVICE_WORKER_ACTIONS.scrapeFormFields,
-            tabId: tabs[0].id,
-          },
-          (response) => {
-            setIsLoading(false);
-            if (response?.success) {
-              setScrapedForm(response.form);
-            } else {
-              setErrorMessage(response?.error || "Failed to scrape form");
-            }
-          },
-        );
-      }
-    });
-  };
 
   // const { theme, toggleTheme } = useTheme();
   const { geminiApiKeyDecrypted } = usePinStore();
 
-  const fillForm = async () => {
-    if (!scrapedForm || !userPrompt.trim() || !geminiApiKeyDecrypted) {
-      setErrorMessage("Please scrape form, enter a prompt, and set your Gemini API key");
+  const scrapeAndFillForm = async () => {
+    if (userPrompt.trim() === "" || !geminiApiKeyDecrypted) {
+      setErrorMessage("Please enter a prompt and set your Gemini API key");
       return;
     }
 
@@ -52,7 +32,34 @@ export default function Step2() {
     setErrorMessage("");
 
     try {
-      const formStructure = scrapedForm.fields.map((field) => ({
+      // 1. Get the active tab
+      const getActiveTabResponse = await getActiveTab();
+
+      logResponse(getActiveTabResponse);
+
+      if (!getActiveTabResponse.isOk) {
+        setGlobalError(getActiveTabResponse.uiMessage);
+        return;
+      }
+
+      const tabId = getActiveTabResponse.value.id;
+
+      if (!tabId) {
+        setGlobalError("No active tab found");
+        return;
+      }
+
+      // 2. Scrape form fields
+      const scrapeResponse = await scrapeFormFields(tabId);
+      if (!scrapeResponse.isOk) {
+        throw new Error(scrapeResponse.uiMessage || "Failed to scrape form");
+      }
+
+      const scrapedFormData = scrapeResponse.value;
+      setScrapedForm(scrapedFormData);
+
+      // Generate AI content
+      const formStructure = scrapedFormData.fields.map((field: FormField) => ({
         name: field.name || field.id,
         type: field.type,
         label: field.label,
@@ -60,29 +67,21 @@ export default function Step2() {
         options: field.options,
       }));
 
-      const response = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
+      const aiResponse = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
 
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length > 0 && tabs[0]?.id) {
-          chrome.runtime.sendMessage(
-            {
-              action: SERVICE_WORKER_ACTIONS.fillFormFields,
-              tabId: tabs[0].id,
-              formData: response.isOk ? response.value.fields : null,
-              scrapedForm: scrapedForm,
-            },
-            (fillResponse) => {
-              setIsLoading(false);
-              if (!fillResponse?.success) {
-                setErrorMessage(fillResponse?.error || "Failed to fill form");
-              }
-            },
-          );
-        }
-      });
+      if (!aiResponse.isOk) {
+        throw new Error(aiResponse.uiMessage);
+      }
+
+      // Fill form fields
+      const fillResponse = await fillFormFields(tabId, aiResponse.value.fields, scrapedFormData);
+      if (!fillResponse.isOk) {
+        throw new Error(fillResponse.uiMessage || "Failed to fill form");
+      }
     } catch (error) {
-      setIsLoading(false);
       setErrorMessage(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,12 +92,12 @@ export default function Step2() {
       <Textarea
         value={userPrompt}
         onChange={(e) => setUserPrompt(e.target.value)}
-        placeholder="Form content"
+        placeholder="Your form content"
         rows={5}
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
-      <RippleButton onClick={fillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
-        {isLoading ? "Filling Form..." : "Fill Form with AI"}
+      <RippleButton onClick={scrapeAndFillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
+        {isLoading ? "Processing..." : "Fill Form"}
       </RippleButton>
     </div>
   );
