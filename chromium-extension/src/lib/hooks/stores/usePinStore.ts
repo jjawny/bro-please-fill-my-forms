@@ -21,7 +21,7 @@ type PinStore = ByoKeyData &
     pinMode: PinMode;
     geminiApiKeyDecrypted?: string;
     isGeminiApiKeyDirty: boolean;
-    fatalError?: string;
+    globalError?: string;
 
     /**
      * Sets the state w any previously saved data
@@ -63,9 +63,9 @@ type PinStore = ByoKeyData &
     setIsApiKeyDirty: (isDirty: boolean) => ErrOr;
 
     /**
-     * Signal to other UI that a fatal error has occurred
+     * Signal to other UI that a global error has occurred
      */
-    setFatalError: (error?: string) => ErrOr;
+    setGlobalError: (error?: string) => ErrOr;
 
     /**
      * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
@@ -234,7 +234,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     pinMode: "LOCKED",
     geminiApiKeyDecrypted: undefined,
     isGeminiApiKeyDirty: false,
-    fatalError: undefined,
+    globalError: undefined,
 
     initialize: async (): Promise<ErrOr> => {
       let messages = ["Begin initializing PinStore"];
@@ -341,7 +341,7 @@ export const usePinStore = create<PinStore>((set, get) => {
 
         if (!saveToSessionStorageResponse.isOk) {
           messages.push("Failed to save PIN for future auto-unlocks");
-          // continue as not fatal
+          // continue as not global
         }
 
         const transitionToUnlockedModeResponse = transitionToUnlockedMode(decryptionResponse.value, cleanNewPin);
@@ -463,14 +463,14 @@ export const usePinStore = create<PinStore>((set, get) => {
       }
     },
 
-    setFatalError: (error?: string): ErrOr => {
-      let messages = ["Begin setting fatalError"];
+    setGlobalError: (error?: string): ErrOr => {
+      let messages = ["Begin setting globalError"];
 
       try {
-        set({ fatalError: error });
-        return ok({ messages, uiMessage: "Successfully set fatalError" });
+        set({ globalError: error });
+        return ok({ messages, uiMessage: "Successfully set globalError" });
       } catch (error: unknown) {
-        return err({ messages, uiMessage: logError(error, "Failed to set fatalError") });
+        return err({ messages, uiMessage: logError(error, "Failed to set globalError") });
       }
     },
 

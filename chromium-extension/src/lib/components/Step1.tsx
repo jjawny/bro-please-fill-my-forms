@@ -45,10 +45,10 @@ export default function Step1() {
 
       if (!setApiKeyResponse.isOk) {
         console.warn(setApiKeyResponse.uiMessage, setApiKeyResponse.messages);
-        // TODO: toast or set fatal error?
+        // TODO: toast or set global error?
       } else {
         console.debug(setApiKeyResponse.uiMessage, setApiKeyResponse.value, setApiKeyResponse.messages);
-        // TODO: toast or set fatal error?
+        // TODO: toast or set global error?
       }
 
       setIsApiKeyDirty(false);

@@ -13,10 +13,10 @@ export default function ToggleThemeButton() {
     const setThemeResponse = await setTheme(themes[nextIndex]);
     if (!setThemeResponse.isOk) {
       console.warn(setThemeResponse.uiMessage, setThemeResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
     } else {
       console.debug(setThemeResponse.uiMessage, setThemeResponse.value, setThemeResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
     }
   };
 

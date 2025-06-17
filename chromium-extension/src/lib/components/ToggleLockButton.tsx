@@ -10,10 +10,10 @@ export default function ToggleLockButton() {
     const lockResponse = await lock();
     if (!lockResponse.isOk) {
       console.warn(lockResponse.uiMessage, lockResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
     } else {
       console.debug(lockResponse.uiMessage, lockResponse.value, lockResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
     }
   };
 

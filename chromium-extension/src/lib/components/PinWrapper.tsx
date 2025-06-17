@@ -32,10 +32,10 @@ export default function PinWrapper() {
         const unlockResponse = await unlock(savedPin);
         if (!unlockResponse.isOk) {
           console.warn(unlockResponse.uiMessage, unlockResponse.messages);
-          // TODO: toast or set fatal error?
+          // TODO: toast or set global error?
         } else {
           console.debug(unlockResponse.uiMessage, unlockResponse.value, unlockResponse.messages);
-          // TODO: toast or set fatal error?
+          // TODO: toast or set global error?
         }
       }
     };
@@ -82,11 +82,11 @@ export default function PinWrapper() {
 
     if (resetResponse.isOk) {
       console.debug(resetResponse.uiMessage, resetResponse.value, resetResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
       setPinValue("");
     } else {
       console.warn(resetResponse.uiMessage, resetResponse.messages);
-      // TODO: toast or set fatal error?
+      // TODO: toast or set global error?
       setPinError(resetResponse.uiMessage);
     }
   };
