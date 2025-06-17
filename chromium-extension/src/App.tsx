@@ -25,6 +25,7 @@ export default function App() {
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
+    setGlobalError("test");
     const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
@@ -81,7 +82,7 @@ function LockedView() {
 
 function UnlockedView() {
   return (
-    <div className="flex flex-col gap-6 pt-20 w-full px-1 overflow-y-scroll">
+    <div className="flex flex-col gap-6 h-full justify-center mt-5 w-full px-1 overflow-y-scroll">
       <Step1 />
       <Step2 />
     </div>
