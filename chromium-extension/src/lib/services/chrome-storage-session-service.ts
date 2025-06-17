@@ -11,7 +11,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
   let messages = ["Begin loading TemporaryData from chrome.storage.session"];
 
   try {
-    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+    if (import.meta.env.DEV) {
       return ok({
         messages,
         uiMessage: "[MOCKED] Successfully loaded TemporaryData",
@@ -53,7 +53,7 @@ export async function saveToSessionStorage<T extends ZodType>(schema: T, data: z
   let messages = ["Begin saving to chrome.storage.session"];
 
   try {
-    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+    if (import.meta.env.DEV) {
       return ok({ messages, uiMessage: "[MOCKED] Successfully saved", value: data });
     }
 

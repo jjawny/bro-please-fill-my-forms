@@ -12,7 +12,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>
   let messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
 
   try {
-    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+    if (import.meta.env.DEV) {
       return ok({ messages, uiMessage: "[MOCKED] Successfully loaded ByoKeyData", value: getDefaultByoKeyData() });
     }
 
@@ -57,7 +57,7 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPr
   let messages = ["Begin loading UserPreferences from chrome.storage.sync"];
 
   try {
-    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+    if (import.meta.env.DEV) {
       return ok({
         messages,
         uiMessage: "[MOCKED] Successfully loaded UserPreferences",
@@ -104,7 +104,7 @@ export async function saveToSyncStorage<TSchema extends ZodType>(
   let messages = ["Begin saving to chrome.storage.sync"];
 
   try {
-    if (import.meta.env.VITE_MOCK_CHROME_STORAGE_OPS_SUCCESSFUL === "true") {
+    if (import.meta.env.DEV) {
       return ok({ messages, uiMessage: "[MOCKED] Successfully saved", value: data });
     }
 

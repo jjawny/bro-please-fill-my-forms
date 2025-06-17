@@ -11,8 +11,7 @@ import { RippleButton } from "./shadcn/ripple";
  * @returns
  */
 export default function Debug() {
-  // TODO: use the actual env like development vs production (check if npm run build sets it to prodution and npm run dev sets it to development)
-  if (import.meta.env.VITE_SHOW_DEBUG_MENU === "false") {
+  if (import.meta.env.PROD) {
     return null;
   }
 
