@@ -7,6 +7,7 @@ import { useGlobalStore } from "../hooks/stores/useGlobalStore";
 import { logResponse } from "../utils/log-utils";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
+import ToolTipWrapper from "./ToolTipWrapper";
 
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
@@ -95,9 +96,13 @@ export default function Step2() {
         rows={5}
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
-      <RippleButton onClick={scrapeAndFillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
-        {isSubmitting ? "Processing..." : "Fill Form"}
-      </RippleButton>
+      <ToolTipWrapper delayDuration={800} content="hey" open={undefined} side="bottom">
+        <div className="px-2">
+          <RippleButton onClick={scrapeAndFillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
+            {isSubmitting ? "Processing..." : "Fill Form"}
+          </RippleButton>
+        </div>
+      </ToolTipWrapper>
     </div>
   );
 }
