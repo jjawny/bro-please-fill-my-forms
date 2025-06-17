@@ -65,8 +65,8 @@ export default function App() {
         <ToggleThemeButton />
         <Debug />
         {pinMode !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default function Footer() {
   const userPreferencesStoreFatalError = useUserPreferencesStore((state) => state.fatalError);
 
   return (
-    <footer className="sticky bottom-0 w-full p-4 flex z-[9999] justify-center">
+    <footer className="flex-grow sticky items-end w-full flex z-[9999] justify-center">
       <a href="https://vitejs.dev" target="_blank">
         <img
           src={githubLogo}
