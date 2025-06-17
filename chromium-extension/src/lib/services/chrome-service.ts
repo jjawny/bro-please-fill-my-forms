@@ -29,7 +29,7 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
 
   try {
     const message: ScrapeFormFieldsRequest = {
-      action: "ScrapeFormFields",
+      action: "scrape_form_fields",
       tabId: tabId,
     };
 
@@ -61,7 +61,7 @@ export async function fillFormFields(
 
   try {
     const message: FillFormFieldsRequest = {
-      action: "FillFormFields",
+      action: "fill_form_fields",
       tabId: tabId,
       formData: formData,
       scrapedForm: scrapedForm,

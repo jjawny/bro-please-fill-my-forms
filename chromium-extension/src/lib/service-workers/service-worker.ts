@@ -1,5 +1,6 @@
 // Function to scrape form fields from the page
 
+import { ServiceWorkerAction } from "../enums/ServiceWorkerAction";
 import {
   FillFormFieldsRequest,
   FillFormFieldsResponse,
@@ -8,7 +9,6 @@ import {
 } from "../types/message-types";
 import { fillFormFields } from "./functions/fill-form-fields";
 import { scrapeFormFields } from "./functions/scrape-form-fields";
-import { SERVICE_WORKER_ACTIONS } from "./service-worker-actions";
 
 const KEEP_CHANNEL_OPEN = true;
 const CLOSE_CHANNEL = false;
@@ -27,11 +27,11 @@ chrome.runtime.onMessage.addListener(
     }
 
     switch (message.action) {
-      case SERVICE_WORKER_ACTIONS.scrapeFormFields:
+      case ServiceWorkerAction.SCRAPE_FORM_FIELDS:
         scrapeFormFields(message.tabId, sendResponse);
         return KEEP_CHANNEL_OPEN;
 
-      case SERVICE_WORKER_ACTIONS.fillFormFields:
+      case ServiceWorkerAction.FILL_FORM_FIELDS:
         if (!message.formData) {
           sendResponse({ success: false, error: "Form data is required" });
           return CLOSE_CHANNEL;

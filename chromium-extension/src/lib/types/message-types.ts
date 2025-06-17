@@ -1,5 +1,5 @@
 import { ScrapedForm } from "~/lib/models/FormField";
-import { ServiceWorkerActionType } from "../service-workers/service-worker-actions";
+import { ServiceWorkerActionType } from "../enums/ServiceWorkerAction";
 
 // Base message interface
 export interface BaseMessage {
@@ -9,11 +9,11 @@ export interface BaseMessage {
 
 // Specific message types
 export type ScrapeFormFieldsRequest = BaseMessage & {
-  action: "ScrapeFormFields";
+  action: "scrape_form_fields";
 };
 
 export type FillFormFieldsRequest = BaseMessage & {
-  action: "FillFormFields";
+  action: "fill_form_fields";
   formData: Record<string, string>;
   scrapedForm: ScrapedForm;
 };
