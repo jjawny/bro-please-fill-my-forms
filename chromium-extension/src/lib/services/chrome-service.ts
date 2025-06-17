@@ -1,6 +1,11 @@
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
-import { SERVICE_WORKER_ACTIONS } from "~/lib/service-workers/service-worker-actions";
+import type {
+  FillFormFieldsRequest,
+  FillFormFieldsResponse,
+  ScrapeFormFieldsRequest,
+  ScrapeFormFieldsResponse,
+} from "~/lib/types/message-types";
 import { logError } from "~/lib/utils/log-utils";
 
 export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
@@ -19,15 +24,16 @@ export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
   }
 }
 
-// TODO: fix up and make type-safe response from sendMessage
 export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm>> {
   let messages = ["Begin scraping form fields"];
 
   try {
-    const response = await chrome.runtime.sendMessage({
-      action: SERVICE_WORKER_ACTIONS.scrapeFormFields,
+    const message: ScrapeFormFieldsRequest = {
+      action: "ScrapeFormFields",
       tabId: tabId,
-    });
+    };
+
+    const response: ScrapeFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
     if (!response?.success) {
       return err({
@@ -39,7 +45,7 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
     return ok({
       messages,
       uiMessage: "Successfully scraped form fields",
-      value: response.form,
+      value: response.form || { fields: [] }, // TODO:
     });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to scrape form fields") });
@@ -54,12 +60,14 @@ export async function fillFormFields(
   let messages = ["Begin filling form fields"];
 
   try {
-    const response = await chrome.runtime.sendMessage({
-      action: SERVICE_WORKER_ACTIONS.fillFormFields,
+    const message: FillFormFieldsRequest = {
+      action: "FillFormFields",
       tabId: tabId,
       formData: formData,
       scrapedForm: scrapedForm,
-    });
+    };
+
+    const response: FillFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
     if (!response?.success) {
       return err({
