@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { ModifierKey, ModifierKeyValues } from "../enums/ModifierKey";
 
 export type KeyboardShortcut = {
   keys: string[];
@@ -11,6 +12,8 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const activeKeys = getActiveKeysFromEvent(event);
+
+      // console.debug("Active keys:", activeKeys);
 
       for (const shortcut of shortcuts) {
         if (shortcut.disabled) continue;
@@ -38,14 +41,14 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 function getActiveKeysFromEvent(event: KeyboardEvent): string[] {
   const keys = [];
 
-  if (event.altKey) keys.push("Alt");
-  if (event.ctrlKey) keys.push("Control");
-  if (event.shiftKey) keys.push("Shift");
-  if (event.metaKey) keys.push("Meta");
+  if (event.altKey) keys.push(ModifierKey.ALT);
+  if (event.ctrlKey) keys.push(ModifierKey.CONTROL);
+  if (event.shiftKey) keys.push(ModifierKey.SHIFT);
+  if (event.metaKey) keys.push(ModifierKey.META);
 
-  // Add non-modifer keys
-  const isNonModifierKey = !["Alt", "Control", "Shift", "Meta"].includes(event.key);
-  if (isNonModifierKey) keys.push(event.key);
+  if (!ModifierKeyValues.includes(event.key)) {
+    keys.push(event.key);
+  }
 
   return keys;
 }

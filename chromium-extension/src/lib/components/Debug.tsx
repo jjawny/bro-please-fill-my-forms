@@ -2,10 +2,16 @@ import { CodeIcon } from "lucide-react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useKeyboardShortcuts } from "~/lib/hooks/useKeyboardShortcuts";
+import { ModifierKey } from "../enums/ModifierKey";
 import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 
+/**
+ * TODO:
+ * @returns
+ */
 export default function Debug() {
+  // TODO: use the actual env like development vs production (check if npm run build sets it to prodution and npm run dev sets it to development)
   if (import.meta.env.VITE_SHOW_DEBUG_MENU === "false") {
     return null;
   }
@@ -21,29 +27,13 @@ function DebugMenu() {
   const logUserPreferencesJson = () => console.debug("UserPreferences:", userPreferencesStoreJson());
 
   useKeyboardShortcuts([
-    {
-      keys: ["control", "1"],
-      callback: logPinStoreJson,
-      description: "Log PinStore",
-    },
-    {
-      keys: ["control", "2"],
-      callback: logUserPreferencesJson,
-      description: "Log UserPreferences",
-    },
+    { keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson },
+    { keys: [ModifierKey.CONTROL, "2"], callback: logUserPreferencesJson },
   ]);
 
   const menuItems: MenuItem[] = [
-    {
-      label: "Log PinStore",
-      onClick: logPinStoreJson,
-      shortcut: "⌃1",
-    },
-    {
-      label: "Log UserPreferencesStore",
-      onClick: logUserPreferencesJson,
-      shortcut: "⌃2",
-    },
+    { label: "Log PinStore", onClick: logPinStoreJson, shortcut: "⌃1" },
+    { label: "Log UserPreferencesStore", onClick: logUserPreferencesJson, shortcut: "⌃2" },
   ];
 
   return (

@@ -6,6 +6,8 @@ export const Theme = {
   SYSTEM: "system",
 } as const;
 
-export const ThemeSchema = z.enum([Theme.LIGHT, Theme.DARK, Theme.SYSTEM]); // for validation
+export const ThemeSchema = z.enum([Theme.LIGHT, Theme.DARK, Theme.SYSTEM]);
 
-export type ThemeType = (typeof Theme)[keyof typeof Theme]; // for type safety
+export const ThemeValues = Object.values(Theme) as readonly string[];
+
+export type ThemeType = (typeof Theme)[keyof typeof Theme];
