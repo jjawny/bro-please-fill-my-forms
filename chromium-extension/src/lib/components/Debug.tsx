@@ -7,8 +7,7 @@ import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 
 /**
- * TODO:
- * @returns
+ * Debug component during development only
  */
 export default function Debug() {
   if (import.meta.env.PROD) {
