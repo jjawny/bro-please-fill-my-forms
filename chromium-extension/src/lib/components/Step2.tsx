@@ -13,11 +13,12 @@ export default function Step2() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // TOOD: display the scrapedForm somewhere so the user can click a pop-up to see it
-  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | null>(null);
+  const [, setScrapedForm] = useState<ScrapedForm | null>(null);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
+  const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const geminiApiKeyDecrypted = usePinStore((state) => state.geminiApiKeyDecrypted);
 
   const scrapeAndFillForm = async () => {
@@ -78,7 +79,12 @@ export default function Step2() {
     setIsSubmitting(false);
   };
 
-  const isSubmitButtonDisabled = isSubmitting || !userPrompt.trim() || !geminiApiKeyDecrypted || isGeminiApiKeyDirty;
+  const isSubmitButtonDisabled =
+    isSubmitting ||
+    !userPrompt.trim() ||
+    !geminiApiKeyDecrypted ||
+    hasGeminiApiKeyConnectedSuccessfully ||
+    isGeminiApiKeyDirty;
 
   return (
     <div>

@@ -18,9 +18,12 @@ export default defineConfig({
         "service-worker": "src/lib/service-workers/service-worker.ts",
       },
       output: {
-        entryFileNames: "assets/[name].js",
-        chunkFileNames: "assets/[name].js",
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === "service-worker" ? "assets/[name].js" : "assets/[name]-[hash].js";
+        },
+        chunkFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name].[ext]",
+        format: "es",
       },
     },
     // Chromium Extensions expect a 'dist' folder
