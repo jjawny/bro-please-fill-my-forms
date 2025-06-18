@@ -22,7 +22,7 @@ A Chromium **Extension** (a.k.a CRX) that **auto-fills** forms based on **natura
 
 ## Viewing console logs
 - ⚛️ Component logs? inspect the popup
-- 💉 Injected scripts logs? inspect current page
 - 🤖 Service worker logs? inspect the extension
+   ![how to view extension console logs](readme/inspect-service-worker-logs.png)
+- 💉 Injected scripts logs (`chrome.scripting.executeScript`)? inspect current page
 
-  ![how to view extension console logs](readme/inspect-service-worker-logs.png)
