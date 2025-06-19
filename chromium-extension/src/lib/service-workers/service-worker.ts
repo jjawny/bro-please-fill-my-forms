@@ -1,12 +1,12 @@
 // Function to scrape form fields from the page
 
-import { ServiceWorkerAction } from "../enums/ServiceWorkerAction";
+import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
 import {
   FillFormFieldsRequest,
   FillFormFieldsResponse,
   ScrapeFormFieldsRequest,
   ScrapeFormFieldsResponse,
-} from "../types/message-types";
+} from "~/lib/models/ServiceWorkerMessages";
 import { fillFormFields } from "./functions/fill-form-fields";
 import { scrapeFormFields } from "./functions/scrape-form-fields";
 
@@ -19,10 +19,8 @@ chrome.runtime.onMessage.addListener(
     _,
     sendResponse: (response: ScrapeFormFieldsResponse | FillFormFieldsResponse) => void,
   ) => {
-    console.debug("SW received:", message);
-
     if (!message.tabId) {
-      sendResponse({ success: false, error: "No tab to act on" });
+      sendResponse({ isOk: false, error: "No tab to act on" });
       return CLOSE_CHANNEL;
     }
 
@@ -33,17 +31,14 @@ chrome.runtime.onMessage.addListener(
 
       case ServiceWorkerAction.FILL_FORM_FIELDS:
         if (!message.formData) {
-          sendResponse({ success: false, error: "Form data is required" });
+          sendResponse({ isOk: false, error: "Form data is required" });
           return CLOSE_CHANNEL;
         }
         fillFormFields(message.tabId, message.formData, sendResponse);
         return KEEP_CHANNEL_OPEN;
 
       default:
-        sendResponse({
-          success: false,
-          error: `Unsupported action`,
-        });
+        sendResponse({ isOk: false, error: `Unsupported action` });
         return CLOSE_CHANNEL;
     }
   },
