@@ -1,6 +1,17 @@
+import { ReactNode } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/lib/components/shadcn/dialog";
 
-export default function DialogWrapper({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
+export default function DialogWrapper({
+  isOpen,
+  onClose,
+  Title,
+  Content,
+}: {
+  isOpen?: boolean;
+  onClose?: () => void;
+  Title?: ReactNode;
+  Content?: ReactNode;
+}) {
   const handleOpenChange = () => {
     if (onClose) {
       onClose();
@@ -11,11 +22,8 @@ export default function DialogWrapper({ isOpen, onClose }: { isOpen?: boolean; o
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove your data from our
-            servers.
-          </DialogDescription>
+          <DialogTitle>{Title ?? "Title goes here"}</DialogTitle>
+          <DialogDescription>{Content ?? "Content goes here"}</DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>

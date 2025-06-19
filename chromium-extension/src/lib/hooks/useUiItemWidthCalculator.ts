@@ -6,14 +6,14 @@ import { useEffect, useRef, useState } from "react";
 export function useUiItemWidthCalculator({
   totalItems,
   uiItemWidthPx,
-  gapWidth,
-  uiOverflowItemWidth: overflowItemWidth,
+  gapWidthPx,
+  uiOverflowItemWidthPx: overflowItemWidth,
   containerPaddingY = 16,
 }: {
   totalItems: number;
   uiItemWidthPx: number;
-  gapWidth: number;
-  uiOverflowItemWidth: number;
+  gapWidthPx: number;
+  uiOverflowItemWidthPx: number;
   containerPaddingY?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,17 +29,17 @@ export function useUiItemWidthCalculator({
       let count = 0;
 
       for (let i = 0; i < totalItems; i++) {
-        const currentGapWidth = i > 0 ? gapWidth : 0;
+        const currentGapWidthPx = i > 0 ? gapWidthPx : 0;
         const remainingItems = totalItems - i - 1;
         const needsOverflowItem = remainingItems > 0;
         const requiredWidth =
-          totalWidth + currentGapWidth + uiItemWidthPx + (needsOverflowItem ? gapWidth + overflowItemWidth : 0);
+          totalWidth + currentGapWidthPx + uiItemWidthPx + (needsOverflowItem ? gapWidthPx + overflowItemWidth : 0);
 
         if (requiredWidth > containerWidth) {
           break;
         }
 
-        totalWidth += currentGapWidth + uiItemWidthPx;
+        totalWidth += currentGapWidthPx + uiItemWidthPx;
         count++;
       }
 
@@ -56,7 +56,7 @@ export function useUiItemWidthCalculator({
     }
 
     return () => resizeObserver.disconnect();
-  }, [totalItems, gapWidth, uiItemWidthPx, overflowItemWidth, containerPaddingY]);
+  }, [totalItems, gapWidthPx, uiItemWidthPx, overflowItemWidth, containerPaddingY]);
 
   return { containerRef, visibleItemCount, invisibleItemCount };
 }

@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { TextCursorIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Badge } from "~/lib/components/shadcn/badge";
 import { useUiItemWidthCalculator } from "~/lib/hooks/useUiItemWidthCalculator";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { cn } from "~/lib/utils/cn";
-import { truncate } from "~/lib/utils/string-utils";
 import DialogWrapper from "./DialogWrapper";
+
+// TODO:DOC
+// set the font (mono for fixed-width chars) and font size
+// These need to be tested and adjusted together
+// e.g., set your desired truncate length
+// adjust the item width and gap to the desired design
+const TRUNCATE_TEXT_LENGTH = 10;
+const UI_ITEM_WIDTH_PX = 90;
+const UI_OVERFLOW_ITEM_WIDTH_PX = 40;
+const GAP_WIDTH_PX = 4;
 
 /**
  * Hints at the scraped inputs for transparency/better feedback
@@ -18,24 +28,16 @@ export default function FormFieldBadgeRow({
 }) {
   const [isFieldsDialogOpen, setIsFieldsDialogOpen] = useState<boolean>(false);
 
-  // TODO:DOC
-  // set the font (mono for fixed-width chars) and font size
-  // These need to be tested and adjusted together
-  // e.g., set your desired truncate length
-  // adjust the item width and gap to the desired design
-  const truncateTextLength = 10;
-  const uiItemWidthPx = 90;
-  const uiOverflowItemWidth = 40;
-  const gapWidthPx = 4;
-
-  const totalFields = scrapedForm.fields.length;
-
   const { containerRef, visibleItemCount, invisibleItemCount } = useUiItemWidthCalculator({
-    totalItems: totalFields,
-    uiItemWidthPx: uiItemWidthPx,
-    gapWidth: gapWidthPx,
-    uiOverflowItemWidth: uiOverflowItemWidth,
+    totalItems: scrapedForm.fields.length,
+    uiItemWidthPx: UI_ITEM_WIDTH_PX,
+    gapWidthPx: GAP_WIDTH_PX,
+    uiOverflowItemWidthPx: UI_OVERFLOW_ITEM_WIDTH_PX,
   });
+
+  const visibleFields = useMemo(() => {
+    return scrapedForm.fields.slice(0, visibleItemCount);
+  }, [scrapedForm.fields, visibleItemCount]);
 
   const openDialog = () => {
     setIsFieldsDialogOpen(true);
@@ -43,17 +45,22 @@ export default function FormFieldBadgeRow({
 
   return (
     <div ref={containerRef} className={className}>
-      <DialogWrapper isOpen={isFieldsDialogOpen} onClose={() => setIsFieldsDialogOpen(false)} />
-      <div className="flex font-mono gap-1 items-center" style={{ gap: `${gapWidthPx}px` }}>
-        {scrapedForm.fields.slice(0, visibleItemCount).map((field) => (
+      <DialogWrapper
+        isOpen={isFieldsDialogOpen}
+        onClose={() => setIsFieldsDialogOpen(false)}
+        Title="Form Fields Found"
+        Content={<FormFieldsSummary scrapedForm={scrapedForm} />}
+      />
+      <div className="flex font-mono gap-1 items-center" style={{ gap: `${GAP_WIDTH_PX}px` }}>
+        {visibleFields.map((field) => (
           <Badge
             key={field.id}
             variant="secondary"
             onClick={openDialog}
             className={cn("text-xs cursor-pointer", "truncate inline-block")}
-            style={{ width: `${uiItemWidthPx}px` }}
+            style={{ width: `${UI_ITEM_WIDTH_PX}px` }}
           >
-            {truncate(field.name ?? field.label ?? field.id, truncateTextLength)}
+            {field.name ?? field.id}
           </Badge>
         ))}
         {invisibleItemCount > 0 && (
@@ -61,12 +68,26 @@ export default function FormFieldBadgeRow({
             variant="outline"
             onClick={openDialog}
             className={cn("text-xs cursor-pointer px-1.5 overflow-visible")}
-            style={{ width: `${uiOverflowItemWidth}px` }}
+            style={{ width: `${UI_OVERFLOW_ITEM_WIDTH_PX}px` }}
           >
             {invisibleItemCount}+
           </Badge>
         )}
       </div>
     </div>
+  );
+}
+
+function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
+  return (
+    <span className="flex flex-col gap-1">
+      {scrapedForm.fields.map((field) => (
+        <Badge key={field.id} variant="secondary" className={cn("text-xs", "inline-flex")}>
+          <TextCursorIcon /> {field.name ?? field.label ?? field.id}{" "}
+          <span className="text-stone-500">{field.type}</span>
+          <span className="text-stone-400">{field.label}</span>
+        </Badge>
+      ))}
+    </span>
   );
 }

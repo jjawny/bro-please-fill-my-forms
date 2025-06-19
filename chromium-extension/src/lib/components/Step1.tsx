@@ -90,7 +90,11 @@ export default function Step1() {
           className="bg-[var(--pin-background-color)] p-2"
           autoComplete="off"
         />
-        <ApiKeyInputEndAdornment isValidating={isValidating} hasApiKey={!!apiKeyInputValue} />
+        <ApiKeyInputEndAdornment
+          isValidating={isValidating}
+          hasApiKey={!!apiKeyInputValue}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-6 flex items-center justify-end bg-gradient-to-l from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent"
+        />
       </form>
       <RippleButton
         title={isVisible ? "Hide value" : "Show value"}
@@ -111,7 +115,15 @@ export default function Step1() {
 /**
  * Hints at the state of the API key (order matters)
  */
-function ApiKeyInputEndAdornment({ isValidating, hasApiKey }: { isValidating: boolean; hasApiKey: boolean }) {
+function ApiKeyInputEndAdornment({
+  isValidating,
+  hasApiKey,
+  className,
+}: {
+  isValidating: boolean;
+  hasApiKey: boolean;
+  className?: string;
+}) {
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
 
@@ -133,9 +145,5 @@ function ApiKeyInputEndAdornment({ isValidating, hasApiKey }: { isValidating: bo
     }
   };
 
-  return (
-    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-6 flex items-center justify-end bg-gradient-to-l from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent">
-      {getIcon()}
-    </div>
-  );
+  return <div className={className}>{getIcon()}</div>;
 }
