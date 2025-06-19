@@ -7,7 +7,14 @@ import { truncate } from "~/lib/utils/string-utils";
 /**
  * Hints at the scraped inputs for transparency/better feedback
  */
-export default function TextareaBadgeOverlay({ scrapedForm }: { scrapedForm: ScrapedForm }) {
+export default function FormFieldBadgeRow({
+  scrapedForm,
+  className,
+}: {
+  scrapedForm: ScrapedForm;
+  className?: string;
+}) {
+  // TODO:DOC
   // set the font (mono for fixed-width chars) and font size
   // These need to be tested and adjusted together
   // e.g., set your desired truncate length
@@ -27,10 +34,7 @@ export default function TextareaBadgeOverlay({ scrapedForm }: { scrapedForm: Scr
   });
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute bottom-0 left-0 right-0 h-fit pt-6 pb-1 rounded-md m-[1px] flex items-center px-2 bg-gradient-to-t from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent justify-end"
-    >
+    <div ref={containerRef} className={className}>
       <div className="flex font-mono gap-1 items-center" style={{ gap: `${gapWidthPx}px` }}>
         {scrapedForm.fields.slice(0, visibleItemCount).map((field) => (
           <Badge

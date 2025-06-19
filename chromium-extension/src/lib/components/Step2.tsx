@@ -13,9 +13,9 @@ import { generateContent } from "~/lib/services/gemini-service";
 import { cn } from "~/lib/utils/cn";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
+import FormFieldBadgeRow from "./FormFieldBadgeRow";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
-import TextareaBadgeOverlay from "./TextareaBadgeOverlay";
 import ToolTipWrapper from "./ToolTipWrapper";
 
 export default function Step2() {
@@ -136,7 +136,12 @@ export default function Step2() {
           rows={8}
           className="bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]"
         />
-        {scrapedForm && <TextareaBadgeOverlay scrapedForm={scrapedForm} />}
+        {scrapedForm && (
+          <FormFieldBadgeRow
+            scrapedForm={scrapedForm}
+            className="absolute bottom-0 left-0 right-0 h-fit pt-6 pb-1 rounded-md m-[1px] flex items-center px-2 bg-gradient-to-t from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent justify-end"
+          />
+        )}
       </div>
       <ToolTipWrapper
         delayDuration={800}
