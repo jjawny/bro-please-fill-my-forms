@@ -19,6 +19,7 @@ import ToolTipWrapper from "./ToolTipWrapper";
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
   // TODO: display the scrapedForm somewhere so the user can click a pop-up to see it
   const [, setScrapedForm] = useState<ScrapedForm | null>(null);
 
@@ -104,13 +105,9 @@ export default function Step2() {
 
   const getToolTipMessage = (): string | undefined => {
     if (isSubmitting) return "Please wait, filling your form...";
-
     if (!userPrompt.trim()) return "Please enter your form content";
-
     if (!geminiApiKeyDecrypted) return "Gemini API key is required";
-
     if (!hasGeminiApiKeyConnectedSuccessfully) return "Gemini API key failed to connect, please check your key";
-
     if (isGeminiApiKeyDirty) return "Please wait, saving your Gemini API key...";
 
     return undefined;
