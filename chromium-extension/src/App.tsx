@@ -25,7 +25,6 @@ export default function App() {
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
-    setGlobalError("test");
     const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
