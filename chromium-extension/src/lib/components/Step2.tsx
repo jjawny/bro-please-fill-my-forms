@@ -1,15 +1,12 @@
 import { LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
-import {
-  getPopulatedFormFieldsGeminiResponseJsonSchema,
-  PopulatedFormFieldsGeminiResponse,
-  ScrapedForm,
-} from "~/lib/models/FormField";
+import { ScrapedForm } from "~/lib/models/FormField";
 import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
 import { generateContent } from "~/lib/services/gemini-service";
 import { useGlobalStore } from "../hooks/stores/useGlobalStore";
+import { PopulatedFormFieldsLlmResponse_SCHEMA } from "../models/llm-structured-responses/PopulateFormFieldLlmResponse";
 import { logResponse } from "../utils/log-utils";
 import { populatePrompt } from "../utils/prompt-utils";
 import { RippleButton } from "./shadcn/ripple";
@@ -78,11 +75,7 @@ export default function Step2() {
     });
 
     // 4. Generate content for form fields
-    const aiResponse = await generateContent<PopulatedFormFieldsGeminiResponse>(
-      geminiApiKeyDecrypted,
-      finalPrompt,
-      getPopulatedFormFieldsGeminiResponseJsonSchema() as PopulatedFormFieldsGeminiResponse,
-    );
+    const aiResponse = await generateContent(geminiApiKeyDecrypted, finalPrompt, PopulatedFormFieldsLlmResponse_SCHEMA);
 
     logResponse(aiResponse);
 

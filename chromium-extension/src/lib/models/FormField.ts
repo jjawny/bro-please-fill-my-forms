@@ -1,21 +1,18 @@
-export interface FormField {
-  id?: string;
+export type BaseFormField = {
+  id: string;
+  value?: string;
+};
+
+export type FormField = BaseFormField & {
   name?: string;
   type: string;
   placeholder?: string;
   label?: string;
   required?: boolean;
-  value?: string;
   options?: string[]; // for select/radio/checkbox
   selector: string; // CSS selector to find the element
-}
+};
 
-export interface ScrapedForm {
+export type ScrapedForm = {
   fields: FormField[];
-  formAction?: string;
-  formMethod?: string;
-}
-
-export interface GeminiResponse {
-  fields: Record<string, string>;
-}
+};
