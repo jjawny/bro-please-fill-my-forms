@@ -34,7 +34,7 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
     const scrapeFormFieldsResponse: ScrapeFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
     if (!scrapeFormFieldsResponse.isOk) {
-      return err({ messages, uiMessage: scrapeFormFieldsResponse.error || "Service worker failed" });
+      return err({ messages, uiMessage: scrapeFormFieldsResponse.uiMessage || "Service worker failed" });
     }
 
     if (!scrapeFormFieldsResponse.form) {
@@ -60,7 +60,7 @@ export async function fillFormFields(tabId: number, formData: PopulatedFormField
     const fillFormFieldsResponse: FillFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
     if (!fillFormFieldsResponse.isOk) {
-      return err({ messages, uiMessage: fillFormFieldsResponse.error || "Service worker failed" });
+      return err({ messages, uiMessage: fillFormFieldsResponse.uiMessage || "Service worker failed" });
     }
 
     return ok({ messages, uiMessage: "Successfully filled form fields" });

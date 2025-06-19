@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(
     sendResponse: (response: ScrapeFormFieldsResponse | FillFormFieldsResponse) => void,
   ) => {
     if (!message.tabId) {
-      sendResponse({ isOk: false, error: "No tab to act on" });
+      sendResponse({ isOk: false, uiMessage: "No tab to act on" });
       return CLOSE_CHANNEL;
     }
 
@@ -31,14 +31,14 @@ chrome.runtime.onMessage.addListener(
 
       case ServiceWorkerAction.FILL_FORM_FIELDS:
         if (!message.formData) {
-          sendResponse({ isOk: false, error: "Form data is required" });
+          sendResponse({ isOk: false, uiMessage: "Form data is required" });
           return CLOSE_CHANNEL;
         }
         fillFormFields(message.tabId, message.formData, sendResponse);
         return KEEP_CHANNEL_OPEN;
 
       default:
-        sendResponse({ isOk: false, error: `Unsupported action` });
+        sendResponse({ isOk: false, uiMessage: `Unsupported action` });
         return CLOSE_CHANNEL;
     }
   },

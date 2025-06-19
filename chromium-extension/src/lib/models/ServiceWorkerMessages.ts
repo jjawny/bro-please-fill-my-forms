@@ -9,7 +9,7 @@ type BaseMessageRequest = {
 
 type BaseMessageResponse = {
   isOk: boolean;
-  error?: string;
+  uiMessage?: string;
 };
 
 export type ScrapeFormFieldsRequest = BaseMessageRequest & {

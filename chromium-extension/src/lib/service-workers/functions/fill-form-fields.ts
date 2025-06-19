@@ -1,37 +1,35 @@
+import { PopulatedFormFieldsLlmResponse } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
+import { FillFormFieldsResponse } from "~/lib/models/ServiceWorkerMessages";
+
 export const fillFormFields = (
   tabId: number,
-  formData: Record<string, string>,
-  sendResponse: (response: any) => void
+  formData: PopulatedFormFieldsLlmResponse,
+  sendResponse: (response: FillFormFieldsResponse) => void,
 ) => {
   chrome.scripting.executeScript(
     {
       target: { tabId },
-      func: (data) => {
+      args: [formData],
+      /**
+       * PRO TIP: Copy n execute this fn directly on the web page to rapidly test (need to define any params first)
+       * Try not to import libs here; keep lightweight/vanilla
+       */
+      func: (formData) => {
         let filledCount = 0;
 
-        console.log("Form data to fill:", data);
-        console.log("Available elements on page:");
-        const allInputs = document.querySelectorAll("input, select, textarea");
-        allInputs.forEach((el, i) => {
-          console.log(`Element ${i}:`, {
-            id: el.id,
-            name: (el as HTMLInputElement).name,
-            dataDigiField: el.getAttribute("data-digi-field"),
-            tagName: el.tagName,
-            type: (el as HTMLInputElement).type,
-          });
-        });
+        formData.fields.forEach((field) => {
+          const { id: fieldId, value } = field;
 
-        Object.entries(data).forEach(([fieldId, value]) => {
           // First try to find by data-digi-field attribute
-          let element = document.querySelector(
-            `[data-digi-field="${fieldId}"]`
-          ) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          let element = document.querySelector(`[data-digi-field="${fieldId}"]`) as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement;
 
           // If not found, try to find by name attribute
           if (!element) {
             element = document.querySelector(
-              `input[name="${fieldId}"], select[name="${fieldId}"], textarea[name="${fieldId}"]`
+              `input[name="${fieldId}"], select[name="${fieldId}"], textarea[name="${fieldId}"]`,
             ) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
           }
 
@@ -43,11 +41,6 @@ export const fillFormFields = (
               | HTMLTextAreaElement;
           }
 
-          console.log(
-            `Trying to fill field "${fieldId}" with value "${value}"`
-          );
-          console.log(`Found element:`, element);
-
           if (element && value) {
             if (element.type === "checkbox" || element.type === "radio") {
               // For checkbox/radio, check if the value matches
@@ -58,9 +51,8 @@ export const fillFormFields = (
             } else if (element.tagName === "SELECT") {
               // For select, set the value
               const select = element as HTMLSelectElement;
-              const option = Array.from(select.options).find(
-                (opt) => opt.value === value || opt.text === value
-              );
+              const option = Array.from(select.options).find((opt) => opt.value === value || opt.text === value);
+
               if (option) {
                 select.value = option.value;
                 filledCount++;
@@ -77,28 +69,22 @@ export const fillFormFields = (
           }
         });
 
-        return { filledCount, totalFields: Object.keys(data).length };
+        return { filledCount, totalFields: formData.fields.length };
       },
-      args: [formData],
     },
-    (result) => {
+    (response) => {
       if (chrome.runtime.lastError) {
-        sendResponse({
-          success: false,
-          error: chrome.runtime.lastError.message,
-        });
+        sendResponse({ isOk: false, uiMessage: chrome.runtime.lastError.message });
         return;
       }
 
-      if (result && result[0] && result[0].result) {
-        const { filledCount, totalFields } = result[0].result;
-        sendResponse({
-          success: true,
-          message: `Successfully filled ${filledCount} out of ${totalFields} fields`,
-        });
-      } else {
-        sendResponse({ success: false, error: "Failed to fill form fields" });
+      if (response[0].result) {
+        const { filledCount, totalFields } = response[0].result;
+        sendResponse({ isOk: true, uiMessage: `Successfully filled ${filledCount}/${totalFields} fields` });
+        return;
       }
-    }
+
+      sendResponse({ isOk: false, uiMessage: "Failed to fill form fields" });
+    },
   );
 };

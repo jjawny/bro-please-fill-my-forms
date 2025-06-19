@@ -1,28 +1,25 @@
-export const scrapeFormFields = (
-  tabId: number,
-  sendResponse: (response: any) => void
-) => {
+import { FormField, ScrapedForm } from "~/lib/models/FormField";
+import { ScrapeFormFieldsResponse } from "~/lib/models/ServiceWorkerMessages";
+
+export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeFormFieldsResponse) => void) => {
   chrome.scripting.executeScript(
     {
       target: { tabId },
+      /**
+       * PRO TIP: Copy n execute this fn directly on the web page to rapidly test (need to define any params first)
+       * Try not to import libs here; keep lightweight/vanilla
+       */
       func: () => {
-        const formFields: any[] = [];
+        const formFields: FormField[] = [];
 
         // Find all input, select, and textarea elements
         const inputs = document.querySelectorAll("input, select, textarea");
 
         inputs.forEach((element, index) => {
-          const input = element as
-            | HTMLInputElement
-            | HTMLSelectElement
-            | HTMLTextAreaElement;
+          const input = element as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
           // Skip hidden, submit, button inputs
-          if (
-            input.type === "hidden" ||
-            input.type === "submit" ||
-            input.type === "button"
-          ) {
+          if (input.type === "hidden" || input.type === "submit" || input.type === "button") {
             return;
           }
 
@@ -33,9 +30,7 @@ export const scrapeFormFields = (
             placeholder: (input as HTMLInputElement).placeholder || "",
             required: input.required || false,
             value: input.value || "",
-            selector: `[data-digi-field="${
-              input.id || input.name || `field_${index}`
-            }"]`,
+            selector: `[data-digi-field="${input.id || input.name || `field_${index}`}"]`,
           };
 
           // Add data attribute for targeting later
@@ -44,9 +39,7 @@ export const scrapeFormFields = (
           // Find associated label
           let label = "";
           if (input.id) {
-            const labelElement = document.querySelector(
-              `label[for="${input.id}"]`
-            );
+            const labelElement = document.querySelector(`label[for="${input.id}"]`);
             if (labelElement) {
               label = labelElement.textContent?.trim() || "";
             }
@@ -56,8 +49,7 @@ export const scrapeFormFields = (
           if (!label) {
             const parentLabel = input.closest("label");
             if (parentLabel) {
-              label =
-                parentLabel.textContent?.replace(input.value, "").trim() || "";
+              label = parentLabel.textContent?.replace(input.value, "").trim() || "";
             }
           }
 
@@ -66,48 +58,45 @@ export const scrapeFormFields = (
           // Handle select options
           if (input.tagName === "SELECT") {
             const select = input as HTMLSelectElement;
-            field.options = Array.from(select.options).map(
-              (option) => option.value || option.text
-            );
+            field.options = Array.from(select.options).map((option) => option.value || option.text);
           }
 
           // Handle radio/checkbox options
           if (input.type === "radio" || input.type === "checkbox") {
             const name = input.name;
             if (name) {
-              const relatedInputs = document.querySelectorAll(
-                `input[name="${name}"]`
-              );
-              field.options = Array.from(relatedInputs).map(
-                (inp: any) => inp.value
-              );
+              const relatedInputs = document.querySelectorAll(`input[name="${name}"]`);
+              field.options = Array.from(relatedInputs).map((inp: any) => inp.value);
             }
           }
 
           formFields.push(field);
         });
 
-        return {
+        const finalForm: ScrapedForm = {
           fields: formFields,
-          formAction: document.querySelector("form")?.action || "",
-          formMethod: document.querySelector("form")?.method || "POST",
         };
+
+        return { finalForm };
       },
     },
-    (result) => {
+    (response) => {
       if (chrome.runtime.lastError) {
+        sendResponse({ isOk: false, uiMessage: chrome.runtime.lastError.message });
+        return;
+      }
+
+      if (response[0].result) {
+        const { finalForm } = response[0].result;
         sendResponse({
-          success: false,
-          error: chrome.runtime.lastError.message,
+          isOk: true,
+          uiMessage: `Successfully scraped ${finalForm.fields.length} fields`,
+          form: finalForm,
         });
         return;
       }
 
-      if (result && result[0] && result[0].result) {
-        sendResponse({ success: true, form: result[0].result });
-      } else {
-        sendResponse({ success: false, error: "No form fields found" });
-      }
-    }
+      sendResponse({ isOk: false, uiMessage: "No form fields found" });
+    },
   );
 };
