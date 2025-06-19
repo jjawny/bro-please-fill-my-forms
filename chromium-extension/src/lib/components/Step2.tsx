@@ -1,10 +1,17 @@
+import { LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
-import { FormField, ScrapedForm } from "~/lib/models/FormField";
+import {
+  getPopulatedFormFieldsGeminiResponseJsonSchema,
+  PopulatedFormFieldsGeminiResponse,
+  ScrapedForm,
+} from "~/lib/models/FormField";
+import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
-import { generateFormContent } from "~/lib/services/gemini-service";
+import { generateContent } from "~/lib/services/gemini-service";
 import { useGlobalStore } from "../hooks/stores/useGlobalStore";
 import { logResponse } from "../utils/log-utils";
+import { populatePrompt } from "../utils/prompt-utils";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 import ToolTipWrapper from "./ToolTipWrapper";
@@ -12,8 +19,7 @@ import ToolTipWrapper from "./ToolTipWrapper";
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  // TOOD: display the scrapedForm somewhere so the user can click a pop-up to see it
+  // TODO: display the scrapedForm somewhere so the user can click a pop-up to see it
   const [, setScrapedForm] = useState<ScrapedForm | null>(null);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
@@ -22,13 +28,17 @@ export default function Step2() {
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const geminiApiKeyDecrypted = usePinStore((state) => state.geminiApiKeyDecrypted);
 
+  const onSubmit = async () => {
+    setIsSubmitting(true);
+    await scrapeAndFillForm();
+    setIsSubmitting(false);
+  };
+
   const scrapeAndFillForm = async () => {
     if (userPrompt.trim() === "" || !geminiApiKeyDecrypted) {
       console.debug("User prompt and Gemini API key required");
       return;
     }
-
-    setIsSubmitting(true);
 
     // 1. Get the active tab
     const getActiveTabResponse = await getActiveTab();
@@ -48,43 +58,69 @@ export default function Step2() {
     }
 
     // 2. Scrape form fields
-    const scrapeResponse = await scrapeFormFields(tabId);
-    if (!scrapeResponse.isOk) {
-      throw new Error(scrapeResponse.uiMessage || "Failed to scrape form");
+    const scrapeFormResponse = await scrapeFormFields(tabId);
+
+    logResponse(scrapeFormResponse);
+
+    if (!scrapeFormResponse.isOk) {
+      setGlobalError(scrapeFormResponse.uiMessage);
+      return;
     }
 
-    const scrapedFormData = scrapeResponse.value;
-    setScrapedForm(scrapedFormData);
+    const scrapedForm = scrapeFormResponse.value;
 
-    // Generate AI content
-    const formStructure = scrapedFormData.fields.map((field: FormField) => ({
-      name: field.name || field.id,
-      type: field.type,
-      label: field.label,
-      placeholder: field.placeholder,
-      options: field.options,
-    }));
+    setScrapedForm(scrapedForm);
 
-    const aiResponse = await generateFormContent(geminiApiKeyDecrypted, formStructure, userPrompt);
+    // 3. Generate AI content
+    const finalPrompt = populatePrompt(fillFormPrompt, {
+      form: JSON.stringify(scrapedForm, null, 2),
+      userInput: userPrompt,
+    });
+
+    // 4. Generate content for form fields
+    const aiResponse = await generateContent<PopulatedFormFieldsGeminiResponse>(
+      geminiApiKeyDecrypted,
+      finalPrompt,
+      getPopulatedFormFieldsGeminiResponseJsonSchema() as PopulatedFormFieldsGeminiResponse,
+    );
+
+    logResponse(aiResponse);
 
     if (!aiResponse.isOk) {
-      throw new Error(aiResponse.uiMessage);
+      setGlobalError(aiResponse.uiMessage);
+      return;
     }
 
-    // Fill form fields
-    const fillResponse = await fillFormFields(tabId, aiResponse.value.fields, scrapedFormData);
+    // 5. Fill form fields with generated content
+    const fillResponse = await fillFormFields(tabId, aiResponse.value);
+
+    logResponse(fillResponse);
+
     if (!fillResponse.isOk) {
-      throw new Error(fillResponse.uiMessage || "Failed to fill form");
+      setGlobalError(scrapeFormResponse.uiMessage);
+      return;
     }
+  };
 
-    setIsSubmitting(false);
+  const getToolTipMessage = (): string | undefined => {
+    if (isSubmitting) return "Please wait, processing...";
+
+    if (!userPrompt.trim()) return "Please enter a prompt first";
+
+    if (!geminiApiKeyDecrypted) return "Gemini API key is required";
+
+    if (!hasGeminiApiKeyConnectedSuccessfully) return "Gemini API key failed to connect, please check your key";
+
+    if (isGeminiApiKeyDirty) return "Please wait, saving your Gemini API key";
+
+    return undefined;
   };
 
   const isSubmitButtonDisabled =
     isSubmitting ||
     !userPrompt.trim() ||
     !geminiApiKeyDecrypted ||
-    hasGeminiApiKeyConnectedSuccessfully ||
+    !hasGeminiApiKeyConnectedSuccessfully ||
     isGeminiApiKeyDirty;
 
   return (
@@ -96,10 +132,15 @@ export default function Step2() {
         rows={5}
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
-      <ToolTipWrapper delayDuration={800} content="hey" open={undefined} side="bottom">
+      <ToolTipWrapper
+        delayDuration={800}
+        content={getToolTipMessage()}
+        open={isSubmitButtonDisabled ? false : undefined}
+        side="bottom"
+      >
         <div className="px-2">
-          <RippleButton onClick={scrapeAndFillForm} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
-            {isSubmitting ? "Processing..." : "Fill Form"}
+          <RippleButton onClick={onSubmit} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
+            {isSubmitting ? <LoaderCircleIcon className="animate-spin" /> : "Fill Form"}
           </RippleButton>
         </div>
       </ToolTipWrapper>
