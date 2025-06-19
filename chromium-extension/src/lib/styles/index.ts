@@ -1,3 +1,2 @@
-import "./root.css";
-import "./animations.css";
 import "./background.css";
+import "./root.css";

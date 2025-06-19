@@ -14,7 +14,7 @@ const DATA_PREFIX_SEPARATOR = "$$$";
 
 /**
  * 
- * TODO: clean up
+ * TODO:DOCS clean up
 I've successfully updated the component to use the native Web Crypto API instead of CryptoJS. The changes include:
 
 Replaced CryptoJS with Web Crypto API: Using the browser's built-in crypto.subtle for encryption/decryption

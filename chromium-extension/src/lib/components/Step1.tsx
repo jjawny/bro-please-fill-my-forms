@@ -101,14 +101,8 @@ export default function Step1() {
       >
         {isVisible ? <EyeClosedIcon /> : <EyeIcon />}
       </RippleButton>
-      <RippleButton
-        title="Copy"
-        size="icon"
-        variant="secondary"
-        onClick={handleCopy}
-        className={cn("size-9", isCopied && "text-lime-500 animate-bounce-in")}
-      >
-        {isCopied ? <CheckIcon /> : <CopyIcon />}
+      <RippleButton title="Copy" size="icon" variant="secondary" onClick={handleCopy} className={cn("size-9")}>
+        {isCopied ? <CheckIcon className="animate-bounce-in text-lime-500" /> : <CopyIcon />}
       </RippleButton>
     </div>
   );

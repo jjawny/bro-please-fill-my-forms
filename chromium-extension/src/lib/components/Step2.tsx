@@ -1,4 +1,4 @@
-import { LoaderCircleIcon } from "lucide-react";
+import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
@@ -10,6 +10,7 @@ import {
 import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
 import { generateContent } from "~/lib/services/gemini-service";
+import { cn } from "~/lib/utils/cn";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
 import { RippleButton } from "./shadcn/ripple";
@@ -19,7 +20,7 @@ import ToolTipWrapper from "./ToolTipWrapper";
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
+  const [isDone, setIsDone] = useState<boolean>(false);
   // TODO: display the scrapedForm somewhere so the user can click a pop-up to see it
   const [, setScrapedForm] = useState<ScrapedForm | null>(null);
 
@@ -31,14 +32,17 @@ export default function Step2() {
 
   const onSubmit = async () => {
     setIsSubmitting(true);
-    await scrapeAndFillForm();
-    // setIsSubmitting(false);
+    const isSuccessful = await scrapeAndFillForm();
+    if (isSuccessful) {
+      setIsDone(true);
+      setTimeout(() => setIsDone(false), 1_000);
+    }
+    setIsSubmitting(false);
   };
 
-  const scrapeAndFillForm = async () => {
+  const scrapeAndFillForm = async (): Promise<boolean> => {
     if (userPrompt.trim() === "" || !geminiApiKeyDecrypted) {
-      console.debug("User prompt and Gemini API key required");
-      return;
+      return false;
     }
 
     // 1. Get the active tab
@@ -48,14 +52,14 @@ export default function Step2() {
 
     if (!getActiveTabResponse.isOk) {
       setGlobalError(getActiveTabResponse.uiMessage);
-      return;
+      return false;
     }
 
     const tabId = getActiveTabResponse.value.id;
 
     if (!tabId) {
       setGlobalError("No active tab found");
-      return;
+      return false;
     }
 
     // 2. Scrape form fields
@@ -65,7 +69,7 @@ export default function Step2() {
 
     if (!scrapeFormResponse.isOk) {
       setGlobalError(scrapeFormResponse.uiMessage);
-      return;
+      return false;
     }
 
     const scrapedForm = scrapeFormResponse.value;
@@ -89,7 +93,7 @@ export default function Step2() {
 
     if (!aiResponse.isOk) {
       setGlobalError(aiResponse.uiMessage);
-      return;
+      return false;
     }
 
     // 5. Fill form fields with generated content
@@ -99,8 +103,10 @@ export default function Step2() {
 
     if (!fillResponse.isOk) {
       setGlobalError(scrapeFormResponse.uiMessage);
-      return;
+      return false;
     }
+
+    return true;
   };
 
   const getToolTipMessage = (): string | undefined => {
@@ -136,8 +142,14 @@ export default function Step2() {
         side="bottom"
       >
         <div className="px-2">
-          <RippleButton onClick={onSubmit} disabled={isSubmitButtonDisabled} className="w-full mt-2 h-6">
-            {isSubmitting ? <LoaderCircleIcon className="animate-spin" /> : "Fill Form"}
+          <RippleButton onClick={onSubmit} disabled={isSubmitButtonDisabled} className={cn("w-full mt-2 h-6")}>
+            {isSubmitting ? (
+              <LoaderCircleIcon className="animate-spin" />
+            ) : isDone ? (
+              <CheckIcon className="animate-bounce-in text-lime-500" />
+            ) : (
+              "Fill Form"
+            )}
           </RippleButton>
         </div>
       </ToolTipWrapper>

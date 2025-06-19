@@ -35,7 +35,7 @@
 
 // #region UPGRADE?
 // u shouldnt need to think or type much as this is used everywhere, so only TWO helper functions, ok and err, flexible
-// TODO: confirm this? this is from the POV of us adding these to messages bundle, but maybe should be from the POV of the ui and we can easily just search, messages should be unique anyway failure ui messages should always start with "Failed to...", success ui messages should always start with "Successfully..."
+// TODO:DOCS confirm this? this is from the POV of us adding these to messages bundle, but maybe should be from the POV of the ui and we can easily just search, messages should be unique anyway failure ui messages should always start with "Failed to...", success ui messages should always start with "Successfully..."
 // messages are for debugging (logging), <success/error>Message is for UI (toasts/helper text)
 // success/error message got confusing when returning a bool (api key invalid but setting success message? idk man, lets call it uiMessage)
 export type ErrOr<TValue = true> =
