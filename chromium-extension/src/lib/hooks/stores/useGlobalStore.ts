@@ -9,6 +9,8 @@ type GlobalStore = {
    * Signal to other UI that a global error has occurred
    */
   setGlobalError: (error?: string) => ErrOr;
+
+  // TODO: Persistent tutorial based on empty inputs and order
 };
 
 export const useGlobalStore = create<GlobalStore>((set) => ({

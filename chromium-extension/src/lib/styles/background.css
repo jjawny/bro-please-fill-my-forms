@@ -18,7 +18,7 @@
   width: 500px;
   transform: translateX(20%) translateY(-10%);
   border-radius: 9999px;
-  background-color: rgba(109, 228, 244, 0.169);
+  background-color: rgba(109, 228, 244, 0.1);
   opacity: 0.5;
   filter: blur(80px);
   z-index: 0;

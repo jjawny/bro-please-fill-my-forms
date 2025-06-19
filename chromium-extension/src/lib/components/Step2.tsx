@@ -129,7 +129,7 @@ export default function Step2() {
         value={userPrompt}
         onChange={(e) => setUserPrompt(e.target.value)}
         placeholder="Your form content"
-        rows={5}
+        rows={6}
         className="bg-white text-black resize-none ![field-sizing:initial]"
       />
       <ToolTipWrapper

@@ -80,39 +80,36 @@ export default function Step1() {
   };
 
   return (
-    <div>
-      <h2 className="text-start">1. Enter a Gemini API Key</h2>
-      <div className="flex gap-1 items-center w-full">
-        <form className="w-full relative">
-          <Input
-            type={isVisible ? "text" : "password"}
-            placeholder="Gemini API Key"
-            value={apiKeyInputValue}
-            onChange={handleInputChange}
-            className="bg-white p-2"
-            autoComplete="off"
-          />
-          <ApiKeyInputEndAdornment isValidating={isValidating} hasApiKey={!!apiKeyInputValue} />
-        </form>
-        <RippleButton
-          title={isVisible ? "Hide value" : "Show value"}
-          size="icon"
-          variant="secondary"
-          onClick={() => setIsVisible(!isVisible)}
-          className="size-9"
-        >
-          {isVisible ? <EyeClosedIcon /> : <EyeIcon />}
-        </RippleButton>
-        <RippleButton
-          title="Copy"
-          size="icon"
-          variant="secondary"
-          onClick={handleCopy}
-          className={cn("size-9", isCopied && "text-lime-500 animate-bounce-in")}
-        >
-          {isCopied ? <CheckIcon /> : <CopyIcon />}
-        </RippleButton>
-      </div>
+    <div className="flex gap-1 items-center w-full">
+      <form className="w-full relative">
+        <Input
+          type={isVisible ? "text" : "password"}
+          placeholder="Gemini API Key"
+          value={apiKeyInputValue}
+          onChange={handleInputChange}
+          className="bg-white p-2"
+          autoComplete="off"
+        />
+        <ApiKeyInputEndAdornment isValidating={isValidating} hasApiKey={!!apiKeyInputValue} />
+      </form>
+      <RippleButton
+        title={isVisible ? "Hide value" : "Show value"}
+        size="icon"
+        variant="secondary"
+        onClick={() => setIsVisible(!isVisible)}
+        className="size-9"
+      >
+        {isVisible ? <EyeClosedIcon /> : <EyeIcon />}
+      </RippleButton>
+      <RippleButton
+        title="Copy"
+        size="icon"
+        variant="secondary"
+        onClick={handleCopy}
+        className={cn("size-9", isCopied && "text-lime-500 animate-bounce-in")}
+      >
+        {isCopied ? <CheckIcon /> : <CopyIcon />}
+      </RippleButton>
     </div>
   );
 }
