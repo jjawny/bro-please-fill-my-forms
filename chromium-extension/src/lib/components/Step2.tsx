@@ -31,7 +31,7 @@ export default function Step2() {
   const onSubmit = async () => {
     setIsSubmitting(true);
     await scrapeAndFillForm();
-    setIsSubmitting(false);
+    // setIsSubmitting(false);
   };
 
   const scrapeAndFillForm = async () => {
@@ -103,15 +103,15 @@ export default function Step2() {
   };
 
   const getToolTipMessage = (): string | undefined => {
-    if (isSubmitting) return "Please wait, processing...";
+    if (isSubmitting) return "Please wait, filling your form...";
 
-    if (!userPrompt.trim()) return "Please enter a prompt first";
+    if (!userPrompt.trim()) return "Please enter your form content";
 
     if (!geminiApiKeyDecrypted) return "Gemini API key is required";
 
     if (!hasGeminiApiKeyConnectedSuccessfully) return "Gemini API key failed to connect, please check your key";
 
-    if (isGeminiApiKeyDirty) return "Please wait, saving your Gemini API key";
+    if (isGeminiApiKeyDirty) return "Please wait, saving your Gemini API key...";
 
     return undefined;
   };
@@ -129,13 +129,13 @@ export default function Step2() {
         value={userPrompt}
         onChange={(e) => setUserPrompt(e.target.value)}
         placeholder="Your form content"
-        rows={6}
-        className="bg-white text-black resize-none ![field-sizing:initial]"
+        rows={8}
+        className="bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]"
       />
       <ToolTipWrapper
         delayDuration={800}
         content={getToolTipMessage()}
-        open={isSubmitButtonDisabled ? false : undefined}
+        open={isSubmitButtonDisabled ? undefined : false}
         side="bottom"
       >
         <div className="px-2">

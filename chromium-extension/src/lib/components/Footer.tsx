@@ -7,7 +7,7 @@ export default function Footer() {
   const globalError = useGlobalStore((state) => state.globalError);
 
   return (
-    <footer className="flex-grow sticky items-end w-full flex justify-center">
+    <footer className="flex-grow sticky items-end w-full flex justify-center h-4">
       {globalError && <span className="text-red-500 text-sm">{globalError}</span>}
     </footer>
   );

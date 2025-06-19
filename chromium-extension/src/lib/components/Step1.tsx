@@ -87,7 +87,7 @@ export default function Step1() {
           placeholder="Gemini API Key"
           value={apiKeyInputValue}
           onChange={handleInputChange}
-          className="bg-white p-2"
+          className="bg-[var(--pin-background-color)] p-2"
           autoComplete="off"
         />
         <ApiKeyInputEndAdornment isValidating={isValidating} hasApiKey={!!apiKeyInputValue} />
@@ -140,7 +140,7 @@ function ApiKeyInputEndAdornment({ isValidating, hasApiKey }: { isValidating: bo
   };
 
   return (
-    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-6 flex items-center justify-end bg-gradient-to-l from-white via-white to-transparent">
+    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-6 flex items-center justify-end bg-gradient-to-l from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent">
       {getIcon()}
     </div>
   );

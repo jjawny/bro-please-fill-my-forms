@@ -81,7 +81,7 @@ function LockedView() {
 
 function UnlockedView() {
   return (
-    <div className="flex flex-col gap-6 h-full justify-center w-full px-1 overflow-y-scroll">
+    <div className="flex flex-col gap-6 mt-4 h-full justify-center w-full px-1 overflow-y-scroll">
       <Step1 />
       <Step2 />
     </div>
