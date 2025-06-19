@@ -12,7 +12,7 @@ A Chromium **Extension** (a.k.a CRX) that **auto-fills** forms based on **natura
 1. `npm run build` will dump a [dist](./dist) directory (see [vite.config.ts](./vite.config.ts))
 2. Open your Chromium browser extension page (for example: [chrome://extensions/](chrome://extensions/))
 3. Click <kbd>Load unpacked</kbd> and choose [dist](./dist)
-4. Make changes and repeat `npm run build` + reload <img src="readme/reload-extension-guide.png" alt="reload extension" style="max-height: 256px;">
+4. Make changes and repeat `npm run build` + reload <img src="chromium-extension/public/images/readme/reload-extension-guide.png" alt="reload extension" style="max-height: 256px;">
 
 ## Edit popup UI fast
 1. `npm run dev` to edit the popup UI like a normal web app (faster feedback loop)
@@ -23,6 +23,6 @@ A Chromium **Extension** (a.k.a CRX) that **auto-fills** forms based on **natura
 ## Viewing console logs
 - ⚛️ Component logs? inspect the popup
 - 🤖 Service worker logs? inspect the extension
-   ![how to view extension console logs](readme/inspect-service-worker-logs.png)
+   ![how to view extension console logs](chromium-extension/public/images/readme/inspect-service-worker-logs.png)
 - 💉 Injected scripts logs (`chrome.scripting.executeScript`)? inspect current page
 
