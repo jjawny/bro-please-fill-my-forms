@@ -7,7 +7,7 @@ export default function Hero() {
     <div
       className={cn(
         "relative",
-        "w-[300px] h-[80px] mt-[80px] mr-[50px]", // FOR POSITIONING
+        "w-[300px] h-[80px] mt-[80px] mr-[50px]",
         // "bg-lime-300", // FOR DEBUGGING THE POSITION
       )}
     >
@@ -20,7 +20,7 @@ export default function Hero() {
 function HeroLogo() {
   return (
     <div className="select-none absolute top-[-60px] right-[-66px] z-50">
-      <img src={logo} alt="TODO: name of app + logo" className="max-h-32" />
+      <img src={logo} alt="Bro Please, Fill My Forms logo" className="max-h-32" />
     </div>
   );
 }

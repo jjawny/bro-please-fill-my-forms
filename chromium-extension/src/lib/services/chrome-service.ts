@@ -1,6 +1,7 @@
 import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
+import { PopulatedFormFieldsLlmResponse } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
 import type {
   FillFormFieldsRequest,
   FillFormFieldsResponse,
@@ -8,7 +9,6 @@ import type {
   ScrapeFormFieldsResponse,
 } from "~/lib/models/ServiceWorkerMessages";
 import { logError } from "~/lib/utils/log-utils";
-import { PopulatedFormFieldsLlmResponse } from "../models/llm-structured-responses/PopulateFormFieldLlmResponse";
 
 export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
   let messages = ["Begin getting active tab"];
