@@ -11,7 +11,6 @@ import DialogWrapper from "./DialogWrapper";
 // These need to be tested and adjusted together
 // e.g., set your desired truncate length
 // adjust the item width and gap to the desired design
-const TRUNCATE_TEXT_LENGTH = 10;
 const UI_ITEM_WIDTH_PX = 90;
 const UI_OVERFLOW_ITEM_WIDTH_PX = 40;
 const GAP_WIDTH_PX = 4;
@@ -48,7 +47,7 @@ export default function FormFieldBadgeRow({
       <DialogWrapper
         isOpen={isFieldsDialogOpen}
         onClose={() => setIsFieldsDialogOpen(false)}
-        Title="Form Fields Found"
+        Title={`Found ${scrapedForm.fields.length} Fields`}
         Content={<FormFieldsSummary scrapedForm={scrapedForm} />}
       />
       <div className="flex font-mono gap-1 items-center" style={{ gap: `${GAP_WIDTH_PX}px` }}>
@@ -57,10 +56,11 @@ export default function FormFieldBadgeRow({
             key={field.id}
             variant="secondary"
             onClick={openDialog}
-            className={cn("text-xs cursor-pointer", "truncate inline-block")}
+            className="text-xs cursor-pointer"
             style={{ width: `${UI_ITEM_WIDTH_PX}px` }}
           >
-            {field.name ?? field.id}
+            <TextCursorIcon className="opacity-50" />
+            <span className="opacity-75 truncate inline-block">{field.name ?? field.id}</span>
           </Badge>
         ))}
         {invisibleItemCount > 0 && (
@@ -80,12 +80,12 @@ export default function FormFieldBadgeRow({
 
 function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
   return (
-    <span className="flex flex-col gap-1">
+    <span className="flex flex-col gap-1 max-h-[calc(100vh-200px)] overflow-y-scroll">
       {scrapedForm.fields.map((field) => (
-        <Badge key={field.id} variant="secondary" className={cn("text-xs", "inline-flex")}>
-          <TextCursorIcon /> {field.name ?? field.label ?? field.id}{" "}
-          <span className="text-stone-500">{field.type}</span>
-          <span className="text-stone-400">{field.label}</span>
+        <Badge key={field.id} variant="secondary" className="text-xs">
+          <TextCursorIcon className="opacity-50" /> {field.name ?? field.label ?? field.id}
+          <span className="opacity-75 truncate inline-block">{field.type}</span>
+          <span className="opacity-60 truncate inline-block">{field.label ?? field.placeholder}</span>
         </Badge>
       ))}
     </span>
