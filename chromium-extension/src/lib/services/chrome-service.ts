@@ -1,3 +1,4 @@
+import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
 import type {
@@ -5,8 +6,9 @@ import type {
   FillFormFieldsResponse,
   ScrapeFormFieldsRequest,
   ScrapeFormFieldsResponse,
-} from "~/lib/types/message-types";
+} from "~/lib/models/ServiceWorkerMessages";
 import { logError } from "~/lib/utils/log-utils";
+import { PopulatedFormFieldsLlmResponse } from "../models/llm-structured-responses/PopulateFormFieldLlmResponse";
 
 export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
   let messages = ["Begin getting active tab"];
@@ -28,59 +30,40 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
   let messages = ["Begin scraping form fields"];
 
   try {
-    const message: ScrapeFormFieldsRequest = {
-      action: "scrape_form_fields",
-      tabId: tabId,
-    };
+    const message: ScrapeFormFieldsRequest = { tabId, action: ServiceWorkerAction.SCRAPE_FORM_FIELDS };
+    const scrapeFormFieldsResponse: ScrapeFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
-    const response: ScrapeFormFieldsResponse = await chrome.runtime.sendMessage(message);
-
-    if (!response?.success) {
-      return err({
-        messages,
-        uiMessage: response?.error || "Failed to scrape form fields",
-      });
+    if (!scrapeFormFieldsResponse.isOk) {
+      return err({ messages, uiMessage: scrapeFormFieldsResponse.error || "Service worker failed" });
     }
 
-    return ok({
-      messages,
-      uiMessage: "Successfully scraped form fields",
-      value: response.form || { fields: [] }, // TODO:
-    });
+    if (!scrapeFormFieldsResponse.form) {
+      return err({ messages, uiMessage: "No form found" });
+    }
+
+    return ok({ messages, uiMessage: "Successfully scraped form fields", value: scrapeFormFieldsResponse.form });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to scrape form fields") });
   }
 }
 
-export async function fillFormFields(
-  tabId: number,
-  formData: Record<string, string>,
-  scrapedForm: ScrapedForm,
-): Promise<ErrOr<boolean>> {
+export async function fillFormFields(tabId: number, formData: PopulatedFormFieldsLlmResponse): Promise<ErrOr> {
   let messages = ["Begin filling form fields"];
 
   try {
     const message: FillFormFieldsRequest = {
-      action: "fill_form_fields",
+      action: ServiceWorkerAction.FILL_FORM_FIELDS,
       tabId: tabId,
       formData: formData,
-      scrapedForm: scrapedForm,
     };
 
-    const response: FillFormFieldsResponse = await chrome.runtime.sendMessage(message);
+    const fillFormFieldsResponse: FillFormFieldsResponse = await chrome.runtime.sendMessage(message);
 
-    if (!response?.success) {
-      return err({
-        messages,
-        uiMessage: response?.error || "Failed to fill form fields",
-      });
+    if (!fillFormFieldsResponse.isOk) {
+      return err({ messages, uiMessage: fillFormFieldsResponse.error || "Service worker failed" });
     }
 
-    return ok({
-      messages,
-      uiMessage: "Successfully filled form fields",
-      value: true,
-    });
+    return ok({ messages, uiMessage: "Successfully filled form fields" });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to fill form fields") });
   }
