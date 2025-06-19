@@ -15,14 +15,14 @@ import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
+import TextareaBadgeOverlay from "./TextareaBadgeOverlay";
 import ToolTipWrapper from "./ToolTipWrapper";
 
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  // TODO: display the scrapedForm somewhere so the user can click a pop-up to see it
-  const [, setScrapedForm] = useState<ScrapedForm | null>(null);
+  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>(undefined);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
@@ -128,13 +128,16 @@ export default function Step2() {
 
   return (
     <div>
-      <Textarea
-        value={userPrompt}
-        onChange={(e) => setUserPrompt(e.target.value)}
-        placeholder="Your form content"
-        rows={8}
-        className="bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]"
-      />
+      <div className="relative">
+        <Textarea
+          value={userPrompt}
+          onChange={(e) => setUserPrompt(e.target.value)}
+          placeholder="Your form content"
+          rows={8}
+          className="bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]"
+        />
+        {scrapedForm && <TextareaBadgeOverlay scrapedForm={scrapedForm} />}
+      </div>
       <ToolTipWrapper
         delayDuration={800}
         content={getToolTipMessage()}
