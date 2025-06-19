@@ -22,7 +22,14 @@ export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>(undefined);
+  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>({
+    fields: [
+      { id: "placeholder1", name: "Placeholder", label: "Placeholder", value: "", type: "text", selector: "" },
+      { id: "placeholder2", name: "Placeholder", label: "Placeholder", value: "", type: "text", selector: "" },
+      { id: "placeholder3", name: "Placeholder", label: "Placeholder", value: "", type: "text", selector: "" },
+      { id: "placeholder4", name: "Placeholder", label: "Placeholder", value: "", type: "text", selector: "" },
+    ],
+  });
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 

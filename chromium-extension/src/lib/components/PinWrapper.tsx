@@ -4,7 +4,7 @@ import { RippleButton } from "~/lib/components/shadcn/ripple";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";
-import DialogWrapper from "./DialogWrapper";
+import AlertDialogWrapper from "./AlertDialogWrapper";
 
 /**
  * A wrapper for <Pin> with heavier business logic
@@ -106,7 +106,7 @@ export default function PinWrapper() {
         onComplete={handlePinSubmit}
       />
       {pinMode !== "SETTING_UP" && (
-        <DialogWrapper
+        <AlertDialogWrapper
           title="Are you sure you want to reset your PIN?"
           description="You will need to set an API key again"
           confirmLabel="Reset"
