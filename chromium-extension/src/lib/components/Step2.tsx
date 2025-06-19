@@ -1,14 +1,17 @@
 import { LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { ScrapedForm } from "~/lib/models/FormField";
+import {
+  PopulatedFormFieldsLlmResponse,
+  PopulatedFormFieldsLlmResponse_SCHEMA,
+} from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
 import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
 import { generateContent } from "~/lib/services/gemini-service";
-import { useGlobalStore } from "../hooks/stores/useGlobalStore";
-import { PopulatedFormFieldsLlmResponse_SCHEMA } from "../models/llm-structured-responses/PopulateFormFieldLlmResponse";
-import { logResponse } from "../utils/log-utils";
-import { populatePrompt } from "../utils/prompt-utils";
+import { logResponse } from "~/lib/utils/log-utils";
+import { populatePrompt } from "~/lib/utils/prompt-utils";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 import ToolTipWrapper from "./ToolTipWrapper";
@@ -75,7 +78,11 @@ export default function Step2() {
     });
 
     // 4. Generate content for form fields
-    const aiResponse = await generateContent(geminiApiKeyDecrypted, finalPrompt, PopulatedFormFieldsLlmResponse_SCHEMA);
+    const aiResponse = await generateContent<PopulatedFormFieldsLlmResponse>(
+      geminiApiKeyDecrypted,
+      finalPrompt,
+      PopulatedFormFieldsLlmResponse_SCHEMA,
+    );
 
     logResponse(aiResponse);
 
