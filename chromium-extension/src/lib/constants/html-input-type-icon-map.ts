@@ -11,6 +11,7 @@ import {
   HashIcon,
   ImageIcon,
   LinkIcon,
+  ListChecksIcon,
   LockIcon,
   MailIcon,
   PaletteIcon,
@@ -21,6 +22,7 @@ import {
   SendIcon,
   SlidersIcon,
   SquareIcon,
+  SquareMousePointerIcon,
   TextCursorIcon,
 } from "lucide-react";
 
@@ -47,4 +49,6 @@ export const inputTypeIconMap = {
   time: ClockIcon,
   url: LinkIcon,
   week: Calendar1Icon,
+  "select-one": SquareMousePointerIcon,
+  "select-multiple": ListChecksIcon,
 } as const;
