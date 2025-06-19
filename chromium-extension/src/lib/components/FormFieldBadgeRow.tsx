@@ -1,6 +1,7 @@
 import { TextCursorIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "~/lib/components/shadcn/badge";
+import { inputTypeIconMap } from "~/lib/constants/html-input-type-icon-map";
 import { useUiItemWidthCalculator } from "~/lib/hooks/useUiItemWidthCalculator";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { cn } from "~/lib/utils/cn";
@@ -51,18 +52,21 @@ export default function FormFieldBadgeRow({
         Content={<FormFieldsSummary scrapedForm={scrapedForm} />}
       />
       <div className="flex font-mono gap-1 items-center" style={{ gap: `${GAP_WIDTH_PX}px` }}>
-        {visibleFields.map((field) => (
-          <Badge
-            key={field.id}
-            variant="secondary"
-            onClick={openDialog}
-            className="text-xs cursor-pointer"
-            style={{ width: `${UI_ITEM_WIDTH_PX}px` }}
-          >
-            <TextCursorIcon className="opacity-50" />
-            <span className="opacity-75 truncate inline-block">{field.name ?? field.id}</span>
-          </Badge>
-        ))}
+        {visibleFields.map((field) => {
+          const IconComponent = getIconByType(field.type);
+          return (
+            <Badge
+              key={field.id}
+              variant="secondary"
+              onClick={openDialog}
+              className="text-xs cursor-pointer"
+              style={{ width: `${UI_ITEM_WIDTH_PX}px` }}
+            >
+              <IconComponent className="opacity-50" />
+              <span className="opacity-75 truncate inline-block">{field.name ?? field.id}</span>
+            </Badge>
+          );
+        })}
         {invisibleItemCount > 0 && (
           <Badge
             variant="outline"
@@ -81,13 +85,22 @@ export default function FormFieldBadgeRow({
 function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
   return (
     <span className="flex flex-col gap-1 max-h-[calc(100vh-200px)] overflow-y-scroll">
-      {scrapedForm.fields.map((field) => (
-        <Badge key={field.id} variant="secondary" className="text-xs">
-          <TextCursorIcon className="opacity-50" /> {field.name ?? field.label ?? field.id}
-          <span className="opacity-75 truncate inline-block">{field.type}</span>
-          <span className="opacity-60 truncate inline-block">{field.label ?? field.placeholder}</span>
-        </Badge>
-      ))}
+      {scrapedForm.fields.map((field) => {
+        const IconComponent = getIconByType(field.type);
+        return (
+          <Badge key={field.id} variant="secondary" className="text-xs">
+            <IconComponent className="opacity-50" /> {field.name ?? field.label ?? field.id}
+            <span className="opacity-75 truncate inline-block">{field.type}</span>
+            <span className="opacity-60 truncate inline-block">{field.label ?? field.placeholder}</span>
+          </Badge>
+        );
+      })}
     </span>
   );
+}
+
+function getIconByType(htmlInputType?: string) {
+  const cleanType = htmlInputType?.toLowerCase();
+  const IconComponent = inputTypeIconMap[cleanType as keyof typeof inputTypeIconMap];
+  return IconComponent || TextCursorIcon;
 }

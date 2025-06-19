@@ -11,7 +11,7 @@ export const fillFormFields = (
       target: { tabId },
       args: [formData],
       /**
-       * PRO TIP: Copy n execute this fn directly on the web page to rapidly test (need to define any params first)
+       * PRO TIP: GPT a vanilla JS version of the fn to exec directly on the web page (rapidly feedback loop)
        * Try not to import libs here; keep lightweight/vanilla
        */
       func: (formData) => {
