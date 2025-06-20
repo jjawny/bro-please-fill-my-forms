@@ -1,6 +1,6 @@
 import HeroDemo from "~/lib/components/HeroDemo";
 import { cn } from "~/lib/utils/cn";
-import logo from "/images/logo.png";
+import HeroLogo from "./HeroLogo";
 
 export default function Hero() {
   return (
@@ -12,16 +12,7 @@ export default function Hero() {
       )}
     >
       <HeroDemo />
-      <HeroLogo />
-    </div>
-  );
-}
-
-// TODO: move this out
-function HeroLogo() {
-  return (
-    <div className="select-none absolute top-[-60px] right-[-66px] z-50 pointer-events-none">
-      <img src={logo} alt="Bro Please, Fill My Forms logo" className="max-h-32" />
+      <HeroLogo heightPx={128} className="absolute top-[-60px] right-[-66px] z-50" />
     </div>
   );
 }
