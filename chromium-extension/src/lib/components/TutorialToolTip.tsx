@@ -1,5 +1,5 @@
+import { TutorialStepType } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
-import { TutorialStepType } from "../enums/TutorialStep";
 import ToolTipWrapper from "./ToolTipWrapper";
 
 export default function TutorialToolTip({
