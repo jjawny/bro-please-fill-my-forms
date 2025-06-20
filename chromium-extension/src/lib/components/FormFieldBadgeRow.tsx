@@ -90,15 +90,20 @@ function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
       <span className="flex flex-col gap-1 py-2.5 max-h-[calc(100vh-200px)] overflow-y-scroll">
         {scrapedForm.fields.map((field) => {
           const IconComponent = getIconByType(field.type);
+
+          const label1 = field.name ?? field.label ?? field.id;
+          const label2 = field.type;
+          const label3 = field.label?.trim() !== "" ? field.label : field.placeholder;
+
           return (
             <Badge key={field.id} variant="secondary" className="text-xs whitespace-normal">
-              <IconComponent className="opacity-50" /> {field.name ?? field.label ?? field.id}
+              <IconComponent className="opacity-50" /> {label1}
               <Bullet />
-              <span className="opacity-60">{field.type}</span>
-              {(field.label || field.placeholder) && (
+              <span className="opacity-60">{label2}</span>
+              {label3 && (
                 <>
                   <Bullet />
-                  <span className="opacity-40">{field.label ?? field.placeholder}</span>
+                  <span className="opacity-40">{label3}</span>
                 </>
               )}
             </Badge>

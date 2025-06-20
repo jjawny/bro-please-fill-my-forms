@@ -19,7 +19,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
       });
     }
 
-    const itemKeys: (keyof TemporaryData)[] = ["pin"];
+    const itemKeys: (keyof TemporaryData)[] = ["pin", "prompt"];
     const items = await chrome.storage.session.get(itemKeys);
     const temporaryData: TemporaryData = { pin: items.pin, prompt: items.prompt };
     const validationResponse = TemporaryDataSchema.safeParse(temporaryData);
