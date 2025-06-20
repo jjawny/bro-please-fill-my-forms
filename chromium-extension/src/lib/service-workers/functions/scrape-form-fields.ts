@@ -11,71 +11,122 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeF
        */
       func: () => {
         const formFields: FormField[] = [];
+        const processedGroups = new Set<string>();
 
-        // Find all input, select, and textarea elements
-        const inputs = document.querySelectorAll("input, select, textarea");
+        /**
+         * Helper function to find label text
+         */
+        const findLabel = (el: HTMLElement): string => {
+          // Try label[for] first
+          if (el.id) {
+            const labelElement = document.querySelector(`label[for="${el.id}"]`);
+            if (labelElement) {
+              return labelElement.textContent?.trim() || "";
+            }
+          }
 
-        inputs.forEach((element, index) => {
-          const input = element as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          // Try parent label
+          const parentLabel = el.closest("label");
+          if (parentLabel) {
+            const labelText = parentLabel.textContent?.trim() || "";
+            // Remove the input's value from the label text
+            return labelText.replace(el.getAttribute("value") || "", "").trim();
+          }
 
-          // Skip hidden, submit, button inputs
-          if (input.type === "hidden" || input.type === "submit" || input.type === "button") {
+          // Try preceding label or text node
+          let prev = el.previousElementSibling;
+
+          while (prev) {
+            if (prev.tagName === "LABEL") {
+              return prev.textContent?.trim() || "";
+            }
+
+            if (prev.textContent?.trim()) {
+              return prev.textContent.trim();
+            }
+
+            prev = prev.previousElementSibling;
+          }
+
+          // Try aria-label or placeholder as fallback
+          return el.getAttribute("aria-label") || el.getAttribute("placeholder") || el.getAttribute("title") || "";
+        };
+
+        /**
+         * Helper function to get field type
+         */
+        const getFieldType = (el: HTMLElement): string => {
+          if (el.tagName === "SELECT") return "select";
+          if (el.tagName === "TEXTAREA") return "textarea";
+          return (el as HTMLInputElement).type || "text";
+        };
+
+        /**
+         * Helper function to generate unique selector
+         */
+        const generateSelector = (el: HTMLElement, index: number): string => {
+          const id = el.id || el.getAttribute("name") || `field_${index}`;
+          return `[data-digi-field="${id}"]`;
+        };
+
+        // BEGIN Finding all form elements
+        const formElements = document.querySelectorAll("input, select, textarea, [contenteditable='true']");
+
+        formElements.forEach((el, idx) => {
+          const input = el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+          const type = getFieldType(input);
+
+          // Skip non-interactive elements
+          const skipTypes = ["hidden", "submit", "button", "reset", "image"];
+          if (skipTypes.includes(type)) {
             return;
           }
 
+          // Handle radio/checkbox groups - avoid duplicates
+          if (type === "radio" || type === "checkbox") {
+            const groupName = input.name || input.id || `group_${idx}`;
+
+            if (processedGroups.has(groupName)) {
+              return;
+            }
+
+            processedGroups.add(groupName);
+          }
+
+          const fieldId = input.id || input.name || `field_${idx}`;
           const field: FormField = {
-            id: input.id || `field_${index}`,
-            name: input.name || input.id || `field_${index}`,
-            type: input.type || "text",
-            placeholder: (input as HTMLInputElement).placeholder || "",
-            required: input.required || false,
-            value: input.value || "",
-            selector: `[data-digi-field="${input.id || input.name || `field_${index}`}"]`,
+            id: fieldId,
+            name: input.name || fieldId,
+            type: type,
+            placeholder: input.getAttribute("placeholder") || "",
+            required: input.hasAttribute("required"),
+            value: input.value || input.textContent || "",
+            selector: generateSelector(input, idx),
+            label: findLabel(input),
           };
 
           // Add data attribute for targeting later
-          input.setAttribute("data-digi-field", field.id);
-
-          // Find associated label
-          let label = "";
-          if (input.id) {
-            const labelElement = document.querySelector(`label[for="${input.id}"]`);
-            if (labelElement) {
-              label = labelElement.textContent?.trim() || "";
-            }
-          }
-
-          // If no label found, look for parent label or nearby text
-          if (!label) {
-            const parentLabel = input.closest("label");
-            if (parentLabel) {
-              label = parentLabel.textContent?.replace(input.value, "").trim() || "";
-            }
-          }
-
-          field.label = label;
+          input.setAttribute("data-digi-field", fieldId);
 
           // Handle select options
-          if (input.tagName === "SELECT") {
+          if (type === "select") {
             const select = input as HTMLSelectElement;
             field.options = Array.from(select.options).map((option) => option.value || option.text);
           }
 
-          // Handle radio/checkbox options
-          if (input.type === "radio" || input.type === "checkbox") {
-            const name = input.name;
-            if (name) {
-              const relatedInputs = document.querySelectorAll(`input[name="${name}"]`);
-              field.options = Array.from(relatedInputs).map((inp: any) => inp.value);
+          // Handle radio/checkbox groups
+          if (type === "radio" || type === "checkbox") {
+            const groupName = input.name;
+            if (groupName) {
+              const relatedInputs = document.querySelectorAll(`input[name="${groupName}"]`);
+              field.options = Array.from(relatedInputs).map((inp) => (inp as HTMLInputElement).value);
             }
           }
 
           formFields.push(field);
         });
 
-        const finalForm: ScrapedForm = {
-          fields: formFields,
-        };
+        const finalForm: ScrapedForm = { fields: formFields };
 
         return { finalForm };
       },
