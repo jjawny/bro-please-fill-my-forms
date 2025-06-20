@@ -5,6 +5,6 @@ export const ModifierKey = {
   META: "meta",
 } as const;
 
-export const ModifierKeyValues = Object.values(ModifierKey) as readonly string[];
+export const ModifierKeyValues = Object.values(ModifierKey) as readonly ModifierKeyType[];
 
 export type ModifierKeyType = (typeof ModifierKey)[keyof typeof ModifierKey];

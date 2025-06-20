@@ -8,6 +8,6 @@ export const Theme = {
 
 export const ThemeSchema = z.enum([Theme.LIGHT, Theme.DARK, Theme.SYSTEM]);
 
-export const ThemeValues = Object.values(Theme) as readonly string[];
+export const ThemeValues = Object.values(Theme) as readonly ThemeType[];
 
 export type ThemeType = (typeof Theme)[keyof typeof Theme];
