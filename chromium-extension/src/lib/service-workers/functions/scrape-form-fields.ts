@@ -1,4 +1,3 @@
-import { INPUT_SELECTOR_NAME } from "~/lib/constants/html";
 import { FormField, ScrapedForm } from "~/lib/models/FormField";
 import { ScrapeFormFieldsResponse } from "~/lib/models/ServiceWorkerMessages";
 
@@ -8,13 +7,63 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeF
       target: { tabId },
       /**
        * PRO TIP: GPT a vanilla JS version of the fn to exec directly on the web page (rapidly feedback loop)
-       * Try not to import libs here; keep lightweight/vanilla
+       * Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
        */
       func: () => {
-        const formFields: FormField[] = [];
+        /**
+         * Find the associated label for an element
+         */
+        const findLabel = (el: HTMLElement): string => {
+          // Try label[for] first
+          if (el.id) {
+            const labelElement = document.querySelector(`label[for="${el.id}"]`);
+
+            if (labelElement) {
+              return labelElement.textContent?.trim() || "";
+            }
+          }
+
+          // Try parent label
+          const parentLabel = el.closest("label");
+
+          if (parentLabel) {
+            const labelText = parentLabel.textContent?.trim() || "";
+
+            // Remove the input's value from the label text
+            return labelText.replace(el.getAttribute("value") || "", "").trim();
+          }
+
+          // Try preceding label or text node
+          let prev = el.previousElementSibling;
+
+          while (prev) {
+            if (prev.tagName === "LABEL") {
+              return prev.textContent?.trim() || "";
+            }
+
+            if (prev.textContent?.trim()) {
+              return prev.textContent.trim();
+            }
+
+            prev = prev.previousElementSibling;
+          }
+
+          // Try aria-label or placeholder as fallback
+          return el.getAttribute("aria-label") || el.getAttribute("placeholder") || el.getAttribute("title") || "";
+        };
+
+        /**
+         * Get the field type
+         */
+        const getFieldType = (el: HTMLElement): string => {
+          if (el.tagName === "SELECT") return "select";
+          if (el.tagName === "TEXTAREA") return "textarea";
+          return (el as HTMLInputElement).type || "text";
+        };
 
         // 1. Scrape all editable elements
         const formElements = document.querySelectorAll("input, select, textarea, [contenteditable='true']");
+        const formFields: FormField[] = [];
 
         formElements.forEach((el, idx) => {
           const input = el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -39,6 +88,7 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeF
           };
 
           // 4. Set a selector to find this element later
+          const INPUT_SELECTOR_NAME = "data-digi-field";
           el.setAttribute(INPUT_SELECTOR_NAME, fieldId);
 
           // 5. Handle select options
@@ -85,54 +135,3 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeF
     },
   );
 };
-
-/**
- * Find the associated label for an element
- */
-function findLabel(el: HTMLElement): string {
-  // Try label[for] first
-  if (el.id) {
-    const labelElement = document.querySelector(`label[for="${el.id}"]`);
-
-    if (labelElement) {
-      return labelElement.textContent?.trim() || "";
-    }
-  }
-
-  // Try parent label
-  const parentLabel = el.closest("label");
-
-  if (parentLabel) {
-    const labelText = parentLabel.textContent?.trim() || "";
-
-    // Remove the input's value from the label text
-    return labelText.replace(el.getAttribute("value") || "", "").trim();
-  }
-
-  // Try preceding label or text node
-  let prev = el.previousElementSibling;
-
-  while (prev) {
-    if (prev.tagName === "LABEL") {
-      return prev.textContent?.trim() || "";
-    }
-
-    if (prev.textContent?.trim()) {
-      return prev.textContent.trim();
-    }
-
-    prev = prev.previousElementSibling;
-  }
-
-  // Try aria-label or placeholder as fallback
-  return el.getAttribute("aria-label") || el.getAttribute("placeholder") || el.getAttribute("title") || "";
-}
-
-/**
- * Get the field type
- */
-function getFieldType(el: HTMLElement): string {
-  if (el.tagName === "SELECT") return "select";
-  if (el.tagName === "TEXTAREA") return "textarea";
-  return (el as HTMLInputElement).type || "text";
-}
