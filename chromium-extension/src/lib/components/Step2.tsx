@@ -152,7 +152,7 @@ export default function Step2() {
           onChange={(e) => setUserPrompt(e.target.value)}
           placeholder="Your form content"
           rows={8}
-          className="bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]"
+          className={cn("bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]")}
         />
         {scrapedForm && (
           <FormFieldBadgeRow

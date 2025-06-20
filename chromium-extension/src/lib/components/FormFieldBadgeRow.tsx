@@ -16,6 +16,7 @@ const UI_ITEM_WIDTH_PX = 90;
 const UI_OVERFLOW_ITEM_WIDTH_PX = 40;
 const GAP_WIDTH_PX = 4;
 
+const SHARED_BADGE_STYLES = "text-xs cursor-pointer hover:scale-105";
 /**
  * Hints at the scraped inputs for transparency/better feedback
  */
@@ -59,7 +60,7 @@ export default function FormFieldBadgeRow({
               key={field.id}
               variant="secondary"
               onClick={openDialog}
-              className="text-xs cursor-pointer"
+              className={SHARED_BADGE_STYLES}
               style={{ width: `${UI_ITEM_WIDTH_PX}px` }}
             >
               <IconComponent className="opacity-50" />
@@ -71,7 +72,7 @@ export default function FormFieldBadgeRow({
           <Badge
             variant="outline"
             onClick={openDialog}
-            className={cn("text-xs cursor-pointer px-1.5 overflow-visible")}
+            className={cn(SHARED_BADGE_STYLES, "px-1.5 overflow-visible")}
             style={{ width: `${UI_OVERFLOW_ITEM_WIDTH_PX}px` }}
           >
             {invisibleItemCount}+
