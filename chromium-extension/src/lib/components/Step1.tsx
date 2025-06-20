@@ -25,11 +25,13 @@ export default function Step1() {
   const saveNewApiKey = usePinStore((state) => state.saveNewApiKey);
   const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
 
-  useEffect(function setInitialApiKeyInputValueOnceOnMount() {
+  useEffect(function setIsFirstRenderFlag() {
     if (!isFirstRender.current) return;
     isFirstRender.current = false;
+  }, []);
 
-    // This component should be rendered after a successful unlock; the~/lib.
+  useEffect(function setInitialApiKeyInputValueOnceOnMount() {
+    // This component should be rendered after a successful unlock
     //  decrypted key should be available immediately
     const geminiApiKeyDecrypted = usePinStore.getState().geminiApiKeyDecrypted;
     if (geminiApiKeyDecrypted) {
