@@ -23,7 +23,7 @@ export default function TextIconPairTypeWriter({
 
   return (
     <div className={cn(className, "flex overflow-hidden", "text-start text-sm whitespace-nowrap")}>
-      <span className="opacity-30 flex gap-1 items-center">
+      <span className={cn("opacity-30", "flex gap-1 items-center")}>
         <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
           {currentIcon}
         </span>

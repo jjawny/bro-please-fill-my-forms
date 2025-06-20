@@ -7,10 +7,10 @@ export default function GitHubLink() {
   const { theme } = useTheme();
 
   return (
-    <a href="https://vitejs.dev" target="_blank">
+    <a href="https://github.com/jjawny/bro-please-fill-my-forms-RnD" target="_blank">
       <img
         src={githubLogo}
-        alt="GitHub repo"
+        alt="View the GitHub repo"
         className={cn(
           "select-none pointer-events-auto ",
           "absolute bottom-0 right-0 z-50",

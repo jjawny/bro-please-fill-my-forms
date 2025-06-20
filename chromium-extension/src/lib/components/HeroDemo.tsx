@@ -3,7 +3,7 @@ import TextIconPairTypeWriter, { TextIconPair } from "~/lib/components/WordAndIc
 import { cn } from "~/lib/utils/cn";
 
 const SHARED_STYLES =
-  "select-none h-7 pl-1 right-0 absolute bg-[var(--hero-background-color)] border border-[var(--hero-border-color)] rounded-sm";
+  "select-none h-7 pl-1 right-0 absolute bg-[var(--hero-background-color)] border border-[var(--hero-border-color)] rounded-sm transform transition-transform ease-in-out";
 
 const WORDS_AND_ICONS_GROUP_1: TextIconPair[] = [
   { text: "999,999,999,999", icon: <DollarSignIcon /> },
@@ -32,7 +32,9 @@ export default function HeroDemo() {
           SHARED_STYLES,
           "w-55",
           "-z-10",
-          "transform rotate-9 translate-x-5 -translate-y-2 group-hover:rotate-15 group-hover:-translate-y-4.5 transition-transform duration-300 ease-in-out",
+          "translate-x-5 -translate-y-2 rotate-9",
+          "group-hover:rotate-15 group-hover:-translate-y-4.5",
+          "duration-300",
         )}
       />
       <TextIconPairTypeWriter
@@ -41,7 +43,9 @@ export default function HeroDemo() {
           SHARED_STYLES,
           "w-60",
           "z-0",
-          "transform rotate-6 translate-x-5 -translate-y-1.5 group-hover:rotate-10 group-hover:-translate-y-3.5 transition-transform duration-200 ease-in-out",
+          "translate-x-5 -translate-y-1.5 rotate-6",
+          "group-hover:rotate-10 group-hover:-translate-y-3.5",
+          "duration-200",
         )}
       />
       <TextIconPairTypeWriter
@@ -50,7 +54,9 @@ export default function HeroDemo() {
           SHARED_STYLES,
           "w-64",
           "z-10",
-          "transform translate-x-5 -translate-y-1 rotate-3 group-hover:rotate-5 group-hover:-translate-y-2 transition-transform duration-100 ease-in-out",
+          "translate-x-5 -translate-y-1 rotate-3",
+          "group-hover:rotate-5 group-hover:-translate-y-2",
+          "duration-100",
         )}
       />
       <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-0", "!h-fit !p-3")}>

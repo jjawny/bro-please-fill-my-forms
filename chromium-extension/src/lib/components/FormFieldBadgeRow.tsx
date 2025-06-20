@@ -17,6 +17,7 @@ const UI_OVERFLOW_ITEM_WIDTH_PX = 40;
 const GAP_WIDTH_PX = 4;
 
 const SHARED_BADGE_STYLES = "text-xs cursor-pointer hover:scale-105";
+
 /**
  * Hints at the scraped inputs for transparency/better feedback
  */
