@@ -8,17 +8,9 @@ import MenuWrapper, { MenuItem } from "./MenuWrapper";
 import { RippleButton } from "./shadcn/ripple";
 
 /**
- * Debug component during development only
+ * Debug UI during development only; shortcuts still work in production
  */
 export default function Debug() {
-  if (import.meta.env.PROD) {
-    return null;
-  }
-
-  return <DebugMenu />;
-}
-
-function DebugMenu() {
   const pinStoreJson = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const userPreferencesStoreJson = useUserPreferencesStore((state) => state.GET_DEBUG_JSON_DUMP);
   const globalStoreJson = useGlobalStore((state) => state.GET_DEBUG_JSON_DUMP);
@@ -38,6 +30,10 @@ function DebugMenu() {
     { label: "Log UserPreferencesStore", onClick: logUserPreferencesJson, shortcut: "⌃2" },
     { label: "Log GlobalStore", onClick: logGlobalStore, shortcut: "⌃3" },
   ];
+
+  if (import.meta.env.PROD) {
+    return null;
+  }
 
   return (
     <MenuWrapper

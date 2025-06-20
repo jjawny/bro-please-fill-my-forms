@@ -64,15 +64,13 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
       const currentStep = loadTutorialDataResponse.value.currentStep;
       const nextTutorialProgress: TutorialProgress = { ...get().tutorialProgress };
 
-      if (currentStep) {
-        // Mark all steps before the current step as completed
-        for (let i = 0; i < TutorialStepValues.length; i++) {
-          const currValue = TutorialStepValues[i];
-          if (currValue === currentStep) {
-            break;
-          }
-          nextTutorialProgress[currValue] = true;
+      // Mark all steps before the current step as completed
+      for (let i = 0; i < TutorialStepValues.length; i++) {
+        const currValue = TutorialStepValues[i];
+        if (currValue === currentStep) {
+          break;
         }
+        nextTutorialProgress[currValue] = true;
       }
 
       set({
