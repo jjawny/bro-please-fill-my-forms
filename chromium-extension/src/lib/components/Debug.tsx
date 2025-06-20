@@ -1,5 +1,6 @@
 import { CodeIcon } from "lucide-react";
 import { ModifierKey } from "~/lib/enums/ModifierKey";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useKeyboardShortcuts } from "~/lib/hooks/useKeyboardShortcuts";
@@ -20,18 +21,22 @@ export default function Debug() {
 function DebugMenu() {
   const pinStoreJson = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
   const userPreferencesStoreJson = useUserPreferencesStore((state) => state.GET_DEBUG_JSON_DUMP);
+  const globalStoreJson = useGlobalStore((state) => state.GET_DEBUG_JSON_DUMP);
 
   const logPinStoreJson = () => console.debug("PinStore:", pinStoreJson());
   const logUserPreferencesJson = () => console.debug("UserPreferences:", userPreferencesStoreJson());
+  const logGlobalStore = () => console.debug("GlobalStore:", globalStoreJson());
 
   useKeyboardShortcuts([
     { keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson },
     { keys: [ModifierKey.CONTROL, "2"], callback: logUserPreferencesJson },
+    { keys: [ModifierKey.CONTROL, "3"], callback: logGlobalStore },
   ]);
 
   const menuItems: MenuItem[] = [
     { label: "Log PinStore", onClick: logPinStoreJson, shortcut: "⌃1" },
     { label: "Log UserPreferencesStore", onClick: logUserPreferencesJson, shortcut: "⌃2" },
+    { label: "Log GlobalStore", onClick: logGlobalStore, shortcut: "⌃3" },
   ];
 
   return (

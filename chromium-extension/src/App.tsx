@@ -25,6 +25,9 @@ export default function App() {
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
 
+  const initializeGloablStore = useGlobalStore((state) => state.initialize);
+  const isGlobalStoreInitialized = useGlobalStore((state) => state.isInitialized);
+
   // Start listening/reacting to pin mode; updating popup height dynamically
   useSetHeightDynamicallyBasedOnPinMode();
 
@@ -60,6 +63,22 @@ export default function App() {
 
     initStore();
   }, [isUserPreferencesStoreInitialized, initializeUserPreferencesStore]);
+
+  useEffect(() => {
+    const initStore = async () => {
+      if (!isGlobalStoreInitialized) {
+        const initStoreResponse = await initializeGloablStore();
+
+        logResponse(initStoreResponse);
+
+        if (!initStoreResponse.isOk) {
+          setGlobalError(initStoreResponse.uiMessage);
+        }
+      }
+    };
+
+    initStore();
+  }, [isGlobalStoreInitialized, initializeGloablStore]);
 
   return (
     <div className="app-container">
