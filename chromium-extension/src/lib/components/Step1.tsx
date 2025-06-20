@@ -2,12 +2,14 @@ import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
+import { TutorialStep } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce-utils";
 import { logResponse } from "~/lib/utils/log-utils";
 import { sleep } from "~/lib/utils/sleep-utils";
+import TutorialToolTip from "./TutorialToolTip";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
 const SAVE_API_KEY_DEBOUNCE_DELAY_MS = 2_000;
@@ -21,6 +23,8 @@ export default function Step1() {
   const isFirstRender = useRef<boolean>(true);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+  const getCurrentTutorialStep = useGlobalStore((state) => state.getCurrentTutorialStep);
+  const completeTutorialStep = useGlobalStore((state) => state.completeTutorialStep);
 
   const saveNewApiKey = usePinStore((state) => state.saveNewApiKey);
   const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
@@ -65,6 +69,7 @@ export default function Step1() {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setApiKeyInputValue(newValue);
+      completeTutorialStep(TutorialStep.ENCRYPT_GEMINI_API_KEY);
 
       if (!isFirstRender.current) {
         setIsValidating(false);
@@ -84,14 +89,17 @@ export default function Step1() {
   return (
     <div className="flex gap-1 items-center w-full">
       <form className="w-full relative">
-        <Input
-          type={isVisible ? "text" : "password"}
-          placeholder="Gemini API Key"
-          value={apiKeyInputValue}
-          onChange={handleInputChange}
-          className="bg-[var(--pin-background-color)] p-2"
-          autoComplete="off"
-        />
+        <TutorialToolTip content="Encrypt your Gemini API key" step={TutorialStep.ENCRYPT_GEMINI_API_KEY}>
+          <Input
+            type={isVisible ? "text" : "password"}
+            placeholder="Gemini API Key"
+            value={apiKeyInputValue}
+            onChange={handleInputChange}
+            className="bg-[var(--pin-background-color)] p-2"
+            autoComplete="off"
+          />
+        </TutorialToolTip>
+
         <ApiKeyInputEndAdornment
           isValidating={isValidating}
           hasApiKey={!!apiKeyInputValue}

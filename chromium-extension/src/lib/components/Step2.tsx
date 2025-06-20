@@ -1,5 +1,6 @@
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TutorialStep } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { ScrapedForm } from "~/lib/models/FormField";
@@ -17,6 +18,7 @@ import FormFieldBadgeRow from "./FormFieldBadgeRow";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 import ToolTipWrapper from "./ToolTipWrapper";
+import TutorialToolTip from "./TutorialToolTip";
 
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
@@ -25,6 +27,7 @@ export default function Step2() {
   const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>(undefined);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
+  const completeTutorialStep = useGlobalStore((state) => state.completeTutorialStep);
 
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
@@ -38,8 +41,17 @@ export default function Step2() {
     }
   }, []);
 
-  const onSubmit = async () => {
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newPrompt = e.target.value;
+    setUserPrompt(newPrompt);
+    completeTutorialStep(TutorialStep.ENTER_YOUR_PROMPT);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsSubmitting(true);
+    completeTutorialStep(TutorialStep.PRESS_GO);
+
     const savePromptResponse = await savePrompt(userPrompt);
 
     logResponse(savePromptResponse);
@@ -126,7 +138,7 @@ export default function Step2() {
     return true;
   };
 
-  const getToolTipMessage = (): string | undefined => {
+  const getSubmitButtonDisabledMessage = (): string | undefined => {
     if (isSubmitting) return "Please wait, filling your form...";
     if (!userPrompt.trim()) return "Please enter your form content";
     if (!geminiApiKeyDecrypted) return "Gemini API key is required";
@@ -144,44 +156,74 @@ export default function Step2() {
     isGeminiApiKeyDirty;
 
   return (
-    <div>
-      <div className="relative">
-        <Textarea
-          value={userPrompt}
-          onChange={(e) => setUserPrompt(e.target.value)}
-          placeholder="Your form content"
-          rows={8}
-          className={cn("bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]")}
-        />
-        {scrapedForm && (
-          <FormFieldBadgeRow
-            scrapedForm={scrapedForm}
-            className="absolute bottom-0 left-0 right-0 h-fit pt-6 pb-1 rounded-md m-[1px] flex items-center px-2 bg-gradient-to-t from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent justify-end"
-          />
-        )}
-      </div>
-      <ToolTipWrapper
-        delayDuration={800}
-        content={getToolTipMessage()}
-        open={isSubmitButtonDisabled ? undefined : false}
-        side="bottom"
+    <form onSubmit={onSubmit}>
+      <TutorialToolTip
+        content="Enter your form content here, describe what you want"
+        step={TutorialStep.ENTER_YOUR_PROMPT}
       >
-        <div className="px-2">
-          <RippleButton
-            onClick={onSubmit}
-            disabled={isSubmitButtonDisabled}
-            className={cn("select-none w-full mt-2 h-6")}
-          >
-            {isSubmitting ? (
-              <LoaderCircleIcon className="animate-spin" />
-            ) : isDone ? (
-              <CheckIcon className="animate-bounce-in text-lime-500" />
-            ) : (
-              "Fill Form"
-            )}
-          </RippleButton>
+        <div className="relative">
+          <Textarea
+            value={userPrompt}
+            rows={8}
+            placeholder="Your form content"
+            onChange={handlePromptChange}
+            className={cn("bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]")}
+          />
+          {scrapedForm && (
+            <FormFieldBadgeRow
+              scrapedForm={scrapedForm}
+              className="absolute bottom-0 left-0 right-0 h-fit pt-6 pb-1 rounded-md m-[1px] flex items-center px-2 bg-gradient-to-t from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent justify-end"
+            />
+          )}
         </div>
-      </ToolTipWrapper>
-    </div>
+      </TutorialToolTip>
+
+      <TutorialToolTip content="Push the button!" step={TutorialStep.PRESS_GO}>
+        <div className="px-2">
+          <SubmitButton
+            isDisabledMessage={getSubmitButtonDisabledMessage()}
+            isDisabled={isSubmitButtonDisabled}
+            isSubmitting={isSubmitting}
+            isDone={isDone}
+          />
+        </div>
+      </TutorialToolTip>
+    </form>
   );
+}
+
+function SubmitButton({
+  isDisabledMessage,
+  isDisabled,
+  isSubmitting,
+  isDone,
+}: {
+  isDisabledMessage?: string;
+  isDisabled?: boolean;
+  isSubmitting?: boolean;
+  isDone?: boolean;
+}) {
+  const InnerContent = () => {
+    return (
+      <RippleButton type="submit" disabled={isDisabled} className={cn("select-none w-full mt-2 h-6")}>
+        {isSubmitting ? (
+          <LoaderCircleIcon className="animate-spin" />
+        ) : isDone ? (
+          <CheckIcon className="animate-bounce-in text-lime-500" />
+        ) : (
+          "Fill Form"
+        )}
+      </RippleButton>
+    );
+  };
+
+  if (isDisabled && isDisabledMessage) {
+    return (
+      <ToolTipWrapper delayDuration={800} content={isDisabledMessage} side="bottom">
+        <InnerContent />
+      </ToolTipWrapper>
+    );
+  }
+
+  return <InnerContent />;
 }
