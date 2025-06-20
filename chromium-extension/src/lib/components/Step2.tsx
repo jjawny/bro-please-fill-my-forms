@@ -1,5 +1,5 @@
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MOCK_SCRAPED_FORM } from "~/lib/constants/mock-data";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
@@ -31,6 +31,13 @@ export default function Step2() {
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const geminiApiKeyDecrypted = usePinStore((state) => state.geminiApiKeyDecrypted);
   const savePrompt = usePinStore((state) => state.savePrompt);
+
+  useEffect(function setInitialUserPromptValueOnceOnMount() {
+    const tempCachedPrompt = usePinStore.getState().prompt;
+    if (tempCachedPrompt) {
+      setUserPrompt(tempCachedPrompt);
+    }
+  }, []);
 
   const onSubmit = async () => {
     setIsSubmitting(true);
