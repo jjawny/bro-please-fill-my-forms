@@ -22,7 +22,7 @@ export default function Step1() {
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
-  const setNewApiKey = usePinStore((state) => state.setNewApiKey);
+  const saveNewApiKey = usePinStore((state) => state.saveNewApiKey);
   const setIsApiKeyDirty = usePinStore((state) => state.setIsApiKeyDirty);
 
   useEffect(function setInitialApiKeyInputValueOnceOnMount() {
@@ -45,7 +45,7 @@ export default function Step1() {
 
       const cleanedApiKey = apiKey.trim();
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
-      const setApiKeyResponse = await setNewApiKey(cleanedApiKey, shouldTest);
+      const setApiKeyResponse = await saveNewApiKey(cleanedApiKey, shouldTest);
 
       logResponse(setApiKeyResponse);
 
@@ -56,7 +56,7 @@ export default function Step1() {
       setIsApiKeyDirty(false);
       setIsValidating(false);
     }, SAVE_API_KEY_DEBOUNCE_DELAY_MS),
-    [setNewApiKey, setIsApiKeyDirty, setIsValidating],
+    [saveNewApiKey, setIsApiKeyDirty, setIsValidating],
   );
 
   const handleInputChange = useCallback(

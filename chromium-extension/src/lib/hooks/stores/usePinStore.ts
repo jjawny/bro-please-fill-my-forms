@@ -43,13 +43,18 @@ type PinStore = ByoKeyData &
      * When "SETTING_UP", users can set the PIN
      * Includes re-encryping the existing/dummy API key
      */
-    setNewPin: (newPin: string) => Promise<ErrOr>;
+    saveNewPin: (newPin: string) => Promise<ErrOr>;
 
     /**
      * When "UNLOCKED", users can set the API key
      * Includes hashing, encrypting, and testing the key
      */
-    setNewApiKey: (newKey: string, shouldTest: boolean) => Promise<ErrOr>;
+    saveNewApiKey: (newKey: string, shouldTest: boolean) => Promise<ErrOr>;
+
+    /**
+     * Saves the user input prompt portion into TemporaryData
+     */
+    savePrompt: (prompt: string) => Promise<ErrOr>;
 
     /**
      * Reset all data to defaults and transition to "SETTING_UP"
@@ -76,7 +81,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     try {
       // If the user intentionally locks, clear the PIN so nothing tries to auto-unlock
       const pin = null;
-      const clearTempDataResponse = await saveToSessionStorage(TemporaryDataSchema, { pin });
+      const clearTempDataResponse = await saveToSessionStorage(TemporaryDataSchema, { pin, prompt: get().prompt });
 
       messages = messages.concat(clearTempDataResponse.messages);
 
@@ -328,7 +333,10 @@ export const usePinStore = create<PinStore>((set, get) => {
           return err({ messages, uiMessage: "PIN failed" });
         }
 
-        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
+        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, {
+          pin: cleanNewPin,
+          prompt: get().prompt,
+        });
 
         messages = messages.concat(saveToSessionStorageResponse.messages);
 
@@ -355,12 +363,12 @@ export const usePinStore = create<PinStore>((set, get) => {
       }
     },
 
-    setNewPin: async (newPin: string): Promise<ErrOr> => {
-      let messages = ["Begin setting new PIN"];
+    saveNewPin: async (newPin: string): Promise<ErrOr> => {
+      let messages = ["Begin saving new PIN"];
 
       try {
         if (get().pinMode !== "SETTING_UP") {
-          return err({ messages, uiMessage: "Can only set new PIN during setup" });
+          return err({ messages, uiMessage: "Can only save new PIN during setup" });
         }
 
         const cleanNewPin = newPin.trim();
@@ -373,7 +381,10 @@ export const usePinStore = create<PinStore>((set, get) => {
           return err({ messages, uiMessage: encryptApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
-        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, { pin: cleanNewPin });
+        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, {
+          pin: cleanNewPin,
+          prompt: get().prompt,
+        });
 
         messages = messages.concat(saveToSessionStorageResponse.messages);
 
@@ -393,24 +404,24 @@ export const usePinStore = create<PinStore>((set, get) => {
           });
         }
 
-        return ok({ messages, uiMessage: "Successfully set new PIN" });
+        return ok({ messages, uiMessage: "Successfully saved new PIN" });
       } catch (error: unknown) {
-        return err({ messages, uiMessage: logError(error, "Failed to set new PIN") });
+        return err({ messages, uiMessage: logError(error, "Failed to save new PIN") });
       }
     },
 
-    setNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<ErrOr> => {
-      let messages = ["Begin setting new API key"];
+    saveNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<ErrOr> => {
+      let messages = ["Begin saving new API key"];
 
       try {
         if (get().pinMode !== "UNLOCKED") {
-          return err({ messages, uiMessage: "Can only set new API key when unlocked" });
+          return err({ messages, uiMessage: "Can only save new API key when unlocked" });
         }
 
         const pin = get().pin;
 
         if (!pin) {
-          return err({ messages, uiMessage: "Please set a PIN first" });
+          return err({ messages, uiMessage: "Please save a PIN first" });
         }
 
         const encryptApiKeyResponse = await encryptApiKey(pin, newApiKey, shouldTest);
@@ -421,9 +432,31 @@ export const usePinStore = create<PinStore>((set, get) => {
           return err({ messages, uiMessage: encryptApiKeyResponse.uiMessage, isAddUiMessageToMessages: false });
         }
 
-        return ok({ messages, uiMessage: "Successfully set new API key" });
+        return ok({ messages, uiMessage: "Successfully saved new API key" });
       } catch (error: unknown) {
-        return err({ messages, uiMessage: logError(error, "Failed to set new API key") });
+        return err({ messages, uiMessage: logError(error, "Failed to save new API key") });
+      }
+    },
+
+    savePrompt: async (prompt: string): Promise<ErrOr> => {
+      let messages = ["Begin saving prompt"];
+
+      try {
+        const cleanPrompt = prompt.trim();
+        const nextData: TemporaryData = { prompt: cleanPrompt, pin: get().pin };
+        const saveToSessionStorageResponse = await saveToSessionStorage(TemporaryDataSchema, nextData);
+
+        messages = messages.concat(saveToSessionStorageResponse.messages);
+
+        if (!saveToSessionStorageResponse.isOk) {
+          return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
+        }
+
+        set({ ...nextData });
+
+        return ok({ messages, uiMessage: "Successfully saved prompt" });
+      } catch (error: unknown) {
+        return err({ messages, uiMessage: logError(error, "Failed to save prompt") });
       }
     },
 

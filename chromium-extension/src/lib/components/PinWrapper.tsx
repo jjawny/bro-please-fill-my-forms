@@ -16,7 +16,7 @@ export default function PinWrapper() {
   const unlock = usePinStore((state) => state.unlock);
   const savedPin = usePinStore((state) => state.pin);
   const pinMode = usePinStore((state) => state.pinMode);
-  const setupPin = usePinStore((state) => state.setNewPin);
+  const setupPin = usePinStore((state) => state.saveNewPin);
   const reset = usePinStore((state) => state.reset);
 
   const [isShaking, setIsShaking] = useState<boolean>(false);

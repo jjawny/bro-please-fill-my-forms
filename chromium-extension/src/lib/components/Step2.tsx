@@ -30,9 +30,19 @@ export default function Step2() {
   const isGeminiApiKeyDirty = usePinStore((state) => state.isGeminiApiKeyDirty);
   const hasGeminiApiKeyConnectedSuccessfully = usePinStore((state) => state.hasGeminiApiKeyConnectedSuccessfully);
   const geminiApiKeyDecrypted = usePinStore((state) => state.geminiApiKeyDecrypted);
+  const savePrompt = usePinStore((state) => state.savePrompt);
 
   const onSubmit = async () => {
     setIsSubmitting(true);
+    const savePromptResponse = await savePrompt(userPrompt);
+
+    logResponse(savePromptResponse);
+
+    if (!savePromptResponse.isOk) {
+      setGlobalError(savePromptResponse.uiMessage);
+      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+    }
+
     const isSuccessful = await scrapeAndFillForm();
     if (isSuccessful) {
       setIsDone(true);

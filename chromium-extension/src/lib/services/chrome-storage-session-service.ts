@@ -21,7 +21,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
 
     const itemKeys: (keyof TemporaryData)[] = ["pin"];
     const items = await chrome.storage.session.get(itemKeys);
-    const temporaryData: TemporaryData = { pin: items.pin };
+    const temporaryData: TemporaryData = { pin: items.pin, prompt: items.prompt };
     const validationResponse = TemporaryDataSchema.safeParse(temporaryData);
 
     // Fallback to defaults and attempt to heal corrupt data
