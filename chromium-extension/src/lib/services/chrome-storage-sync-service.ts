@@ -106,7 +106,7 @@ export async function loadTutorialDataFromSyncStorage(): Promise<ErrOr<TutorialD
     const itemKeys: (keyof TutorialData)[] = ["currentStep"];
     const items = await chrome.storage.sync.get(itemKeys);
     const tutorialData: TutorialData = {
-      currentStep: items.tutorialData,
+      currentStep: items.currentStep,
     };
     const validationResponse = TutorialDataSchema.safeParse(tutorialData);
 

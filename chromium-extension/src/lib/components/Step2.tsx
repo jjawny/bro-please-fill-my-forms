@@ -41,16 +41,32 @@ export default function Step2() {
     }
   }, []);
 
-  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handlePromptChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newPrompt = e.target.value;
     setUserPrompt(newPrompt);
-    completeTutorialStep(TutorialStep.ENTER_YOUR_PROMPT);
+
+    const completeTutorialStepResponse = await completeTutorialStep(TutorialStep.ENTER_YOUR_PROMPT);
+
+    logResponse(completeTutorialStepResponse);
+
+    if (!completeTutorialStepResponse.isOk) {
+      setGlobalError(completeTutorialStepResponse.uiMessage);
+      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+    }
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    completeTutorialStep(TutorialStep.PRESS_GO);
+
+    const completeTutorialStepResponse = await completeTutorialStep(TutorialStep.PRESS_GO);
+
+    logResponse(completeTutorialStepResponse);
+
+    if (!completeTutorialStepResponse.isOk) {
+      setGlobalError(completeTutorialStepResponse.uiMessage);
+      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+    }
 
     const savePromptResponse = await savePrompt(userPrompt);
 

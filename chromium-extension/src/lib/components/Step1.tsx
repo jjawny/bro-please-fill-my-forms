@@ -65,10 +65,18 @@ export default function Step1() {
   );
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setApiKeyInputValue(newValue);
-      completeTutorialStep(TutorialStep.ENCRYPT_GEMINI_API_KEY);
+
+      const completeTutorialStepResponse = await completeTutorialStep(TutorialStep.ENCRYPT_GEMINI_API_KEY);
+
+      logResponse(completeTutorialStepResponse);
+
+      if (!completeTutorialStepResponse.isOk) {
+        setGlobalError(completeTutorialStepResponse.uiMessage);
+        // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+      }
 
       if (!isFirstRender.current) {
         setIsValidating(false);
