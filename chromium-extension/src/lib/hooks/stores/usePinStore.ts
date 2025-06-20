@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
+import { ByoKeyData, ByoKeyDataSchema, DEFAULT_BYO_KEY_DATA } from "~/lib/models/ByoKeyData";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
-import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
+import { DEFAULT_TEMPORARY_DATA, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import {
   loadTemporaryDataFromSessionStorage,
   saveToSessionStorage,
@@ -128,8 +128,8 @@ export const usePinStore = create<PinStore>((set, get) => {
     let messages = ["Begin transitioning to setup mode"];
 
     try {
-      const defaultByoKeyData = getDefaultByoKeyData();
-      const defaultTemporaryData = getDefaultTemporaryData();
+      const defaultByoKeyData = DEFAULT_BYO_KEY_DATA;
+      const defaultTemporaryData = DEFAULT_TEMPORARY_DATA;
 
       const saveToSyncStorageResponse = await saveToSyncStorage(ByoKeyDataSchema, defaultByoKeyData);
 
@@ -227,8 +227,8 @@ export const usePinStore = create<PinStore>((set, get) => {
 
   //#region PUBLIC
   return {
-    ...getDefaultByoKeyData(),
-    ...getDefaultTemporaryData(),
+    ...DEFAULT_BYO_KEY_DATA,
+    ...DEFAULT_TEMPORARY_DATA,
     isInitialized: false,
     pinMode: "LOCKED",
     geminiApiKeyDecrypted: undefined,

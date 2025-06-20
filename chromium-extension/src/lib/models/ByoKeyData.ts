@@ -6,10 +6,8 @@ export const ByoKeyDataSchema = z.object({
   hasGeminiApiKeyConnectedSuccessfully: z.boolean().nullable(),
 });
 export type ByoKeyData = z.infer<typeof ByoKeyDataSchema>;
-export const getDefaultByoKeyData = (): ByoKeyData => {
-  return {
-    geminiApiKeyEncrypted: null,
-    geminiApiKeyHash: null,
-    hasGeminiApiKeyConnectedSuccessfully: null,
-  };
+export const DEFAULT_BYO_KEY_DATA: ByoKeyData = {
+  geminiApiKeyEncrypted: null,
+  geminiApiKeyHash: null,
+  hasGeminiApiKeyConnectedSuccessfully: null,
 };

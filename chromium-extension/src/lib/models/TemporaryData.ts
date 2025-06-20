@@ -5,9 +5,7 @@ export const TemporaryDataSchema = z.object({
   prompt: z.string().nullable(),
 });
 export type TemporaryData = z.infer<typeof TemporaryDataSchema>;
-export const getDefaultTemporaryData = (): TemporaryData => {
-  return {
-    pin: null,
-    prompt: null,
-  };
+export const DEFAULT_TEMPORARY_DATA: TemporaryData = {
+  pin: null,
+  prompt: null,
 };

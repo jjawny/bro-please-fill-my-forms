@@ -1,6 +1,7 @@
 import z, { ZodType } from "zod/v4";
-import { ByoKeyData, ByoKeyDataSchema, getDefaultByoKeyData } from "~/lib/models/ByoKeyData";
+import { ByoKeyData, ByoKeyDataSchema, DEFAULT_BYO_KEY_DATA } from "~/lib/models/ByoKeyData";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { DEFAULT_TUTORIAL_DATA, TutorialData, TutorialDataSchema } from "~/lib/models/TutorialData";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
@@ -13,7 +14,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>
 
   try {
     if (import.meta.env.DEV) {
-      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded ByoKeyData", value: getDefaultByoKeyData() });
+      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded ByoKeyData", value: DEFAULT_BYO_KEY_DATA });
     }
 
     const itemKeys: (keyof ByoKeyData)[] = [
@@ -31,7 +32,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>
 
     // Fallback to defaults and attempt to heal corrupt data
     if (!validationResponse.success) {
-      const defaults = getDefaultByoKeyData();
+      const defaults = DEFAULT_BYO_KEY_DATA;
       await saveToSyncStorage(ByoKeyDataSchema, defaults);
       return ok({
         messages,
@@ -88,6 +89,46 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPr
     });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to load UserPreferences") });
+  }
+}
+
+/**
+ * Loads TutorialData from chrome.storage.sync
+ */
+export async function loadTutorialDataFromSyncStorage(): Promise<ErrOr<TutorialData>> {
+  let messages = ["Begin loading TutorialData from chrome.storage.sync"];
+
+  try {
+    if (import.meta.env.DEV) {
+      return ok({ messages, uiMessage: "[MOCKED] Successfully loaded TutorialData", value: DEFAULT_TUTORIAL_DATA });
+    }
+
+    const itemKeys: (keyof TutorialData)[] = ["currentStep"];
+    const items = await chrome.storage.sync.get(itemKeys);
+    const tutorialData: TutorialData = {
+      currentStep: items.tutorialData,
+    };
+    const validationResponse = TutorialDataSchema.safeParse(tutorialData);
+
+    // Fallback to defaults and attempt to heal corrupt data
+    if (!validationResponse.success) {
+      const defaults = DEFAULT_TUTORIAL_DATA;
+      await saveToSyncStorage(TutorialDataSchema, defaults);
+
+      return ok({
+        messages,
+        uiMessage: `TutorialData failed validation, falling back to defaults: ${z.prettifyError(validationResponse.error)}`,
+        value: defaults,
+      });
+    }
+
+    return ok({
+      messages,
+      uiMessage: `Successfully loaded ${JSON.stringify(validationResponse.data)}`,
+      value: validationResponse.data,
+    });
+  } catch (error: unknown) {
+    return err({ messages, uiMessage: logError(error, "Failed to load TutorialData, failing back to defaults") });
   }
 }
 

@@ -1,6 +1,6 @@
 import z, { ZodType } from "zod/v4";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
-import { getDefaultTemporaryData, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
+import { DEFAULT_TEMPORARY_DATA, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
 
@@ -15,7 +15,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
       return ok({
         messages,
         uiMessage: "[MOCKED] Successfully loaded TemporaryData",
-        value: getDefaultTemporaryData(),
+        value: DEFAULT_TEMPORARY_DATA,
       });
     }
 
@@ -26,7 +26,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
 
     // Fallback to defaults and attempt to heal corrupt data
     if (!validationResponse.success) {
-      const defaults = getDefaultTemporaryData();
+      const defaults = DEFAULT_TEMPORARY_DATA;
       await saveToSessionStorage(TemporaryDataSchema, defaults);
       return ok({
         messages,
