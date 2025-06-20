@@ -17,6 +17,7 @@ export default function Hero() {
   );
 }
 
+// TODO: move this out
 function HeroLogo() {
   return (
     <div className="select-none absolute top-[-60px] right-[-66px] z-50 pointer-events-none">

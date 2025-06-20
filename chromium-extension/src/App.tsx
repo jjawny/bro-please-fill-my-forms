@@ -13,6 +13,7 @@ import GitHubLink from "./lib/components/GitHubLink";
 import { useGlobalStore } from "./lib/hooks/stores/useGlobalStore";
 import { useSetHeightDynamicallyBasedOnPinMode } from "./lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
 import { logResponse } from "./lib/utils/log-utils";
+import logo from "/images/logo.png";
 
 export default function App() {
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
@@ -29,7 +30,6 @@ export default function App() {
 
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
-    setGlobalError("sss");
     const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();
@@ -86,7 +86,10 @@ function LockedView() {
 
 function UnlockedView() {
   return (
-    <div className="flex flex-col gap-6 mt-4 h-full justify-center w-full px-1 overflow-y-scroll">
+    <div className="relative flex flex-col gap-6 pt-4 h-full justify-center w-full px-1 overflow-y-scroll">
+      <div className="absolute top-1 w-full justify-items-center">
+        <img src={logo} alt="Bro Please, Fill My Forms logo" className="max-h-5" />
+      </div>
       <Step1 />
       <Step2 />
     </div>
