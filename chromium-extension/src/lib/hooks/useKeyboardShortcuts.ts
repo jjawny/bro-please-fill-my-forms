@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { ModifierKey, ModifierKeyValues } from "~/lib/enums/ModifierKey";
+import { ModifierKey, ModifierKeyType, ModifierKeyValues } from "~/lib/enums/ModifierKey";
 
 export type KeyboardShortcut = {
   keys: string[];
@@ -46,7 +46,7 @@ function getActiveKeysFromEvent(event: KeyboardEvent): string[] {
   if (event.shiftKey) keys.push(ModifierKey.SHIFT);
   if (event.metaKey) keys.push(ModifierKey.META);
 
-  if (!ModifierKeyValues.includes(event.key)) {
+  if (!ModifierKeyValues.includes(event.key as ModifierKeyType)) {
     keys.push(event.key);
   }
 
