@@ -112,7 +112,7 @@ export default function PinWrapper() {
           confirmLabel="Reset"
           confirmVariant="destructive"
           onConfirm={handleResetPin}
-          trigger={<RippleButton className="mt-6">Reset PIN</RippleButton>}
+          trigger={<RippleButton className="mt-2">Reset PIN</RippleButton>}
         />
       )}
     </>

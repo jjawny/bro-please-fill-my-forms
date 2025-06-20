@@ -11,6 +11,7 @@ import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesSt
 import Debug from "./lib/components/Debug";
 import GitHubLink from "./lib/components/GitHubLink";
 import { useGlobalStore } from "./lib/hooks/stores/useGlobalStore";
+import { useSetHeightDynamicallyBasedOnPinMode } from "./lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
 import { logResponse } from "./lib/utils/log-utils";
 
 export default function App() {
@@ -23,8 +24,12 @@ export default function App() {
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
 
+  // Start listening/reacting to pin mode; updating popup height dynamically
+  useSetHeightDynamicallyBasedOnPinMode();
+
   // Initialize stores (ONCE at top of component tree)
   useEffect(() => {
+    setGlobalError("sss");
     const initStore = async () => {
       if (!isPinStoreInitialized) {
         const initStoreResponse = await initializePinStore();

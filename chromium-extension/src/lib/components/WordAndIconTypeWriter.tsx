@@ -22,17 +22,13 @@ export default function TextIconPairTypeWriter({
   const currentIcon = pairs[currentWordIndex]?.icon;
 
   return (
-    <div
-      className={cn(
-        className,
-        "flex gap-1 items-center overflow-hidden",
-        "text-start text-sm text-stone-300 whitespace-nowrap",
-      )}
-    >
-      <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
-        {currentIcon}
+    <div className={cn(className, "flex overflow-hidden", "text-start text-sm whitespace-nowrap")}>
+      <span className="opacity-30 flex gap-1 items-center">
+        <span key={currentWordIndex} className={cn("[&_svg]:h-[1rem]", "animate-bounce-in")}>
+          {currentIcon}
+        </span>
+        {text}
       </span>
-      {text}
     </div>
   );
 }
