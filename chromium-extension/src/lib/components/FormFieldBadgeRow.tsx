@@ -1,7 +1,7 @@
 import { TextCursorIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "~/lib/components/shadcn/badge";
-import { inputTypeIconMap } from "~/lib/constants/html-input-type-icon-map";
+import { INPUT_TYPE_ICON_MAP } from "~/lib/constants/html-input-type-icon-map";
 import { useUiItemWidthCalculator } from "~/lib/hooks/useUiItemWidthCalculator";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { cn } from "~/lib/utils/cn";
@@ -83,24 +83,37 @@ export default function FormFieldBadgeRow({
 }
 
 function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
+  const Bullet = () => <span className="opacity-20">•</span>;
+
   return (
-    <span className="flex flex-col gap-1 max-h-[calc(100vh-200px)] overflow-y-scroll">
-      {scrapedForm.fields.map((field) => {
-        const IconComponent = getIconByType(field.type);
-        return (
-          <Badge key={field.id} variant="secondary" className="text-xs">
-            <IconComponent className="opacity-50" /> {field.name ?? field.label ?? field.id}
-            <span className="opacity-75 truncate inline-block">{field.type}</span>
-            <span className="opacity-60 truncate inline-block">{field.label ?? field.placeholder}</span>
-          </Badge>
-        );
-      })}
+    <span className="relative block">
+      <span className="flex flex-col gap-1 py-2.5 max-h-[calc(100vh-200px)] overflow-y-scroll">
+        {scrapedForm.fields.map((field) => {
+          const IconComponent = getIconByType(field.type);
+          return (
+            <Badge key={field.id} variant="secondary" className="text-xs whitespace-normal">
+              <IconComponent className="opacity-50" /> {field.name ?? field.label ?? field.id}
+              <Bullet />
+              <span className="opacity-60">{field.type}</span>
+              {(field.label || field.placeholder) && (
+                <>
+                  <Bullet />
+                  <span className="opacity-40">{field.label ?? field.placeholder}</span>
+                </>
+              )}
+            </Badge>
+          );
+        })}
+      </span>
+      {/* Soft borders (top, bottom) */}
+      <span className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+      <span className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </span>
   );
 }
 
 function getIconByType(htmlInputType?: string) {
   const cleanType = htmlInputType?.toLowerCase();
-  const IconComponent = inputTypeIconMap[cleanType as keyof typeof inputTypeIconMap];
+  const IconComponent = INPUT_TYPE_ICON_MAP[cleanType as keyof typeof INPUT_TYPE_ICON_MAP];
   return IconComponent || TextCursorIcon;
 }

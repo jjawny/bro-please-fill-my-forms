@@ -1,5 +1,6 @@
 import { CheckIcon, LoaderCircleIcon } from "lucide-react";
 import { useState } from "react";
+import { MOCK_SCRAPED_FORM } from "~/lib/constants/mock-data";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { ScrapedForm } from "~/lib/models/FormField";
@@ -22,7 +23,7 @@ export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>(undefined);
+  const [scrapedForm, setScrapedForm] = useState<ScrapedForm | undefined>(MOCK_SCRAPED_FORM);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
