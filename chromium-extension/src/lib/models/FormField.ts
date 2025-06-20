@@ -10,7 +10,6 @@ export type FormField = BaseFormField & {
   label?: string;
   required?: boolean;
   options?: string[]; // for select/radio/checkbox
-  selector: string; // CSS selector to find the element
 };
 
 export type ScrapedForm = {
