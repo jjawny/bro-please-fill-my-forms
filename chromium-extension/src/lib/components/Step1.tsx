@@ -23,7 +23,6 @@ export default function Step1() {
   const isFirstRender = useRef<boolean>(true);
 
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
-  const getCurrentTutorialStep = useGlobalStore((state) => state.getCurrentTutorialStep);
   const completeTutorialStep = useGlobalStore((state) => state.completeTutorialStep);
 
   const saveNewApiKey = usePinStore((state) => state.saveNewApiKey);
