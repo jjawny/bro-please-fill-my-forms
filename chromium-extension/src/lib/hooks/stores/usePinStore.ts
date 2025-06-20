@@ -67,9 +67,9 @@ type PinStore = ByoKeyData &
     setIsApiKeyDirty: (isDirty: boolean) => ErrOr;
 
     /**
-     * Get a JSON dump of this store, render in <pre> tags for fast debugging/insights
+     * Get a dump of this store
      */
-    GET_DEBUG_JSON_DUMP: () => string;
+    GET_DEBUG_DUMP: () => object;
   };
 //#endregion
 
@@ -489,7 +489,7 @@ export const usePinStore = create<PinStore>((set, get) => {
       }
     },
 
-    GET_DEBUG_JSON_DUMP: () => JSON.stringify(get(), null, 2),
+    GET_DEBUG_DUMP: () => ({ ...get() }),
   };
   //#endregion
 });

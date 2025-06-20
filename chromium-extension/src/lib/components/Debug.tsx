@@ -11,25 +11,19 @@ import { RippleButton } from "./shadcn/ripple";
  * Debug UI during development only; shortcuts still work in production
  */
 export default function Debug() {
-  const pinStoreJson = usePinStore((state) => state.GET_DEBUG_JSON_DUMP);
-  const userPreferencesStoreJson = useUserPreferencesStore((state) => state.GET_DEBUG_JSON_DUMP);
-  const globalStoreJson = useGlobalStore((state) => state.GET_DEBUG_JSON_DUMP);
+  const getPinStoreDump = usePinStore((state) => state.GET_DEBUG_DUMP);
+  const getUserPreferencesStoreDump = useUserPreferencesStore((state) => state.GET_DEBUG_DUMP);
+  const getGlobalStoreDump = useGlobalStore((state) => state.GET_DEBUG_DUMP);
 
-  const logPinStoreJson = () => console.debug("PinStore:", pinStoreJson());
-  const logUserPreferencesJson = () => console.debug("UserPreferences:", userPreferencesStoreJson());
-  const logGlobalStore = () => console.debug("GlobalStore:", globalStoreJson());
+  const logPinStoreJson = () => {
+    console.debug("PinStore:", getPinStoreDump());
+    console.debug("UserPreferencesStore:", getUserPreferencesStoreDump());
+    console.debug("GlobalStore:", getGlobalStoreDump());
+  };
 
-  useKeyboardShortcuts([
-    { keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson },
-    { keys: [ModifierKey.CONTROL, "2"], callback: logUserPreferencesJson },
-    { keys: [ModifierKey.CONTROL, "3"], callback: logGlobalStore },
-  ]);
+  useKeyboardShortcuts([{ keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson }]);
 
-  const menuItems: MenuItem[] = [
-    { label: "Log PinStore", onClick: logPinStoreJson, shortcut: "⌃1" },
-    { label: "Log UserPreferencesStore", onClick: logUserPreferencesJson, shortcut: "⌃2" },
-    { label: "Log GlobalStore", onClick: logGlobalStore, shortcut: "⌃3" },
-  ];
+  const menuItems: MenuItem[] = [{ label: "Log all state", onClick: logPinStoreJson, shortcut: "⌃1" }];
 
   if (import.meta.env.PROD) {
     return null;
