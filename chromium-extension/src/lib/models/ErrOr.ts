@@ -117,6 +117,7 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
 // }
 
 // // Console.log
+// console.clear();
 // const testFnResponse = ((): ErrOr => Math.random() > 0.5 ? ok() : err())();
 // const testFnResponse2 = ((): ErrOr<string> => Math.random() > 0.5 ? ok("here") : err())();
 
