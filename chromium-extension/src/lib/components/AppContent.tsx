@@ -24,23 +24,19 @@ export default function AppContent() {
 
   useEffect(() => {
     const autoUnlock = async () => {
-      // 1. Initialize the store to load any previously saved data
-      // 2. If a PIN is saved (session storage), attempt to unlock with it
-      // 3. The unlock fn will change the pinMode to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
-      if (!hasAttemptedAutoUnlock.current && isInitialized && pin) {
+      if (!hasAttemptedAutoUnlock.current && isInitialized) {
         hasAttemptedAutoUnlock.current = true;
-        const unlockResponse = await unlock(pin);
 
-        logResponse(unlockResponse);
+        if (pin) {
+          const unlockResponse = await unlock(pin);
 
-        if (!unlockResponse.isOk) {
-          setGlobalError(unlockResponse.uiMessage);
+          logResponse(unlockResponse);
+
+          if (!unlockResponse.isOk) {
+            setGlobalError(unlockResponse.uiMessage);
+          }
         }
 
-        await sleep(100); // Simulate latency to avoid flash of validation state (better UX)
-        setIsAutoUnlocking(false);
-      } else if (isInitialized && (!pin || hasAttemptedAutoUnlock.current)) {
-        hasAttemptedAutoUnlock.current = true;
         await sleep(100); // Simulate latency to avoid flash of validation state (better UX)
         setIsAutoUnlocking(false);
       }
