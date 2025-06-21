@@ -46,7 +46,7 @@ export default function Step1() {
     debounce(async (apiKey: string) => {
       setIsValidating(true);
 
-      await sleep(500); // Simulate latency to avoid flash of validation state (better UX)
+      await sleep(100); // Simulate latency to avoid flash of validation state (better UX)
 
       const cleanedApiKey = apiKey.trim();
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
