@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Digi Worlds",
+  "name": "Bro Please, Fill My Forms",
   "description": "Johnny was bored...",
   "version": "1.0.0",
   "permissions": ["activeTab", "scripting", "storage"],
