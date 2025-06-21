@@ -13,16 +13,12 @@ import { logError } from "~/lib/utils/log-utils";
 const DATA_PREFIX_SEPARATOR = "$$$";
 
 /**
- * 
- * TODO:DOCS clean up
-I've successfully updated the component to use the native Web Crypto API instead of CryptoJS. The changes include:
-
-Replaced CryptoJS with Web Crypto API: Using the browser's built-in crypto.subtle for encryption/decryption
-Enhanced security: Implemented PBKDF2 key derivation with 100,000 iterations and SHA-256 hashing
-AES-GCM encryption: Using AES-GCM which provides both confidentiality and authenticity
-Proper salt and IV handling: Each encryption uses a random salt and initialization vector for security
-Base64 encoding: Encoded the combined salt, IV, and encrypted data for storage
-The native Web Crypto API provides better security, performance, and doesn't require external dependencies. The encryption process now uses industry-standard practices with proper key derivation and authenticated encryption.
+ * - Use the browser's native Crypto API (no ext deps)
+ * - For security, derive a key from the PIN using PBKDF2 w SHA-256 hashing and 100,000 iterations
+ * - For security, use AES-GCM for encryption which provides both confidentiality and authenticity
+ * - For security, use a random salt and initialization vector (IV) for each encryption
+ * - For storage, combine the salt, IV, and encrypted data into a single Base64-encoded string
+ * - For tougher security, prepend a randomly generated prefix to the data before encryption (also handles empty data)
  */
 export async function encryptData(data: string, pin: string): Promise<ErrOr<string>> {
   let messages = ["Begin encrypting data"];
@@ -114,7 +110,7 @@ async function deriveKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
     "deriveKey",
   ]);
   const derivedKey = crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+    { name: "PBKDF2", salt, iterations: 100_000, hash: "SHA-256" },
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     false,
