@@ -8,9 +8,10 @@ const ToolTipWrapper = forwardRef<
     backgroundColorHex?: string;
     children: ReactNode;
     content: ReactNode;
+    contentClassName?: string;
   } & TooltipProps &
     TooltipContentProps
->(({ backgroundColorHex, children, content, delayDuration, open, side, ...props }, ref) => {
+>(({ backgroundColorHex, children, content, contentClassName, delayDuration, open, side, ...props }, ref) => {
   return (
     <Tooltip delayDuration={delayDuration} open={open}>
       <TooltipTrigger asChild>
@@ -18,7 +19,7 @@ const ToolTipWrapper = forwardRef<
           {children}
         </div>
       </TooltipTrigger>
-      <TooltipContent backgroundColorHex={backgroundColorHex} side={side}>
+      <TooltipContent backgroundColorHex={backgroundColorHex} side={side} className={contentClassName}>
         {content}
       </TooltipContent>
     </Tooltip>

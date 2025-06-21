@@ -18,6 +18,7 @@ export default function TutorialToolTip({
       content={content}
       open={getCurrentTutorialStep() === step ? true : false}
       backgroundColorHex="#0047d8"
+      contentClassName="!text-white"
     >
       {children}
     </ToolTipWrapper>
