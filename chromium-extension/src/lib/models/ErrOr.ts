@@ -120,9 +120,9 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
 // const testFnResponse = ((): ErrOr => Math.random() > 0.5 ? ok() : err())();
 // const testFnResponse2 = ((): ErrOr<string> => Math.random() > 0.5 ? ok("here") : err())();
 
-// if (testFnResponse.isOk) console.log("1 ok and value?", testFnResponse.value);
+// if (testFnResponse.isOk) console.log("1 ok + value is true?", testFnResponse.value);
 // else console.warn("1 ok?", testFnResponse.isOk);
-// if (testFnResponse2.isOk) console.log("2 ok and value?", testFnResponse2.value)
+// if (testFnResponse2.isOk) console.log("2 ok + value is 'here'?", testFnResponse2.value)
 // else console.warn("2 ok?", testFnResponse2.isOk);
 //#endregion
 
