@@ -1,11 +1,22 @@
-import { GoogleGenAI } from "@google/genai";
+// import { GoogleGenAI } from "@google/genai";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
+
+// Lazy-loaded (upon first access) then cached onwards
+// This improves initial app load perf (genai chunk isn't included in the main CRX bundle)
+// Gains: from 888kB to 630kB = ~30% savings
+let ai: typeof import("@google/genai") | undefined;
+
+async function getGenAI() {
+  if (!ai) ai = await import("@google/genai");
+  return ai;
+}
 
 export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
   let messages = ["Begin validating Gemini API key"];
 
   try {
+    const { GoogleGenAI } = await getGenAI();
     const ai = new GoogleGenAI({ apiKey });
 
     // Equivalent to a ping/health check, will throw if API key is invalid or network issue
@@ -37,6 +48,7 @@ export async function generateContent<TStructuredResponse>(
   let messages = ["Begin generating content"];
 
   try {
+    const { GoogleGenAI } = await getGenAI();
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-001",

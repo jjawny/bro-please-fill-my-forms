@@ -26,3 +26,7 @@ A Chromium **Extension** (a.k.a CRX) that **auto-fills** forms based on **natura
    ![how to view extension console logs](chromium-extension/public/images/readme/inspect-service-worker-logs.png)
 - 💉 Injected scripts logs (`chrome.scripting.executeScript`)? inspect current page
 
+## Optimizing bundle size
+- After a build: `open stats.html`
+- Inspect problematic chunk in CRX's bundle
+- Lazy-load/etc to reduce the bundle size (impacts initial load times)

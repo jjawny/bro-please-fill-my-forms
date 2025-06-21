@@ -1,11 +1,12 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import { plugin as mdPlugin, Mode } from "vite-plugin-markdown";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), mdPlugin({ mode: [Mode.MARKDOWN] })],
+  plugins: [react(), tailwindcss(), mdPlugin({ mode: [Mode.MARKDOWN] }), visualizer()],
   resolve: {
     alias: {
       "~": path.resolve(__dirname, "./src"),
