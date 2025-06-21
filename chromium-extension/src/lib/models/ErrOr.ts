@@ -96,69 +96,59 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
 }
 //#endregion
 
-//#region from TS playground
+//#region Copy into TS Playground to RnD
+// // Fallback to 'true' as the value if no generic given
 // type ErrOr<TValue = true> =
-//   | { isOk: true; value: TValue, messages: string[], successMessage?: string }
-//   | { isOk: false; messages: string[], errorMessage?: string };
+//   | { isOk: true; value: TValue }
+//   | { isOk: false; };
 
 // // Helper functions
-// function ok<T>(value: T): ErrOr<T>;
 // function ok(): ErrOr;
-// function ok<T>(value?: T): any {
+// function ok<T>(value: T): ErrOr<T>;
+// function ok<T>(value?: T): ErrOr | ErrOr<T> {
 //   if (arguments.length === 0) {
-//     return { isOk: true, value: true, messages: [], successMessage: undefined };
+//     return { isOk: true, value: true };
 //   }
-//   return { isOk: true, value: value, messages: [], successMessage: undefined };
+//   return { isOk: true, value: value ?? (true as any) };
 // }
 
 // function err<T = true>(): ErrOr<T> {
-//   return { isOk: false, messages: [], errorMessage: undefined };
+//   return { isOk: false };
 // }
 
-// // Now this works
-// const testFn = (): ErrOr => Math.random() > 0.5 ? ok() : err();
-// const testFn2 = (): ErrOr<string> => Math.random() > 0.5 ? ok("here") : err();
-// const testResponse = testFn();
-// const testResponse2 = testFn2();
+// // Console.log
+// const testFnResponse = ((): ErrOr => Math.random() > 0.5 ? ok() : err())();
+// const testFnResponse2 = ((): ErrOr<string> => Math.random() > 0.5 ? ok("here") : err())();
 
-// // TEST
-// if (testResponse.isOk) console.log(testResponse.value);
-// else console.warn(testResponse.errorMessage);
-
-// if (testResponse2.isOk) console.log(testResponse2.value)
-// else console.warn(testResponse2.errorMessage);
+// if (testFnResponse.isOk) console.log("1 ok and value?", testFnResponse.value);
+// else console.warn("1 ok?", testFnResponse.isOk);
+// if (testFnResponse2.isOk) console.log("2 ok and value?", testFnResponse2.value)
+// else console.warn("2 ok?", testFnResponse2.isOk);
 //#endregion
 
-/* EXAMPLE
+//#region EXAMPLE USAGE
+// function doWork(): ErrOr<string> {
+//   let messages: Messages = ["Begin do work"];
 
-function doWork(): OneOf<string, string> {
-  let messages: Messages = ["Begin do work"];
+//   try {
+//     const doOtherWorkResponse = doOtherWork();
 
-  try {
-    const doOtherWorkResponse = doOtherWork();
+//     messages.push(doOtherWorkResponse.messages);
 
-    messages.push(doOtherWorkResponse.messages);
+//     if (!doOtherWorkResponse.isOk) {
+//       return err({ messages, uiMessage: doOtherWorkResponse.uiMessage, isAddUiMessageToMessages: false });
+//     }
 
-    if (!doOtherWorkResponse.isOk) {
-      const failMessage = "Failed to do work";
-      messages.push(failMessage);
-      return { isOk: false, error: failMessage, messages };
-    }
+//     const otherWorkValue = doOtherWorkResponse.value;
 
-    const otherWorkValue = doOtherWorkResponse.value;
+//     return ok({ messages, uiMessage: "Successfully did work", value: otherWorkValue.toString() });
+//   } catch (error: unknown) {
+//     return err({ messages, uiMessage: logError(error, "Failed to do work") });
+//   }
+// }
 
-    const uiMessage = "Successfully did work";
-    messages.push(uiMessage);
-    return { isOk: true, value: uiMessage, messages };
-  } catch (error: unknown) {
-    const uiMessage = logError(error, "Failed to do work");
-    messages.push(uiMessage);
-    return { isOk: false, error: uiMessage, messages };
-  }
-}
-
-function doOtherWork(): OneOf<string, number> {
-  return { isOk: false, error: 111111111, messages: ["Successfully did other work"] }
-};
-
- */
+// function doOtherWork(): ErrOr<number> {
+//   let messages: Messages = ["Begin do other work"];
+//   return ok({ messages, uiMessage: "Successfully did other work", value: 69 });
+// }
+//#endregion
