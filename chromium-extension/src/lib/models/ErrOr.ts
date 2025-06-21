@@ -42,7 +42,6 @@ export type Messages = (string | Messages)[];
 // #endregion
 
 // #region Helper functions
-
 type CommonErrOrParams = {
   messages?: Messages;
   uiMessage: string;

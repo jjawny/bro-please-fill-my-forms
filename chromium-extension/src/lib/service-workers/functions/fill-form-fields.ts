@@ -1,10 +1,10 @@
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { PopulatedFormFieldsLlmResponse } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
-import { FillFormFieldsResponse } from "~/lib/models/ServiceWorkerMessages";
 
 export const fillFormFields = (
   tabId: number,
   formData: PopulatedFormFieldsLlmResponse,
-  sendResponse: (response: FillFormFieldsResponse) => void,
+  sendResponse: (response: ErrOr) => void,
 ) => {
   chrome.scripting.executeScript(
     {
@@ -205,17 +205,19 @@ export const fillFormFields = (
     },
     (response) => {
       if (chrome.runtime.lastError) {
-        sendResponse({ isOk: false, uiMessage: chrome.runtime.lastError.message });
+        sendResponse(err({ uiMessage: `Chrome error: ${chrome.runtime.lastError.message}` }));
+
         return;
       }
 
       if (response[0].result) {
         const { filledCount, totalFields } = response[0].result;
-        sendResponse({ isOk: true, uiMessage: `Successfully filled ${filledCount}/${totalFields} fields` });
+        sendResponse(ok({ uiMessage: `Successfully filled ${filledCount}/${totalFields} fields` }));
+
         return;
       }
 
-      sendResponse({ isOk: false, uiMessage: "Failed to fill form fields" });
+      sendResponse(err({ uiMessage: "Failed to fill form fields" }));
     },
   );
 };

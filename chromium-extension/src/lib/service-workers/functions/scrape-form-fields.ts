@@ -1,7 +1,7 @@
+import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { FormField, ScrapedForm } from "~/lib/models/FormField";
-import { ScrapeFormFieldsResponse } from "~/lib/models/ServiceWorkerMessages";
 
-export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeFormFieldsResponse) => void) => {
+export const scrapeFormFields = (tabId: number, sendResponse: (response: ErrOr<ScrapedForm>) => void) => {
   chrome.scripting.executeScript(
     {
       target: { tabId },
@@ -117,21 +117,17 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ScrapeF
     },
     (response) => {
       if (chrome.runtime.lastError) {
-        sendResponse({ isOk: false, uiMessage: chrome.runtime.lastError.message });
+        sendResponse(err({ uiMessage: `Chrome error: ${chrome.runtime.lastError.message}` }));
         return;
       }
 
       if (response[0].result) {
         const { finalForm } = response[0].result;
-        sendResponse({
-          isOk: true,
-          uiMessage: `Successfully scraped ${finalForm.fields.length} fields`,
-          form: finalForm,
-        });
+        sendResponse(ok({ uiMessage: `Successfully scraped ${finalForm.fields.length} fields`, value: finalForm }));
         return;
       }
 
-      sendResponse({ isOk: false, uiMessage: "No form fields found" });
+      sendResponse(err({ uiMessage: "No form fields found" }));
     },
   );
 };

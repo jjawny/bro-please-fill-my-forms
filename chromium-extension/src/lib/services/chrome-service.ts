@@ -2,12 +2,7 @@ import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { PopulatedFormFieldsLlmResponse } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
-import type {
-  FillFormFieldsRequest,
-  FillFormFieldsResponse,
-  ScrapeFormFieldsRequest,
-  ScrapeFormFieldsResponse,
-} from "~/lib/models/ServiceWorkerMessages";
+import { ServiceWorkerRequest } from "~/lib/models/ServiceWorkerRequest";
 import { logError } from "~/lib/utils/log-utils";
 
 export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
@@ -30,18 +25,14 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
   let messages = ["Begin scraping form fields"];
 
   try {
-    const message: ScrapeFormFieldsRequest = { tabId, action: ServiceWorkerAction.SCRAPE_FORM_FIELDS };
-    const scrapeFormFieldsResponse: ScrapeFormFieldsResponse = await chrome.runtime.sendMessage(message);
+    const message: ServiceWorkerRequest = { tabId, action: ServiceWorkerAction.SCRAPE_FORM_FIELDS };
+    const scrapeFormFieldsResponse: ErrOr<ScrapedForm> = await chrome.runtime.sendMessage(message);
 
     if (!scrapeFormFieldsResponse.isOk) {
-      return err({ messages, uiMessage: scrapeFormFieldsResponse.uiMessage || "Service worker failed" });
+      return err({ messages, uiMessage: scrapeFormFieldsResponse.uiMessage, isAddUiMessageToMessages: false });
     }
 
-    if (!scrapeFormFieldsResponse.form) {
-      return err({ messages, uiMessage: "No form found" });
-    }
-
-    return ok({ messages, uiMessage: "Successfully scraped form fields", value: scrapeFormFieldsResponse.form });
+    return ok({ messages, uiMessage: "Successfully scraped form fields", value: scrapeFormFieldsResponse.value });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to scrape form fields") });
   }
@@ -51,16 +42,16 @@ export async function fillFormFields(tabId: number, formData: PopulatedFormField
   let messages = ["Begin filling form fields"];
 
   try {
-    const message: FillFormFieldsRequest = {
+    const message: ServiceWorkerRequest = {
       action: ServiceWorkerAction.FILL_FORM_FIELDS,
       tabId: tabId,
       formData: formData,
     };
 
-    const fillFormFieldsResponse: FillFormFieldsResponse = await chrome.runtime.sendMessage(message);
+    const fillFormFieldsResponse: ErrOr = await chrome.runtime.sendMessage(message);
 
     if (!fillFormFieldsResponse.isOk) {
-      return err({ messages, uiMessage: fillFormFieldsResponse.uiMessage || "Service worker failed" });
+      return err({ messages, uiMessage: fillFormFieldsResponse.uiMessage, isAddUiMessageToMessages: false });
     }
 
     return ok({ messages, uiMessage: "Successfully filled form fields" });
