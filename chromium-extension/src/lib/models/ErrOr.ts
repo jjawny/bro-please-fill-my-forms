@@ -1,59 +1,61 @@
 /**
- * Simple Descriminated Union Type (by checking isOk)
- * Messages for UI (toasts, helper text, etc) also acts as a slim stack trace
+ * Simple 'Errors as Values' by checking isOk
+ * Unlike ASP.NET version, HTTP code is replaced w a UI message (final definitive value; use in toasts, helper text, etc)
+ * Because messages are for debugging, enhance them to allow nesting to build a true slim stack trace
  *
- * FINDINGS/REALISATIONS when designing around ONE OFS functions:
- *  - Every function that's "Just My Code" should return a OneOf
+ * FINDINGS/REALISATIONS when designing around ErrOr functions on frontends:
+ *  - Every function that's "Just My Code" should return a ErrOr
  *     except for atomic functions that we don't expect to fail (helpers/utils)
  *     what's left are basically functions for biz logic/orchestration/using 3rd party libs more
- *  - ∴ our code outside of <Components/> are just a bunch of OneOf functions (a.k.a OneOfs)
+ *  - ∴ our code outside of <Components/> are just a bunch of ErrOr functions (a.k.a ErrOrs)
  *
- *  - OneOfs should reduce decision-fatigue (always return the same type)
- *  - OneOfs should speed-up debugging; the type forces us to package errors as values and a quick way to check later (Go-lang inspired)
- *  - OneOfs should always merge messages from other OneOfs after calling (maintaining order)
- *  - OneOfs should not console.log/debug, because we already bundle messages across the entire stack trace of messages, the caller can decide to log/toast
- *  - OneOfs should not console.error expected errors (like failed decryption using nodeJS crypto lib) because...
- *  - OneOfs should always console.error UNEXPECTED errors when caught (as these are errors we need to fix)
- *  - OneOfs should never return nullish values, instead, fallback to <string, string> for the final success/error toast messages (like ErrOr status code)
+ *  - ErrOrs should reduce decision-fatigue (always return the same type)
+ *  - ErrOrs should speed-up debugging; the type forces us to package errors as values and a quick way to check later (Go-lang inspired)
+ *  - ErrOrs should always merge messages from other ErrOrs after calling (maintaining order)
+ *  - ErrOrs should not console.log/debug, because we already bundle messages across the entire stack trace of messages, the caller can decide to log/toast
+ *  - ErrOrs should not console.error expected errors (like failed decryption using nodeJS crypto lib) because...
+ *  - ErrOrs should always console.error UNEXPECTED errors when caught (as these are errors we need to fix)
  *
  *  - What are the entry points?
  *     99% of code execution/the stack trace will start from an event handlers/useEffect hooks/service workers (ignoring network-driven types; web sockets/SSE/polling)
- *     when we handle OneOfs in entry points, we console.debug/warn (not console.error as these errors are all handled)
+ *     when we handle ErrOrs in entry points, we console.debug/warn (not console.error as these errors are all handled)
  *
- *  - Why not new up a dedicated OneOf object?
- *     using the pure type (creating object literals) has better perf (less memory) just GPT "Performance of creating object literals from my OneOf type vs using a dedicated OneOf class"
+ *  - Why not new up a dedicated ErrOr object?
+ *     using the pure type (creating object literals) has better perf (less memory) just GPT "Performance of creating object literals from my ErrOr type vs using a dedicated ErrOr class"
  *     apparently 2-10x faster creation (CPU perf) and 20-30% less heap usage (MEM perf)
  *
- *  - Realised OneOfs are like heavy functions and for this app, all <Components/> call OneOfs via Zustand stores (which call more OneOfs down the stack trace)
+ *  - Realised ErrOrs are like heavy functions and for this app, all <Components/> call ErrOrs via Zustand stores (which call more ErrOrs down the stack trace)
  *  - Realised this starts to build a simple flow/map/visual of a React app like my ASP.NET Web API architecture
  */
 
-// ORIGINAL
+// #region OneOf (original idea)
 // export type OneOf<TValue, TError> =
 //   | { isOk: true; value: TValue; messages: string[] }
 //   | { isOk: false; error: TError; messages: string[] };
+// #endregion
 
-// #region UPGRADE?
-// u shouldnt need to think or type much as this is used everywhere, so only TWO helper functions, ok and err, flexible
-// TODO:DOCS confirm this? this is from the POV of us adding these to messages bundle, but maybe should be from the POV of the ui and we can easily just search, messages should be unique anyway failure ui messages should always start with "Failed to...", success ui messages should always start with "Successfully..."
-// messages are for debugging (logging), <success/error>Message is for UI (toasts/helper text)
-// success/error message got confusing when returning a bool (api key invalid but setting success message? idk man, lets call it uiMessage)
+// #region ErrOr
 export type ErrOr<TValue = true> =
   | { isOk: true; value: TValue; messages: Messages; uiMessage: string }
   | { isOk: false; messages: Messages; uiMessage: string };
-
 export type Messages = (string | Messages)[];
+// #endregion
 
-// Helper functions
-/**
- * merges uimessage into messages and builds the return type quickly for u
- */
+// #region Helper functions
+
 type CommonErrOrParams = {
   messages?: Messages;
   uiMessage: string;
-  // OPT-OUT (true by default) this saves 2 extra lines everywhere, assume true, and if we merge (return err using another ErrOrs uiMessage (less frequent) set to false), the 2 lines are newing the uimessage, then push manually everytime, and then assign, this way we can opt out of pushing etc here by default
+  // OPT-OUT (true by default)
+  // This saves 2 extra lines everywhere we bubble-up another ErrOr response
+  // These 2 lines would be `const uiMessage = ...` and then pushing to messages (to make sure uiMessage is included in-case the caller decides to use a different uiMessage)
+  // The savings come from auto-adding uiMessage to messages during `ok` fn call
+  // Issue is if we bubble-up the same uiMessage, this will be added again (duplicates)
+  // For perf (avoiding a .includes check) and to keep predictable fn behaviour/output, expose a flag param to opt-out of this behaviour
+  // TLDR if we bubble-up another error response w the SAME uiMessage, opt-out (false)
   isAddUiMessageToMessages?: boolean;
 };
+
 export function ok(): ErrOr;
 export function ok(params: CommonErrOrParams): ErrOr;
 export function ok<T>(params: { value: T } & CommonErrOrParams): ErrOr<T>;
@@ -70,7 +72,7 @@ export function ok<T>(params?: { value?: T } & CommonErrOrParams): ErrOr | ErrOr
 
   return {
     isOk: true,
-    value: value ?? (true as any), // satisfies both ErrOr n ErrOr<T>, the caller will get type-safety from which signature they choose
+    value: value ?? (true as any), // Satisfies both ErrOr n ErrOr<T>, the caller will get type-safety from which 'ok' fn signature they choose
     messages,
     uiMessage,
   };
