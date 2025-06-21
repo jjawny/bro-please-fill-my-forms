@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { TutorialStep, TutorialStepType, TutorialStepValues } from "~/lib/enums/TutorialStep";
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { TutorialDataSchema } from "~/lib/models/TutorialData";
 import { loadTutorialDataFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
 import { logError } from "~/lib/utils/log-utils";
@@ -48,14 +48,14 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   },
 
   initialize: async (): Promise<ErrOr> => {
-    let messages = ["Begin initializing GlobalStore"];
+    let messages: Messages = ["Begin initializing GlobalStore"];
 
     try {
       set({ isInitialized: false });
 
       const loadTutorialDataResponse = await loadTutorialDataFromSyncStorage();
 
-      messages = messages.concat(loadTutorialDataResponse.messages);
+      messages.push(loadTutorialDataResponse.messages);
 
       if (!loadTutorialDataResponse.isOk) {
         return err({ messages, uiMessage: loadTutorialDataResponse.uiMessage, isAddUiMessageToMessages: false });
@@ -85,7 +85,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   },
 
   setGlobalError: (error?: string): ErrOr => {
-    let messages = ["Begin setting globalError"];
+    let messages: Messages = ["Begin setting globalError"];
 
     try {
       set({ globalError: error });
@@ -96,7 +96,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   },
 
   completeTutorialStep: async (step: TutorialStepType): Promise<ErrOr> => {
-    let messages = [`Begin marking tutorial step '${step}' as complete`];
+    let messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
 
     try {
       set((state) => ({ tutorialProgress: { ...state.tutorialProgress, [step]: true } }));
@@ -105,7 +105,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
         currentStep: get().getCurrentTutorialStep(),
       });
 
-      messages = messages.concat(saveToSessionStorageResponse.messages);
+      messages.push(saveToSessionStorageResponse.messages);
 
       if (!saveToSessionStorageResponse.isOk) {
         return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });

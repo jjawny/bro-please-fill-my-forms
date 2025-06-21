@@ -39,15 +39,17 @@
 // messages are for debugging (logging), <success/error>Message is for UI (toasts/helper text)
 // success/error message got confusing when returning a bool (api key invalid but setting success message? idk man, lets call it uiMessage)
 export type ErrOr<TValue = true> =
-  | { isOk: true; value: TValue; messages: string[]; uiMessage: string }
-  | { isOk: false; messages: string[]; uiMessage: string };
+  | { isOk: true; value: TValue; messages: Messages; uiMessage: string }
+  | { isOk: false; messages: Messages; uiMessage: string };
+
+export type Messages = (string | Messages)[];
 
 // Helper functions
 /**
  * merges uimessage into messages and builds the return type quickly for u
  */
 type CommonErrOrParams = {
-  messages?: string[];
+  messages?: Messages;
   uiMessage: string;
   // OPT-OUT (true by default) this saves 2 extra lines everywhere, assume true, and if we merge (return err using another ErrOrs uiMessage (less frequent) set to false), the 2 lines are newing the uimessage, then push manually everytime, and then assign, this way we can opt out of pushing etc here by default
   isAddUiMessageToMessages?: boolean;
@@ -129,12 +131,12 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
 /* EXAMPLE
 
 function doWork(): OneOf<string, string> {
-  let messages = ["Begin do work"];
+  let messages: Messages = ["Begin do work"];
 
   try {
     const doOtherWorkResponse = doOtherWork();
 
-    messages = messages.concat(doOtherWorkResponse.messages);
+    messages.push(doOtherWorkResponse.messages);
 
     if (!doOtherWorkResponse.isOk) {
       const failMessage = "Failed to do work";

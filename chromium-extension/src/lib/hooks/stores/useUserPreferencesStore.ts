@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ThemeType } from "~/lib/enums/Theme";
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { loadUserPreferencesFromSyncStorage, saveToSyncStorage } from "~/lib/services/chrome-storage-sync-service";
 import { logError } from "~/lib/utils/log-utils";
@@ -29,14 +29,14 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
   isInitialized: false,
 
   initialize: async (): Promise<ErrOr> => {
-    let messages = ["Begin initializing UserPreferencesStore"];
+    let messages: Messages = ["Begin initializing UserPreferencesStore"];
 
     try {
       set({ isInitialized: false });
 
       const loadUserPreferencesResponse = await loadUserPreferencesFromSyncStorage();
 
-      messages = messages.concat(loadUserPreferencesResponse.messages);
+      messages.push(loadUserPreferencesResponse.messages);
 
       if (!loadUserPreferencesResponse.isOk) {
         return err({ messages, uiMessage: loadUserPreferencesResponse.uiMessage, isAddUiMessageToMessages: false });
@@ -53,14 +53,14 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
   },
 
   setTheme: async (theme: ThemeType): Promise<ErrOr> => {
-    let messages = ["Begin setting Theme"];
+    let messages: Messages = ["Begin setting Theme"];
 
     try {
       const nextState = { theme: theme };
 
       const saveToBrowserStorageResponse = await saveToSyncStorage(UserPreferencesSchema, nextState);
 
-      messages = messages.concat(saveToBrowserStorageResponse.messages);
+      messages.push(saveToBrowserStorageResponse.messages);
 
       if (!saveToBrowserStorageResponse.isOk) {
         return err({

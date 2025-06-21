@@ -1,6 +1,6 @@
 import z, { ZodType } from "zod/v4";
 import { ByoKeyData, ByoKeyDataSchema, DEFAULT_BYO_KEY_DATA } from "~/lib/models/ByoKeyData";
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { DEFAULT_TUTORIAL_DATA, TutorialData, TutorialDataSchema } from "~/lib/models/TutorialData";
 import { getDefaultUserPreferences, UserPreferences, UserPreferencesSchema } from "~/lib/models/UserPreferences";
 import { logError } from "~/lib/utils/log-utils";
@@ -96,7 +96,7 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPr
  * Loads TutorialData from chrome.storage.sync
  */
 export async function loadTutorialDataFromSyncStorage(): Promise<ErrOr<TutorialData>> {
-  let messages = ["Begin loading TutorialData from chrome.storage.sync"];
+  let messages: Messages = ["Begin loading TutorialData from chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {
@@ -142,7 +142,7 @@ export async function saveToSyncStorage<TSchema extends ZodType>(
   schema: TSchema,
   data: z.infer<TSchema>,
 ): Promise<ErrOr<z.infer<TSchema>>> {
-  let messages = ["Begin saving to chrome.storage.sync"];
+  let messages: Messages = ["Begin saving to chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {
