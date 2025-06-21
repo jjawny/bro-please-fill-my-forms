@@ -3,7 +3,7 @@
 
 # BRO PLEASE, FILL MY FORMS
 
-A Chromium Extension (CRX) that uses a single text box to **auto-fill** any form based on **natural** language (pro-tip: use **dictation**! 🎙️)
+A Chromium Extension (CRX) that uses a single text box to **auto-fill** ANY form based on **natural** language (pro-tip: use **dictation**! 🎙️)
 
 ## 📋 How do I use it?
 1. BYO keys; generate your own Google Gemini API Key [here](https://aistudio.google.com/apikey) (free quota)
