@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
-import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";
 import AlertDialogWrapper from "./AlertDialogWrapper";
@@ -10,40 +9,15 @@ import AlertDialogWrapper from "./AlertDialogWrapper";
  * A wrapper for <Pin> with heavier business logic
  */
 export default function PinWrapper() {
-  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
-
-  const isInitialized = usePinStore((state) => state.isInitialized);
-  const unlock = usePinStore((state) => state.unlock);
-  const savedPin = usePinStore((state) => state.pin);
-  const pinMode = usePinStore((state) => state.pinMode);
-  const setupPin = usePinStore((state) => state.saveNewPin);
-  const reset = usePinStore((state) => state.reset);
-
   const [isShaking, setIsShaking] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string | undefined>();
   const [pinValue, setPinValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const hasAttemptedAutoUnlock = useRef<boolean>(false);
-
-  useEffect(() => {
-    const autoUnlock = async () => {
-      // 1. Initialize the store to load any previously saved data
-      // 2. If a PIN is saved (session storage), attempt to unlock with it
-      // 3. The unlock fn will change the pinMode to UNLOCKED if successful, SETTING_UP if corrupt, or remain LOCKED
-      if (!hasAttemptedAutoUnlock.current && isInitialized && savedPin) {
-        hasAttemptedAutoUnlock.current = true;
-        const unlockResponse = await unlock(savedPin);
-
-        logResponse(unlockResponse);
-
-        if (!unlockResponse.isOk) {
-          setGlobalError(unlockResponse.uiMessage);
-        }
-      }
-    };
-    autoUnlock();
-  }, [isInitialized, savedPin]);
+  const unlock = usePinStore((state) => state.unlock);
+  const pinMode = usePinStore((state) => state.pinMode);
+  const setupPin = usePinStore((state) => state.saveNewPin);
+  const reset = usePinStore((state) => state.reset);
 
   const handlePinSubmit = async (pin: string) => {
     setIsSubmitting(true);

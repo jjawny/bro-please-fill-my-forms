@@ -1,16 +1,12 @@
 import { useEffect } from "react";
 import Footer from "~/lib/components/Footer";
-import Hero from "~/lib/components/Hero";
-import PinWrapper from "~/lib/components/PinWrapper";
-import Step1 from "~/lib/components/Step1";
-import Step2 from "~/lib/components/Step2";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
+import AppContent from "./lib/components/AppContent";
 import Debug from "./lib/components/Debug";
 import GitHubLink from "./lib/components/GitHubLink";
-import HeroLogo from "./lib/components/HeroLogo";
 import { useGlobalStore } from "./lib/hooks/stores/useGlobalStore";
 import { useSetHeightDynamicallyBasedOnPinMode } from "./lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
 import { logResponse } from "./lib/utils/log-utils";
@@ -20,7 +16,6 @@ export default function App() {
 
   const initializePinStore = usePinStore((state) => state.initialize);
   const isPinStoreInitialized = usePinStore((state) => state.isInitialized);
-  const pinMode = usePinStore((state) => state.pinMode);
 
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
@@ -31,7 +26,7 @@ export default function App() {
   // Start listening/reacting to pin mode; updating popup height dynamically
   useSetHeightDynamicallyBasedOnPinMode();
 
-  // Initialize stores (ONCE at top of component tree)
+  // Initialize all stores ONCE at top of component tree
   useEffect(() => {
     const initStore = async () => {
       if (!isPinStoreInitialized) {
@@ -87,28 +82,9 @@ export default function App() {
         <ToggleThemeButton />
         <Debug />
         <GitHubLink />
-        {pinMode !== "UNLOCKED" ? <LockedView /> : <UnlockedView />}
+        <AppContent />
         <Footer />
       </div>
-    </div>
-  );
-}
-
-function LockedView() {
-  return (
-    <>
-      <Hero />
-      <PinWrapper />
-    </>
-  );
-}
-
-function UnlockedView() {
-  return (
-    <div className="relative flex flex-col gap-6 pt-4 h-full justify-center w-full px-1 overflow-y-scroll">
-      <HeroLogo heightPx={20} className="absolute top-1 w-full justify-items-center" />
-      <Step1 />
-      <Step2 />
     </div>
   );
 }
