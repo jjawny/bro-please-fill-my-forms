@@ -1,4 +1,3 @@
-import { LoaderCircleIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Hero from "~/lib/components/Hero";
 import PinWrapper from "~/lib/components/PinWrapper";
@@ -9,6 +8,7 @@ import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";
 import { sleep } from "~/lib/utils/sleep-utils";
 import HeroLogo from "./HeroLogo";
+import Spinner from "./Spinner";
 
 export default function AppContent() {
   const [isAutoUnlocking, setIsAutoUnlocking] = useState<boolean>(true);
@@ -45,7 +45,11 @@ export default function AppContent() {
   }, [isInitialized, pin]);
 
   if (isAutoUnlocking) {
-    return <LoaderCircleIcon className="h-10 w-10 text-stone-500 animate-spin" />;
+    return (
+      <div className="h-full content-center">
+        <Spinner widthPx={40} className="text-[var(--hero-border-color)]" />
+      </div>
+    );
   }
 
   if (pinMode === "UNLOCKED") {

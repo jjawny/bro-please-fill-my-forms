@@ -1,4 +1,4 @@
-import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, LoaderCircleIcon, XIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
 import { RippleButton } from "~/lib/components/shadcn/ripple";
@@ -9,6 +9,7 @@ import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce-utils";
 import { logResponse } from "~/lib/utils/log-utils";
 import { sleep } from "~/lib/utils/sleep-utils";
+import Spinner from "./Spinner";
 import TutorialToolTip from "./TutorialToolTip";
 
 const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
@@ -146,7 +147,7 @@ function ApiKeyInputEndAdornment({
 
   const getIcon = () => {
     if (isValidating) {
-      return <LoaderCircleIcon className="h-4 w-4 text-stone-500 animate-spin" />;
+      return <Spinner />;
     }
 
     if (isGeminiApiKeyDirty || !hasApiKey) {
@@ -154,11 +155,11 @@ function ApiKeyInputEndAdornment({
     }
 
     if (hasGeminiApiKeyConnectedSuccessfully === true) {
-      return <CheckIcon className="h-4 w-4 text-green-500" />;
+      return <CheckIcon className="h-4 text-green-500" />;
     }
 
     if (hasGeminiApiKeyConnectedSuccessfully === false) {
-      return <XIcon className="h-4 w-4 text-red-500" />;
+      return <XIcon className="h-4 text-red-500" />;
     }
   };
 

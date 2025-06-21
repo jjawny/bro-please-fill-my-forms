@@ -1,4 +1,4 @@
-import { CheckIcon, LoaderCircleIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TutorialStep } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
@@ -17,6 +17,7 @@ import { populatePrompt } from "~/lib/utils/prompt-utils";
 import FormFieldBadgeRow from "./FormFieldBadgeRow";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
+import Spinner from "./Spinner";
 import ToolTipWrapper from "./ToolTipWrapper";
 import TutorialToolTip from "./TutorialToolTip";
 
@@ -222,13 +223,7 @@ function SubmitButton({
   const InnerContent = () => {
     return (
       <RippleButton type="submit" disabled={isDisabled} className={cn("select-none w-full mt-2 h-6")}>
-        {isSubmitting ? (
-          <LoaderCircleIcon className="animate-spin" />
-        ) : isDone ? (
-          <CheckIcon className="animate-bounce-in text-lime-500" />
-        ) : (
-          "Fill Form"
-        )}
+        {isSubmitting ? <Spinner /> : isDone ? <CheckIcon className="animate-bounce-in text-lime-500" /> : "Fill Form"}
       </RippleButton>
     );
   };
