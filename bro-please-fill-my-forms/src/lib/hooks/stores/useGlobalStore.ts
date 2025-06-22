@@ -118,12 +118,13 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
       nextData[step] = true;
 
       // Only advance beyond the currentTutorialStep if we're completing that specific step
-      let nextStep: TutorialStepType | undefined = currentTutorialStep;
+      let nextStep = currentTutorialStep;
       if (step === currentTutorialStep) {
-        const nextStepValue: TutorialStepType | null = TutorialStepValues[givenStepIndex + 1] ?? null;
+        const nextStepValue = TutorialStepValues[givenStepIndex + 1];
         nextStep = nextStepValue ?? undefined;
       }
 
+      // Save to storage to avoid repeating tutorial or losing progress
       const saveToSessionStorageResponse = await saveToSyncStorage(TutorialDataSchema, {
         currentStep: nextStep ?? null,
       });
@@ -134,6 +135,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
         return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
       }
 
+      // Update state in-mem
       set({ tutorialProgress: nextData, currentTutorialStep: nextStep });
 
       return ok({ messages, uiMessage: `Successfully completed tutorial step '${step}'` });
