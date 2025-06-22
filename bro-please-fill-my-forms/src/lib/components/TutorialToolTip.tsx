@@ -11,12 +11,12 @@ export default function TutorialToolTip({
   step: TutorialStepType;
   children?: React.ReactNode;
 }) {
-  const getCurrentTutorialStep = useGlobalStore((state) => state.getCurrentTutorialStep);
+  const currentTutorialStep = useGlobalStore((state) => state.currentTutorialStep);
 
   return (
     <ToolTipWrapper
       content={content}
-      open={getCurrentTutorialStep() === step ? true : false}
+      open={currentTutorialStep === step}
       backgroundColorHex="#0047d8"
       contentClassName="!text-white"
     >

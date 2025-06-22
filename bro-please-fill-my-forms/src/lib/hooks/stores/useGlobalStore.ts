@@ -11,6 +11,7 @@ type GlobalStore = {
   isInitialized: boolean;
   globalError?: string;
   tutorialProgress: TutorialProgress;
+  currentTutorialStep?: TutorialStepType;
 
   /**
    * Sets the state w any previously saved data
@@ -28,11 +29,6 @@ type GlobalStore = {
   completeTutorialStep: (step: TutorialStepType) => Promise<ErrOr>;
 
   /**
-   * Get the current (furthest) incomplete tutorial step
-   */
-  getCurrentTutorialStep: () => TutorialStepType | null;
-
-  /**
    * Get a dump of this store
    */
   GET_DEBUG_DUMP: () => object;
@@ -46,6 +42,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
     [TutorialStep.ENTER_YOUR_PROMPT]: false,
     [TutorialStep.PRESS_GO]: false,
   },
+  currentTutorialStep: TutorialStepValues[0],
 
   initialize: async (): Promise<ErrOr> => {
     let messages: Messages = ["Begin initializing GlobalStore"];
@@ -99,10 +96,36 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
     let messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
 
     try {
-      set((state) => ({ tutorialProgress: { ...state.tutorialProgress, [step]: true } }));
+      const currentProgress = get().tutorialProgress;
+      const currentTutorialStep = get().currentTutorialStep;
+      const nextData: TutorialProgress = { ...currentProgress };
+
+      const givenStepIndex = TutorialStepValues.indexOf(step);
+
+      if (givenStepIndex === -1) {
+        return err({ messages, uiMessage: `Invalid tutorial step: ${step}` });
+      }
+
+      // Mark all steps prior to the given step as complete
+      for (let i = 0; i < givenStepIndex; i++) {
+        if (currentProgress[TutorialStepValues[i]] === false) {
+          // Silently continue (using OK >>> err) as it's expected the user may try to interact w steps out-of-order (not an actual error)
+          return ok({ messages, uiMessage: `Please complete prior step '${TutorialStepValues[i]}' first` });
+        }
+      }
+
+      // Mark the given step as complete
+      nextData[step] = true;
+
+      // Only advance beyond the currentTutorialStep if we're completing that specific step
+      let nextStep: TutorialStepType | undefined = currentTutorialStep;
+      if (step === currentTutorialStep) {
+        const nextStepValue: TutorialStepType | null = TutorialStepValues[givenStepIndex + 1] ?? null;
+        nextStep = nextStepValue ?? undefined;
+      }
 
       const saveToSessionStorageResponse = await saveToSyncStorage(TutorialDataSchema, {
-        currentStep: get().getCurrentTutorialStep(),
+        currentStep: nextStep ?? null,
       });
 
       messages.push(saveToSessionStorageResponse.messages);
@@ -111,24 +134,12 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
         return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
       }
 
+      set({ tutorialProgress: nextData, currentTutorialStep: nextStep });
+
       return ok({ messages, uiMessage: `Successfully completed tutorial step '${step}'` });
     } catch (error: unknown) {
       return err({ messages, uiMessage: logError(error, `Failed to complete tutorial step '${step}'`) });
     }
-  },
-
-  getCurrentTutorialStep: (): TutorialStepType | null => {
-    const { tutorialProgress } = get();
-    const steps = Object.values(TutorialStep) as TutorialStepType[];
-
-    // Find the first incomplete step in the tutorial sequence
-    for (let i = 0; i < steps.length; i++) {
-      if (!tutorialProgress[steps[i]]) {
-        return steps[i];
-      }
-    }
-
-    return null; // All steps completed
   },
 
   GET_DEBUG_DUMP: () => ({ ...get() }),
