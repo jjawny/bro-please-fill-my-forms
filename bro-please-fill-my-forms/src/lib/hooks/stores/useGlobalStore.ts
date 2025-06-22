@@ -96,19 +96,13 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
     let messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
 
     try {
-      const currentProgress = get().tutorialProgress;
       const currentTutorialStep = get().currentTutorialStep;
-      const nextData: TutorialProgress = { ...currentProgress };
-
       const givenStepIndex = TutorialStepValues.indexOf(step);
-
-      if (givenStepIndex === -1) {
-        return err({ messages, uiMessage: `Invalid tutorial step: ${step}` });
-      }
+      const nextData: TutorialProgress = { ...get().tutorialProgress };
 
       // Mark all steps prior to the given step as complete
       for (let i = 0; i < givenStepIndex; i++) {
-        if (currentProgress[TutorialStepValues[i]] === false) {
+        if (nextData[TutorialStepValues[i]] === false) {
           // Silently continue (using OK >>> err) as it's expected the user may try to interact w steps out-of-order (not an actual error)
           return ok({ messages, uiMessage: `Please complete prior step '${TutorialStepValues[i]}' first` });
         }
