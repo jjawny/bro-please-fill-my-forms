@@ -414,10 +414,6 @@ export const usePinStore = create<PinStore>((set, get) => {
       let messages: Messages = ["Begin saving new API key"];
 
       try {
-        if (get().pinMode !== "UNLOCKED") {
-          return err({ messages, uiMessage: "Can only save new API key when unlocked" });
-        }
-
         const pin = get().pin;
 
         if (!pin) {
