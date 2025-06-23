@@ -19,7 +19,7 @@ A Chromium Extension (CRX) that uses a single text box to **auto-fill** ANY form
 1. `npm run build` will dump the artifact [here](./bro-please-fill-my-forms/dist)
 2. Open your browser's extensions (for example: [chrome://extensions/](chrome://extensions/))
 3. Click <kbd>Load unpacked</kbd> and choose the artifact directory
-4. Make changes and repeat: `npm run build` + reload <img src="bro-please-fill-my-forms/public/images/README/reload-extension-guide.png" alt="reload extension" style="max-height: 128px;">
+4. Make changes and repeat: `npm run build`
 
 ## 🏎️ How do I edit the popup *FAST*?
 1. `npm run dev` to edit the popup like a normal web app (faster feedback loop)
