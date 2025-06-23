@@ -1,5 +1,6 @@
 import { CalendarIcon, DollarSignIcon, MailIcon, MapPinIcon, PhoneIcon, SignatureIcon } from "lucide-react";
 import TextIconPairTypeWriter, { TextIconPair } from "~/lib/components/WordAndIconTypeWriter";
+import { useTypewriter } from "~/lib/hooks/useTypeWriter";
 import { cn } from "~/lib/utils/cn";
 
 const SHARED_STYLES =
@@ -59,13 +60,21 @@ export default function HeroDemo() {
           "duration-100",
         )}
       />
-      <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-0", "!h-fit !p-3")}>
-        <HeroTitle />
-      </div>
+      <HeroTitle />
     </div>
   );
 }
 
 function HeroTitle() {
-  return <h1 className="text-xl select-text whitespace-nowrap font-extrabold">BRO PLEASE, FILL MY FORMS</h1>;
+  const { text } = useTypewriter({
+    words: ["BRO PLEASE, FILL MY FORMS"],
+    pauseTimeAfterTyping: 5_000,
+    pauseTimeAfterDeleting: 200,
+  });
+
+  return (
+    <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-0", "!h-fit !p-3")}>
+      <h1 className="text-xl text-end select-text whitespace-nowrap font-extrabold w-[280px]">{text}&nbsp;</h1>
+    </div>
+  );
 }
