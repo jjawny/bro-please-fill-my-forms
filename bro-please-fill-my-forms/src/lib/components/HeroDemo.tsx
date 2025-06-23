@@ -74,7 +74,7 @@ function HeroTitle() {
 
   return (
     <div className={cn(SHARED_STYLES, "w-fit", "z-20", "transform -rotate-0", "!h-fit !p-3")}>
-      <h1 className="text-xl text-end select-text whitespace-nowrap font-extrabold w-[280px]">{text}&nbsp;</h1>
+      <h1 className="text-xl text-start select-text whitespace-nowrap font-extrabold w-[280px]">{text}&nbsp;</h1>
     </div>
   );
 }
