@@ -42,15 +42,16 @@ export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
 export async function generateContent<TStructuredResponse>(
   apiKey: string,
   prompt: string,
-  structuredResponseSchema: unknown,
+  structuredResponseSchema: unknown, // 'unknown' for flexibility; some schemas may have metadata
 ): Promise<ErrOr<TStructuredResponse>> {
   let messages = ["Begin generating content"];
 
   try {
     const { GoogleGenAI } = await getGenAI();
+
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-001",
+      model: "gemini-2.0-flash-lite",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
