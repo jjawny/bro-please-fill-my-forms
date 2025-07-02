@@ -1,9 +1,8 @@
-// import { GoogleGenAI } from "@google/genai";
 import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
 
 // Lazy-loaded (upon first access) then cached onwards
-// This improves initial app load perf (genai chunk isn't included in the main CRX bundle)
+// This improves initial app load perf time (genai chunk no longer included in the main CRX bundle)
 // Gains: from 888kB to 630kB = ~30% savings
 let ai: typeof import("@google/genai") | undefined;
 
