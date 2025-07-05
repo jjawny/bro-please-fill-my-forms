@@ -2,29 +2,34 @@ import { err, ErrOr, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
 
 /**
- * Notes:
- *  - Because we do not persist the PIN long-term, we need a way to validate the submitted PIN w/o the PIN
- *  - Successful validation = able to decrypt the API key + hash matches
- *  - If a user saves a blank API key, we still need a value to hash and decrypt later
- *  - This value should be random so it's useless to derive the PIN
- *  - The only known value is a separator so we can strip the prefix from the decrypted value
- *  - For simplicity, always add a random prefix before encrypted and always strip it later
+ * ℹ️ Notes:
+ *  - This is a speedrun app = zero/minimal-infra = client-side only
+ *  - The sensitive data is the Gemini API key, which we need to protect
+ *  - If the Gemini API key is short-lived in-mem only, this would be fine but a horrible UX
+ *  - So we will persist the key in the browser's storage
+ *  - The solution is to leverage CRX security features
+ *
+ * 🔒 Q&A for security concerns/vulns:
+ *  - XSS? CRX popups run in isolation (separate mem-space)
+ *  - CSP? Enforced by the browser, no external scripts can be injected into a CRX popup (we do not fetch any external scrips, everything is done at build, no CDNs)
+ *  - What about the daa we send down to the current tab? Sensitive data never reaches the web page,
+ *     only the LLM generated data to inject (which the user is aware being sent to Google's LLMs anyway)
+ *  - Where do we store the key? in the browser's sync storage, so the user can access it across sessions/devices
+ *  - Do we store plaintext? No, we encrypt data w a PIN, a far better UX
+ *  - How do we encrypt the data? Using AES-GCM to derive a key (these are battled-tested algos)
+ *  - How do we confirm the key was decrypted successfully? Hash
+ *  - But the user will need to enter the PIN every time? No, we can store the PIN in session storage (short-lived, lost when browser closes), this means we auto-unlock the popup every time during the session
+ *  - What if the user sets up a PIN but has no data to encrypt yet? We will use a randomly-gened placeholder value and a separator to remove later
+ *  - Can other sites/CRXs access the browser storage space? No, the CRX browser storage is isolated per extension
+ *  - OK but still, is this safe??? Yes, even w the source code public
  */
 const DATA_PREFIX_SEPARATOR = "$$$";
 
-/**
- * - Use the browser's native Crypto API (no ext deps)
- * - For security, derive a key from the PIN using PBKDF2 w SHA-256 hashing and 100,000 iterations
- * - For security, use AES-GCM for encryption which provides both confidentiality and authenticity
- * - For security, use a random salt and initialization vector (IV) for each encryption
- * - For storage, combine the salt, IV, and encrypted data into a single Base64-encoded string
- * - For tougher security, prepend a randomly generated prefix to the data before encryption (also handles empty data)
- */
 export async function encryptData(data: string, pin: string): Promise<ErrOr<string>> {
   let messages = ["Begin encrypting data"];
 
   try {
-    // 1. Prepend a randomly generated prefix (for tougher security + placeholder text to decrypt if data is empty)
+    // 1. Prepend a randomly generated prefix (for tougher security + placeholder if data is empty)
     const prefixBytes = crypto.getRandomValues(new Uint8Array(16));
     const prefix = Array.from(prefixBytes)
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -39,17 +44,17 @@ export async function encryptData(data: string, pin: string): Promise<ErrOr<stri
     const key = await deriveKey(pin, salt);
     const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(dataWithPrefix));
 
-    // 3. Combine salt, iv, and encrypted data
+    // 3. Combine salt, IV, and encrypted data into a single Base64-encoded string
     const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
     combined.set(salt, 0);
     combined.set(iv, salt.length);
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-    const finalEncryptedData = btoa(String.fromCharCode(...combined));
+    const cipherText = btoa(String.fromCharCode(...combined));
 
     return ok({
       messages,
-      uiMessage: `Successfully encrypted data ${JSON.stringify(finalEncryptedData)}`,
-      value: finalEncryptedData,
+      uiMessage: `Successfully encrypted data ${JSON.stringify(cipherText)}`,
+      value: cipherText,
     });
   } catch (error: unknown) {
     return err({ messages, uiMessage: logError(error, "Failed to encrypt data") });
@@ -93,14 +98,18 @@ export async function decryptData(encryptedData: string, pin: string): Promise<E
       value: cleanDecryptedData,
     });
   } catch (error) {
+    // To prevent timing attacks, always return the same failure message
+    // 'logError' will only console.error during development for debugging
+    const failureMessage = "Invalid PIN";
+
     // Handle expected errors
     const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
 
     if (isDecryptionFailed) {
-      return err({ messages, uiMessage: "Invalid PIN" });
+      return err({ messages, uiMessage: failureMessage });
     }
 
-    return err({ messages, uiMessage: logError(error, "Failed to decrypt data") });
+    return err({ messages, uiMessage: logError(error, failureMessage) });
   }
 }
 
