@@ -25,10 +25,6 @@ export default function Debug() {
 
   const menuItems: MenuItem[] = [{ label: "Log all state", onClick: logPinStoreJson, shortcut: "⌃1" }];
 
-  if (import.meta.env.PROD) {
-    return null;
-  }
-
   return (
     <MenuWrapper
       side="left"

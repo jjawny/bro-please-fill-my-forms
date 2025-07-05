@@ -7,7 +7,7 @@ export default function GitHubLink() {
   const { theme } = useTheme();
 
   return (
-    <a href="https://github.com/jjawny/bro-please-fill-my-forms-RnD" target="_blank">
+    <a href="https://github.com/jjawny/bro-please-fill-my-forms" target="_blank">
       <img
         src={githubLogo}
         alt="View the GitHub repo"

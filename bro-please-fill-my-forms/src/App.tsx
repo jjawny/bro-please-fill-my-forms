@@ -80,11 +80,23 @@ export default function App() {
       <div className="app-container-content">
         <ToggleLockButton />
         <ToggleThemeButton />
-        <Debug />
-        <GitHubLink />
+        <DebugComponents />
         <AppContent />
         <Footer />
       </div>
     </div>
+  );
+}
+
+function DebugComponents() {
+  if (import.meta.env.PROD) {
+    return null;
+  }
+
+  return (
+    <>
+      <Debug />
+      <GitHubLink />
+    </>
   );
 }
