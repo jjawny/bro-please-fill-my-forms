@@ -3,19 +3,21 @@ import AppContent from "~/lib/components/AppContent";
 import Debug from "~/lib/components/Debug";
 import Footer from "~/lib/components/Footer";
 import GitHubLink from "~/lib/components/GitHubLink";
+import MiniHero from "~/lib/components/MiniHero";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
+import { useSetHeightDynamicallyBasedOnPinMode } from "~/lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
 import { logResponse } from "~/lib/utils/log-utils";
-import { useSetHeightDynamicallyBasedOnPinMode } from "./lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
 
 export default function App() {
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
   const initializePinStore = usePinStore((state) => state.initialize);
   const isPinStoreInitialized = usePinStore((state) => state.isInitialized);
+  const pinMode = usePinStore((state) => state.pinMode);
 
   const initializeUserPreferencesStore = useUserPreferencesStore((state) => state.initialize);
   const isUserPreferencesStoreInitialized = useUserPreferencesStore((state) => state.isInitialized);
@@ -79,6 +81,7 @@ export default function App() {
     <div className="app-container">
       <div className="app-container-content">
         <ToggleLockButton />
+        {pinMode === "UNLOCKED" && <MiniHero />}
         <ToggleThemeButton />
         <DebugComponents />
         <AppContent />
