@@ -73,6 +73,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
       set({
         isInitialized: true,
         tutorialProgress: { ...nextTutorialProgress },
+        currentTutorialStep: currentStep ?? undefined,
       });
 
       return ok({ messages, uiMessage: "Successfully initialized GlobalStore" });
