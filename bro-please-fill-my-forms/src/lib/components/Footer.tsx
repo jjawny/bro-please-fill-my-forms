@@ -3,7 +3,7 @@ import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { RippleButton } from "./shadcn/ripple";
 
 /**
- * Place to log misc/generic/global errors rather than using toasts (as this is a CRX)
+ * Place to display misc/generic/global errors rather than using toasts (as this is a CRX)
  */
 export default function Footer() {
   const globalError = useGlobalStore((state) => state.globalError);

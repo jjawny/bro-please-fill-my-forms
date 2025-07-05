@@ -6,7 +6,7 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ErrOr<S
     {
       target: { tabId },
       /**
-       * PRO TIP: GPT a vanilla JS version of the fn to exec directly on the web page (rapidly feedback loop)
+       * Pro tip: GPT a vanilla JS version of this function then test directly on web page (rapidly feedback loop)
        * Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
        */
       func: () => {
