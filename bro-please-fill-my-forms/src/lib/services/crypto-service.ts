@@ -98,18 +98,16 @@ export async function decryptData(encryptedData: string, pin: string): Promise<E
       value: cleanDecryptedData,
     });
   } catch (error) {
-    // To prevent timing attacks, always return the same failure message
-    // 'logError' will only console.error during development for debugging
+    // Expected error when decryption fails
+    // const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
+    // To prevent timing attacks, always return the same failure message (and no error logs in PROD)
     const failureMessage = "Invalid PIN";
 
-    // Handle expected errors
-    const isDecryptionFailed = error instanceof DOMException && error.name === "OperationError";
-
-    if (isDecryptionFailed) {
-      return err({ messages, uiMessage: failureMessage });
+    if (import.meta.env.DEV) {
+      logError(error, "Failed to decrypt data");
     }
 
-    return err({ messages, uiMessage: logError(error, failureMessage) });
+    return err({ messages, uiMessage: failureMessage });
   }
 }
 
