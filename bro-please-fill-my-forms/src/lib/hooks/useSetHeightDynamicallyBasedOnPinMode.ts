@@ -19,9 +19,9 @@ export function useSetHeightDynamicallyBasedOnPinMode() {
     if (pinMode === "SETTING_UP") {
       finalHeight += 240;
     } else if (pinMode === "LOCKED") {
-      finalHeight += 320;
+      finalHeight += 300;
     } else if (pinMode === "UNLOCKED") {
-      finalHeight += 370;
+      finalHeight += 350;
     }
 
     setPopUpHeight(finalHeight);
