@@ -137,6 +137,7 @@ export async function loadTutorialDataFromSyncStorage(): Promise<ErrOr<TutorialD
  * If the user is logged into Chrome, chrome.storage.sync will attempt to sync across devices
  * If the user is NOT logged into Chrome, this will behave like chrome.storage.local
  * Quota: 8KB per item, 100KB total
+ * Note: Google Chrome has a write rate-limit, debounce these function calls
  */
 export async function saveToSyncStorage<TSchema extends ZodType>(
   schema: TSchema,

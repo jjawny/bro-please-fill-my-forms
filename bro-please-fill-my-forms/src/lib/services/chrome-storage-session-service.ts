@@ -48,6 +48,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
 /**
  * Saves data for the lifetime of the browser session (shared between tabs)
  * Quota: 10MB total
+ * Note: Google Chrome has a write rate-limit, debounce these function calls
  */
 export async function saveToSessionStorage<T extends ZodType>(schema: T, data: z.infer<T>): Promise<ErrOr<z.infer<T>>> {
   let messages = ["Begin saving to chrome.storage.session"];
