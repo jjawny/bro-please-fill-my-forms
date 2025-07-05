@@ -97,41 +97,43 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
     let messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
 
     try {
-      const currentTutorialStep = get().currentTutorialStep;
       const givenStepIndex = TutorialStepValues.indexOf(step);
-      const nextData: TutorialProgress = { ...get().tutorialProgress };
+      const currentTutorialStep = get().currentTutorialStep;
+      const nextTutorialProgress: TutorialProgress = { ...get().tutorialProgress };
 
       // Mark all steps prior to the given step as complete
       for (let i = 0; i < givenStepIndex; i++) {
-        if (nextData[TutorialStepValues[i]] === false) {
+        if (nextTutorialProgress[TutorialStepValues[i]] === false) {
           // Silently continue (using OK >>> err) as it's expected the user may try to interact w steps out-of-order (not an actual error)
           return ok({ messages, uiMessage: `Please complete prior step '${TutorialStepValues[i]}' first` });
         }
       }
 
       // Mark the given step as complete
-      nextData[step] = true;
+      nextTutorialProgress[step] = true;
 
       // Only advance beyond the currentTutorialStep if we're completing that specific step
-      let nextStep = currentTutorialStep;
+      let nextCurrentTutorialStepStep = currentTutorialStep;
       if (step === currentTutorialStep) {
         const nextStepValue = TutorialStepValues[givenStepIndex + 1];
-        nextStep = nextStepValue ?? undefined;
+        nextCurrentTutorialStepStep = nextStepValue ?? undefined;
       }
 
-      // Save to storage to avoid repeating tutorial or losing progress
-      const saveToSessionStorageResponse = await saveToSyncStorage(TutorialDataSchema, {
-        currentStep: nextStep ?? null,
-      });
+      // Save to storage to avoid repeating tutorial or losing progress ONLY if there is a change
+      if (currentTutorialStep !== nextCurrentTutorialStepStep) {
+        const saveToSessionStorageResponse = await saveToSyncStorage(TutorialDataSchema, {
+          currentStep: nextCurrentTutorialStepStep ?? null,
+        });
 
-      messages.push(saveToSessionStorageResponse.messages);
+        messages.push(saveToSessionStorageResponse.messages);
 
-      if (!saveToSessionStorageResponse.isOk) {
-        return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
+        if (!saveToSessionStorageResponse.isOk) {
+          return err({ messages, uiMessage: saveToSessionStorageResponse.uiMessage, isAddUiMessageToMessages: false });
+        }
       }
 
       // Update state in-mem
-      set({ tutorialProgress: nextData, currentTutorialStep: nextStep });
+      set({ tutorialProgress: nextTutorialProgress, currentTutorialStep: nextCurrentTutorialStepStep });
 
       return ok({ messages, uiMessage: `Successfully completed tutorial step '${step}'` });
     } catch (error: unknown) {
