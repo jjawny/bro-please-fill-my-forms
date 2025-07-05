@@ -1,5 +1,5 @@
 import { CheckIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TutorialStep } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
@@ -12,6 +12,7 @@ import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
 import { generate } from "~/lib/services/gemini-service";
 import { cn } from "~/lib/utils/cn";
+import { debounce } from "~/lib/utils/debounce-utils";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
 import FormFieldBadgeRow from "./FormFieldBadgeRow";
@@ -20,6 +21,8 @@ import { Textarea } from "./shadcn/textarea";
 import Spinner from "./Spinner";
 import ToolTipWrapper from "./ToolTipWrapper";
 import TutorialToolTip from "./TutorialToolTip";
+
+const SAVE_PROMPT_DEBOUNCE_DELAY_MS = 2_000;
 
 export default function Step2() {
   const [userPrompt, setUserPrompt] = useState<string>("");
@@ -42,6 +45,20 @@ export default function Step2() {
     }
   }, []);
 
+  const debouncedSavePrompt = useCallback(
+    debounce(async (prompt: string) => {
+      const savePromptResponse = await savePrompt(prompt);
+
+      logResponse(savePromptResponse);
+
+      if (!savePromptResponse.isOk) {
+        setGlobalError(savePromptResponse.uiMessage);
+        // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+      }
+    }, SAVE_PROMPT_DEBOUNCE_DELAY_MS),
+    [savePrompt, setGlobalError],
+  );
+
   const handlePromptChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newPrompt = e.target.value;
     setUserPrompt(newPrompt);
@@ -54,6 +71,8 @@ export default function Step2() {
       setGlobalError(completeTutorialStepResponse.uiMessage);
       // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
     }
+
+    debouncedSavePrompt(newPrompt);
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,15 +85,6 @@ export default function Step2() {
 
     if (!completeTutorialStepResponse.isOk) {
       setGlobalError(completeTutorialStepResponse.uiMessage);
-      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
-    }
-
-    const savePromptResponse = await savePrompt(userPrompt);
-
-    logResponse(savePromptResponse);
-
-    if (!savePromptResponse.isOk) {
-      setGlobalError(savePromptResponse.uiMessage);
       // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
     }
 
