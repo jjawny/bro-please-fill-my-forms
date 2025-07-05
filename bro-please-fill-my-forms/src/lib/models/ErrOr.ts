@@ -3,11 +3,11 @@ export type ErrOr<TValue = true> =
   | { isOk: false; messages: Messages; uiMessage: string };
 export type Messages = (string | Messages)[];
 
-// #region ErrOr helper functions
+// #region HELPER FUNCTIONS
 type CommonErrOrParams = {
   messages?: Messages;
   uiMessage: string;
-  isAddUiMessageToMessages?: boolean; // opt-out; less common case
+  isAddUiMessageToMessages?: boolean; // opt-out as this is a less common case
 };
 
 export function ok(): ErrOr;
@@ -49,3 +49,4 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
     uiMessage,
   };
 }
+// #endregion

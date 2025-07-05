@@ -6,22 +6,30 @@ import { logError } from "~/lib/utils/log-utils";
  *  - This is a speedrun app = zero/minimal-infra = client-side only
  *  - The sensitive data is the Gemini API key, which we need to protect
  *  - If the Gemini API key is short-lived in-mem only, this would be fine but a horrible UX
- *  - So we will persist the key in the browser's storage
+ *  - So we will persist the key in the browser's storage (extension storage, NOT web page storage)
  *  - The solution is to leverage CRX security features
  *
  * 🔒 Q&A for security concerns/vulns:
  *  - XSS? CRX popups run in isolation (separate mem-space)
- *  - CSP? Enforced by the browser, no external scripts can be injected into a CRX popup (we do not fetch any external scrips, everything is done at build, no CDNs)
- *  - What about the daa we send down to the current tab? Sensitive data never reaches the web page,
+ *  - What about sites that corrupt the content script return values? These values have a limited blast radius, values being
+ *     [checking if operation was successful, scraped form fields for LLM-generation] which do not impact the sensitive data
+ *  - CSP? Enforced by the browser, no ext scripts can be injected into a CRX popup, we do not fetch any external scripts at
+ *     runtime (CDNs etc), everything is done at build (all deps are npm packages that we trust)
+ *  - What about the data we send down to the current tab via content scripts? Sensitive data never reaches the web page,
  *     only the LLM generated data to inject (which the user is aware being sent to Google's LLMs anyway)
  *  - Where do we store the key? in the browser's sync storage, so the user can access it across sessions/devices
  *  - Do we store plaintext? No, we encrypt data w a PIN, a far better UX
  *  - How do we encrypt the data? Using AES-GCM to derive a key (these are battled-tested algos)
  *  - How do we confirm the key was decrypted successfully? Hash
- *  - But the user will need to enter the PIN every time? No, we can store the PIN in session storage (short-lived, lost when browser closes), this means we auto-unlock the popup every time during the session
- *  - What if the user sets up a PIN but has no data to encrypt yet? We will use a randomly-gened placeholder value and a separator to remove later
+ *  - But the user will need to enter the PIN every time? No, we store the PIN in session storage
+ *     (short-lived, lost when browser closes), this means we auto-unlock the popup every time during the session
+ *  - What if the user sets up a PIN but has no data to encrypt yet? We will use a randomly-gened placeholder value
+ *     and a separator to remove later
  *  - Can other sites/CRXs access the browser storage space? No, the CRX browser storage is isolated per extension
  *  - OK but still, is this safe??? Yes, even w the source code public
+ *
+ * ⚠️ Future improvements:
+ *  - Yes the user can choose PIN '1234', we can add PIN strength validation
  */
 const DATA_PREFIX_SEPARATOR = "$$$";
 
