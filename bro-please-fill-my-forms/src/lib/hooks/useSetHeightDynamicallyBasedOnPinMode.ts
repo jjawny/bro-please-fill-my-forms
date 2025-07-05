@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useGlobalStore } from "./stores/useGlobalStore";
 import { usePinStore } from "./stores/usePinStore";
 
 /**
@@ -6,18 +7,23 @@ import { usePinStore } from "./stores/usePinStore";
  */
 export function useSetHeightDynamicallyBasedOnPinMode() {
   const pinMode = usePinStore((state) => state.pinMode);
+  const globalError = useGlobalStore((state) => state.globalError);
 
   useEffect(() => {
     const setPopUpHeight = (heightPx: number) => {
       document.documentElement.style.setProperty("--popup-height", `${heightPx}px`);
     };
 
+    let finalHeight = globalError ? 20 : 0;
+
     if (pinMode === "SETTING_UP") {
-      setPopUpHeight(260);
+      finalHeight += 240;
     } else if (pinMode === "LOCKED") {
-      setPopUpHeight(320);
+      finalHeight += 320;
     } else if (pinMode === "UNLOCKED") {
-      setPopUpHeight(400);
+      finalHeight += 370;
     }
-  }, [pinMode]);
+
+    setPopUpHeight(finalHeight);
+  }, [pinMode, globalError]);
 }
