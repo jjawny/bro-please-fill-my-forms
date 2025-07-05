@@ -14,6 +14,7 @@ export default function Debug() {
   const getPinStoreDump = usePinStore((state) => state.GET_DEBUG_DUMP);
   const getUserPreferencesStoreDump = useUserPreferencesStore((state) => state.GET_DEBUG_DUMP);
   const getGlobalStoreDump = useGlobalStore((state) => state.GET_DEBUG_DUMP);
+  const setGlobalError = useGlobalStore((state) => state.setGlobalError);
 
   const logPinStoreJson = () => {
     console.debug("PinStore:", getPinStoreDump());
@@ -21,9 +22,19 @@ export default function Debug() {
     console.debug("GlobalStore:", getGlobalStoreDump());
   };
 
-  useKeyboardShortcuts([{ keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson }]);
+  const mockGlobalError = () => {
+    setGlobalError("THIS IS A MOCK ERROR");
+  };
 
-  const menuItems: MenuItem[] = [{ label: "Log all state", onClick: logPinStoreJson, shortcut: "⌃1" }];
+  useKeyboardShortcuts([
+    { keys: [ModifierKey.CONTROL, "1"], callback: logPinStoreJson },
+    { keys: [ModifierKey.CONTROL, "2"], callback: mockGlobalError },
+  ]);
+
+  const menuItems: MenuItem[] = [
+    { label: "Log all state", onClick: logPinStoreJson, shortcut: "⌃1" },
+    { label: "Mock global error", onClick: mockGlobalError, shortcut: "⌃2" },
+  ];
 
   return (
     <MenuWrapper

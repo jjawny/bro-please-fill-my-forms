@@ -13,7 +13,7 @@ export default function Footer() {
     setGlobalError(undefined);
   };
   return (
-    <footer className="flex-grow sticky items-end w-[80%] flex justify-center max-h-4">
+    <footer className="flex-grow sticky items-end w-[80%] flex justify-center max-h-6">
       {globalError && (
         <div className="flex items-center gap-1">
           <span className="text-red-500 text-sm">{globalError}</span>
