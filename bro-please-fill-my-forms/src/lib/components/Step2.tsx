@@ -6,11 +6,11 @@ import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { ScrapedForm } from "~/lib/models/FormField";
 import {
   PopulatedFormFieldsLlmResponse,
-  PopulatedFormFieldsLlmResponse_SCHEMA,
+  PopulatedFormFieldsLlmResponseSchema,
 } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
 import { markdown as fillFormPrompt } from "~/lib/prompts/fill-form.md";
 import { fillFormFields, getActiveTab, scrapeFormFields } from "~/lib/services/chrome-service";
-import { generateContent } from "~/lib/services/gemini-service";
+import { generate } from "~/lib/services/gemini-service";
 import { cn } from "~/lib/utils/cn";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
@@ -122,17 +122,16 @@ export default function Step2() {
 
     setScrapedForm(scrapedForm);
 
-    // 3. Generate AI content
+    // 3. Generate the final form
     const finalPrompt = populatePrompt(fillFormPrompt, {
-      form: JSON.stringify(scrapedForm, null, 2),
-      userInput: userPrompt,
+      formFields: JSON.stringify(scrapedForm, null, 2),
+      userContent: userPrompt,
     });
 
-    // 4. Generate content for form fields
-    const aiResponse = await generateContent<PopulatedFormFieldsLlmResponse>(
+    const aiResponse = await generate<PopulatedFormFieldsLlmResponse>(
       geminiApiKeyDecrypted,
       finalPrompt,
-      PopulatedFormFieldsLlmResponse_SCHEMA,
+      PopulatedFormFieldsLlmResponseSchema,
     );
 
     logResponse(aiResponse);
@@ -142,7 +141,7 @@ export default function Step2() {
       return false;
     }
 
-    // 5. Fill form fields with generated content
+    // 4. Fill form fields
     const fillResponse = await fillFormFields(tabId, aiResponse.value);
 
     logResponse(fillResponse);

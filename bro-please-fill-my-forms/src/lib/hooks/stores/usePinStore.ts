@@ -28,14 +28,14 @@ type PinStore = ByoKeyData &
     initialize: () => Promise<ErrOr>;
 
     /**
-     * When "UNLOCKED", attempts to transition to "LOCKED"
+     * Attempts to transition to "LOCKED"
      */
     lock: () => Promise<ErrOr>;
 
     /**
-     * When "LOCKED", attempts to transition to "UNLOCKED"
-     * Success = PIN is able to decrypt the data
-     * Upon success, the pin is saved in-memory and in temporary browser storage (for auto-unlock within the same browser session)
+     * Attempts to transition to "UNLOCKED"
+     * Success path = given pin is able to decrypt the data
+     * Upon success, the pin is saved in session storage (for auto-unlocks)
      */
     unlock: (pin: string) => Promise<ErrOr>;
 
@@ -57,12 +57,12 @@ type PinStore = ByoKeyData &
     savePrompt: (prompt: string) => Promise<ErrOr>;
 
     /**
-     * Reset all data to defaults and transition to "SETTING_UP"
+     * Resets all data to defaults and transitions to "SETTING_UP"
      */
     reset: () => Promise<ErrOr>;
 
     /**
-     * Signal to other UI that current API key input has not been saved yet
+     * Signal to components that current API key has not been saved yet
      */
     setIsApiKeyDirty: (isDirty: boolean) => ErrOr;
 

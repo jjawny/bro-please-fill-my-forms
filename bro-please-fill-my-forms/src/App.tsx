@@ -1,15 +1,15 @@
 import { useEffect } from "react";
+import AppContent from "~/lib/components/AppContent";
+import Debug from "~/lib/components/Debug";
 import Footer from "~/lib/components/Footer";
+import GitHubLink from "~/lib/components/GitHubLink";
 import ToggleLockButton from "~/lib/components/ToggleLockButton";
 import ToggleThemeButton from "~/lib/components/ToggleThemeButton";
+import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
-import AppContent from "./lib/components/AppContent";
-import Debug from "./lib/components/Debug";
-import GitHubLink from "./lib/components/GitHubLink";
-import { useGlobalStore } from "./lib/hooks/stores/useGlobalStore";
+import { logResponse } from "~/lib/utils/log-utils";
 import { useSetHeightDynamicallyBasedOnPinMode } from "./lib/hooks/useSetHeightDynamicallyBasedOnPinMode";
-import { logResponse } from "./lib/utils/log-utils";
 
 export default function App() {
   const setGlobalError = useGlobalStore((state) => state.setGlobalError);

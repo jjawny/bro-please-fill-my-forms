@@ -39,7 +39,7 @@ export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
   }
 }
 
-export async function generateContent<TStructuredResponse>(
+export async function generate<TStructuredResponse>(
   apiKey: string,
   prompt: string,
   structuredResponseSchema: unknown, // 'unknown' for flexibility; some schemas may have metadata
@@ -68,10 +68,10 @@ export async function generateContent<TStructuredResponse>(
 
     return ok({
       messages,
-      uiMessage: "Successfully generated content",
+      uiMessage: "Successfully generated LLM content",
       value: JSON.parse(generatedText) as TStructuredResponse,
     });
   } catch (error: unknown) {
-    return err({ messages, uiMessage: logError(error, "Failed to generate content") });
+    return err({ messages, uiMessage: logError(error, "Failed to generate LLM content") });
   }
 }

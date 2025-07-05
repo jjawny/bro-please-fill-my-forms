@@ -5,11 +5,10 @@ export type PopulatedFormFieldsLlmResponse = {
 };
 
 // We need to define a schema AOT because we lose TypeScript types at runtime
-// This schema must match the corresponding *GeminiResponse type so we can safely cast as later
-// If we change the GeminiResponse type, use a tool or just GPT to get the new schema
-// Co-locate these as pairs (*GeminiResponse type, matching JSON schema)
+// This schema must match the corresponding '*LlmResponse' type so we can safely cast as later
+// Co-locate these as pairs ('*LlmResponse' type and the matching JSON schema)
 
-export const PopulatedFormFieldsLlmResponse_SCHEMA = {
+export const PopulatedFormFieldsLlmResponseSchema = {
   type: "object",
   properties: {
     fields: {
