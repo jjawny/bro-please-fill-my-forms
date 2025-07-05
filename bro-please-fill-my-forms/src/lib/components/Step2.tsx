@@ -190,7 +190,7 @@ export default function Step2() {
         <div className="relative">
           <Textarea
             value={userPrompt}
-            rows={8}
+            rows={7}
             placeholder="Your form content"
             onChange={handlePromptChange}
             className={cn("bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]")}
