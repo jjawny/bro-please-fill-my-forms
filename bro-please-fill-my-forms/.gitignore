@@ -30,3 +30,4 @@ tsconfig.app.tsbuildinfo
 # APP-SPECIFIC
 .env
 stats.html
+dist.zip
