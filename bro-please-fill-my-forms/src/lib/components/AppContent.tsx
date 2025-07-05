@@ -7,7 +7,6 @@ import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";
 import { sleep } from "~/lib/utils/sleep-utils";
-import HeroLogo from "./HeroLogo";
 import Spinner from "./Spinner";
 
 export default function AppContent() {
@@ -54,8 +53,7 @@ export default function AppContent() {
 
   if (pinMode === "UNLOCKED") {
     return (
-      <div className="relative flex flex-col gap-6 pt-4 h-full justify-center w-full px-1 overflow-y-scroll">
-        <HeroLogo heightPx={20} className="absolute top-1 w-full justify-items-center" />
+      <div className="flex flex-col gap-6 pt-4 h-full justify-center w-full px-1 overflow-y-scroll">
         <Step1 />
         <Step2 />
       </div>
