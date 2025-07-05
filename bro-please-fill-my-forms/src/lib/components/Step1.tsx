@@ -47,7 +47,7 @@ export default function Step1() {
     debounce(async (apiKey: string) => {
       setIsValidating(true);
 
-      await sleep(100); // Simulate latency to avoid flash of validation state (better UX)
+      await sleep(100); // Simulate latency to avoid flash of loading spinner (validation state), this is for better UX
 
       const cleanedApiKey = apiKey.trim();
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
@@ -57,6 +57,7 @@ export default function Step1() {
 
       if (!setApiKeyResponse.isOk) {
         setGlobalError(setApiKeyResponse.uiMessage);
+        // Continue even if not OK, we will re-attempt to save next time
       }
 
       setIsApiKeyDirty(false);
