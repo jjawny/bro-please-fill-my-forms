@@ -1,4 +1,4 @@
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
 
 /**
@@ -34,7 +34,7 @@ import { logError } from "~/lib/utils/log-utils";
 const DATA_PREFIX_SEPARATOR = "$$$";
 
 export async function encryptData(data: string, pin: string): Promise<ErrOr<string>> {
-  let messages = ["Begin encrypting data"];
+  const messages: Messages = ["Begin encrypting data"];
 
   try {
     // 1. Prepend a randomly generated prefix (for tougher security + placeholder if data is empty)
@@ -70,7 +70,7 @@ export async function encryptData(data: string, pin: string): Promise<ErrOr<stri
 }
 
 export async function decryptData(encryptedData: string, pin: string): Promise<ErrOr<string>> {
-  let messages = ["Begin decrypting data"];
+  const messages: Messages = ["Begin decrypting data"];
 
   try {
     // 1. Decode the base64

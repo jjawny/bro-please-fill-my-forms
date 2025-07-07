@@ -29,7 +29,7 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
   isInitialized: false,
 
   initialize: async (): Promise<ErrOr> => {
-    let messages: Messages = ["Begin initializing UserPreferencesStore"];
+    const messages: Messages = ["Begin initializing UserPreferencesStore"];
 
     try {
       set({ isInitialized: false });
@@ -53,7 +53,7 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set, get) =
   },
 
   setTheme: async (theme: ThemeType): Promise<ErrOr> => {
-    let messages: Messages = ["Begin setting Theme"];
+    const messages: Messages = ["Begin setting Theme"];
 
     try {
       const nextState = { theme: theme };

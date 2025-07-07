@@ -1,6 +1,7 @@
 /**
  * See https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore?tab=readme-ov-file#_debounce
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => void>(
   func: T,
   wait: number,
@@ -9,6 +10,7 @@ export function debounce<T extends (...args: any[]) => void>(
   let timeout: ReturnType<typeof setTimeout> | null;
 
   return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
 
     const later = () => {

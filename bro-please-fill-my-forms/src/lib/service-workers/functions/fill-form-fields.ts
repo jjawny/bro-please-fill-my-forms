@@ -70,14 +70,15 @@ export const fillFormFields = (
         const setValue = (element: HTMLElement, value: string): boolean => {
           const handleInputElement = (input: HTMLInputElement, value: string, type: string): boolean => {
             switch (type) {
-              case "checkbox":
+              case "checkbox": {
                 const isChecked =
                   ["true", "yes", "1", "on", "checked"].includes(value.toLowerCase()) || input.value === value;
                 input.checked = isChecked;
                 triggerEvents(input);
                 return true;
+              }
 
-              case "radio":
+              case "radio": {
                 // For radio buttons, check if this specific radio should be selected
                 if (input.value === value || input.id === value) {
                   input.checked = true;
@@ -99,6 +100,7 @@ export const fillFormFields = (
                 }
 
                 return false;
+              }
 
               case "file":
                 // Can't programmatically set file inputs for security reasons

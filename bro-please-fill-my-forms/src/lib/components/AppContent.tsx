@@ -43,7 +43,7 @@ export default function AppContent() {
       }
     };
     autoUnlock();
-  }, [isInitialized, pin]);
+  }, [isInitialized, pin, unlock, setGlobalError]);
 
   if (isAutoUnlocking) {
     return (

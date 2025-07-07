@@ -25,7 +25,8 @@ export function ok<T>(params?: { value?: T } & CommonErrOrParams): ErrOr | ErrOr
 
   return {
     isOk: true,
-    value: value ?? (true as any),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: value ?? (true as any), // this ensures ok() always has a value (for both generic and non-generic versions)
     messages,
     uiMessage,
   };

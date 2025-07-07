@@ -43,7 +43,7 @@ export default function App() {
     };
 
     initStore();
-  }, [isPinStoreInitialized, initializePinStore]);
+  }, [isPinStoreInitialized, initializePinStore, setGlobalError]);
 
   useEffect(() => {
     const initStore = async () => {
@@ -59,7 +59,7 @@ export default function App() {
     };
 
     initStore();
-  }, [isUserPreferencesStoreInitialized, initializeUserPreferencesStore]);
+  }, [isUserPreferencesStoreInitialized, initializeUserPreferencesStore, setGlobalError]);
 
   useEffect(() => {
     const initStore = async () => {
@@ -75,7 +75,7 @@ export default function App() {
     };
 
     initStore();
-  }, [isGlobalStoreInitialized, initializeGloablStore]);
+  }, [isGlobalStoreInitialized, initializeGloablStore, setGlobalError]);
 
   return (
     <div className="app-container">

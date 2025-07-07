@@ -16,7 +16,7 @@ import { debounce } from "~/lib/utils/debounce-utils";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
 import ScrapedFormFieldsPreview from "./ScrapedFormFieldsPreview";
-import { RippleButton } from "./shadcn/ripple";
+import RippleButton from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 import Spinner from "./Spinner";
 import ToolTipWrapper from "./ToolTipWrapper";

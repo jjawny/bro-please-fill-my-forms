@@ -1,5 +1,5 @@
 import { TextCursorIcon } from "lucide-react";
-import { Badge } from "~/lib/components/shadcn/badge";
+import Badge from "~/lib/components/shadcn/badge";
 import { INPUT_TYPE_ICON_MAP } from "~/lib/constants/html-input-type-icon-map";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { cn } from "~/lib/utils/cn";

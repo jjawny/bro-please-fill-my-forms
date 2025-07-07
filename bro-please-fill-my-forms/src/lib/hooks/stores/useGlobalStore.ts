@@ -45,7 +45,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   currentTutorialStep: TutorialStepValues[0],
 
   initialize: async (): Promise<ErrOr> => {
-    let messages: Messages = ["Begin initializing GlobalStore"];
+    const messages: Messages = ["Begin initializing GlobalStore"];
 
     try {
       set({ isInitialized: false });
@@ -83,7 +83,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   },
 
   setGlobalError: (error?: string): ErrOr => {
-    let messages: Messages = ["Begin setting globalError"];
+    const messages: Messages = ["Begin setting globalError"];
 
     try {
       set({ globalError: error });
@@ -94,7 +94,7 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   },
 
   completeTutorialStep: async (step: TutorialStepType): Promise<ErrOr> => {
-    let messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
+    const messages: Messages = [`Begin marking tutorial step '${step}' as complete`];
 
     try {
       const givenStepIndex = TutorialStepValues.indexOf(step);

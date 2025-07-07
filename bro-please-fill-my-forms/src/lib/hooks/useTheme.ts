@@ -1,25 +1,15 @@
 import { useEffect } from "react";
-import { Theme } from "~/lib/enums/Theme";
+import { Theme, ThemeType } from "~/lib/enums/Theme";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 
 export const useTheme = () => {
   const theme = useUserPreferencesStore((state) => state.theme);
   const setTheme = useUserPreferencesStore((state) => state.setTheme);
 
-  const applyTheme = () => {
-    const root = document.documentElement;
-
-    if (theme === Theme.SYSTEM) {
-      const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const systemTheme = isDarkMode ? Theme.DARK : Theme.LIGHT;
-      root.setAttribute("theme", systemTheme);
-    } else {
-      root.setAttribute("theme", theme);
-    }
-  };
-
   // Apply theme ASAP upon selection
-  useEffect(applyTheme, [theme]);
+  useEffect(() => {
+    applyThemeToHtmlDocument(theme);
+  }, [theme]);
 
   // When system theme is selected; sync with system theme changes
   useEffect(
@@ -27,10 +17,11 @@ export const useTheme = () => {
       if (theme !== Theme.SYSTEM) return;
 
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      mediaQuery.addEventListener("change", applyTheme);
+      const handleChange = () => applyThemeToHtmlDocument(Theme.SYSTEM);
+      mediaQuery.addEventListener("change", handleChange);
 
       return () => {
-        mediaQuery.removeEventListener("change", applyTheme);
+        mediaQuery.removeEventListener("change", handleChange);
       };
     },
     [theme],
@@ -38,3 +29,14 @@ export const useTheme = () => {
 
   return { theme, setTheme };
 };
+
+function applyThemeToHtmlDocument(theme: ThemeType) {
+  const root = document.documentElement;
+  if (theme === Theme.SYSTEM) {
+    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const systemTheme = isDarkMode ? Theme.DARK : Theme.LIGHT;
+    root.setAttribute("theme", systemTheme);
+  } else {
+    root.setAttribute("theme", theme);
+  }
+}

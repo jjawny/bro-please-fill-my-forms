@@ -138,4 +138,4 @@ const RippleButton = React.forwardRef<HTMLButtonElement, RippleButtonProps>(func
   );
 });
 
-export { RippleButton, type RippleButtonProps };
+export default RippleButton;

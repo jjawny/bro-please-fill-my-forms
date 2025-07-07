@@ -10,7 +10,7 @@ import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
  * Loads ByoKeyData from chrome.storage.sync
  */
 export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>> {
-  let messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
+  const messages: Messages = ["Begin loading ByoKeyData from chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {
@@ -55,7 +55,7 @@ export async function loadByoKeyDataFromSyncStorage(): Promise<ErrOr<ByoKeyData>
  * Loads UserPreferences from chrome.storage.sync
  */
 export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPreferences>> {
-  let messages = ["Begin loading UserPreferences from chrome.storage.sync"];
+  const messages: Messages = ["Begin loading UserPreferences from chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {
@@ -96,7 +96,7 @@ export async function loadUserPreferencesFromSyncStorage(): Promise<ErrOr<UserPr
  * Loads TutorialData from chrome.storage.sync
  */
 export async function loadTutorialDataFromSyncStorage(): Promise<ErrOr<TutorialData>> {
-  let messages: Messages = ["Begin loading TutorialData from chrome.storage.sync"];
+  const messages: Messages = ["Begin loading TutorialData from chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {
@@ -143,7 +143,7 @@ export async function saveToSyncStorage<TSchema extends ZodType>(
   schema: TSchema,
   data: z.infer<TSchema>,
 ): Promise<ErrOr<z.infer<TSchema>>> {
-  let messages: Messages = ["Begin saving to chrome.storage.sync"];
+  const messages: Messages = ["Begin saving to chrome.storage.sync"];
 
   try {
     if (import.meta.env.DEV) {

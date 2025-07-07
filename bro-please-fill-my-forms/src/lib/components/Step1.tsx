@@ -1,7 +1,7 @@
 import { CheckIcon, CopyIcon, EyeClosedIcon, EyeIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "~/lib/components/shadcn/input";
-import { RippleButton } from "~/lib/components/shadcn/ripple";
+import RippleButton from "~/lib/components/shadcn/ripple";
 import { TutorialStep } from "~/lib/enums/TutorialStep";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
@@ -65,7 +65,7 @@ export default function Step1() {
       setIsApiKeyDirty(false);
       setIsValidating(false);
     }, SAVE_API_KEY_DEBOUNCE_DELAY_MS),
-    [saveNewApiKey, setIsApiKeyDirty, setIsValidating],
+    [saveNewApiKey],
   );
 
   const handleInputChange = useCallback(
@@ -88,7 +88,7 @@ export default function Step1() {
         debouncedSaveApiKey(newValue);
       }
     },
-    [debouncedSaveApiKey, setIsApiKeyDirty],
+    [debouncedSaveApiKey, setIsApiKeyDirty, completeTutorialStep, setGlobalError],
   );
 
   const handleCopy = async () => {

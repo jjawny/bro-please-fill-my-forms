@@ -73,7 +73,7 @@ type PinStore = ByoKeyData &
 
 export const usePinStore = create<PinStore>((set, get) => {
   const transitionToLockedMode = async (otherState?: Partial<PinStore>): Promise<ErrOr> => {
-    let messages: Messages = ["Begin transitioning to locked mode"];
+    const messages: Messages = ["Begin transitioning to locked mode"];
 
     try {
       // Clear the PIN so no components attempt auto-unlock
@@ -105,7 +105,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     pinUsed: string,
     otherState?: Partial<PinStore>,
   ): ErrOr => {
-    let messages: Messages = ["Begin transitioning to unlocked mode"];
+    const messages: Messages = ["Begin transitioning to unlocked mode"];
 
     try {
       set({
@@ -122,7 +122,7 @@ export const usePinStore = create<PinStore>((set, get) => {
   };
 
   const transitionToSetUpMode = async (otherState?: Partial<PinStore>): Promise<ErrOr> => {
-    let messages: Messages = ["Begin transitioning to setup mode"];
+    const messages: Messages = ["Begin transitioning to setup mode"];
 
     try {
       const defaultByoKeyData = DEFAULT_BYO_KEY_DATA;
@@ -171,7 +171,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     apiKey: string,
     shouldTestApiKey: boolean = false,
   ): Promise<ErrOr<ByoKeyData>> => {
-    let messages: Messages = ["Begin encrypting and saving API key"];
+    const messages: Messages = ["Begin encrypting and saving API key"];
 
     try {
       const cleanPin = pin.trim();
@@ -229,7 +229,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     isGeminiApiKeyDirty: false,
 
     initialize: async (): Promise<ErrOr> => {
-      let messages: Messages = ["Begin initializing PinStore"];
+      const messages: Messages = ["Begin initializing PinStore"];
 
       try {
         set({ isInitialized: false });
@@ -271,7 +271,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     lock: async (): Promise<ErrOr> => {
-      let messages: Messages = ["Begin locking"];
+      const messages: Messages = ["Begin locking"];
 
       try {
         if (get().pinMode !== "UNLOCKED") {
@@ -297,7 +297,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     unlock: async (pin: string): Promise<ErrOr> => {
-      let messages: Messages = ["Begin unlocking"];
+      const messages: Messages = ["Begin unlocking"];
 
       try {
         if (get().pinMode !== "LOCKED") {
@@ -358,7 +358,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     saveNewPin: async (newPin: string): Promise<ErrOr> => {
-      let messages: Messages = ["Begin saving new PIN"];
+      const messages: Messages = ["Begin saving new PIN"];
 
       try {
         if (get().pinMode !== "SETTING_UP") {
@@ -405,7 +405,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     saveNewApiKey: async (newApiKey: string, shouldTest: boolean = false): Promise<ErrOr> => {
-      let messages: Messages = ["Begin saving new API key"];
+      const messages: Messages = ["Begin saving new API key"];
 
       try {
         const pin = get().pin;
@@ -429,7 +429,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     savePrompt: async (prompt: string): Promise<ErrOr> => {
-      let messages: Messages = ["Begin saving prompt"];
+      const messages: Messages = ["Begin saving prompt"];
 
       try {
         const cleanPrompt = prompt.trim();
@@ -451,7 +451,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     reset: async (): Promise<ErrOr> => {
-      let messages: Messages = ["Begin resetting"];
+      const messages: Messages = ["Begin resetting"];
 
       try {
         const transitionToSetUpModeResponse = await transitionToSetUpMode();
@@ -469,7 +469,7 @@ export const usePinStore = create<PinStore>((set, get) => {
     },
 
     setIsApiKeyDirty: (isDirty: boolean): ErrOr => {
-      let messages = ["Begin setting isGeminiApiKeyDirty"];
+      const messages: Messages = ["Begin setting isGeminiApiKeyDirty"];
 
       try {
         set({ isGeminiApiKeyDirty: isDirty });

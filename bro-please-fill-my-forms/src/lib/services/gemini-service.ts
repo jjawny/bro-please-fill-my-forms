@@ -1,4 +1,4 @@
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { logError } from "~/lib/utils/log-utils";
 
 // Lazy-loaded (upon first access) then cached onwards
@@ -12,7 +12,7 @@ async function getGenAI() {
 }
 
 export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
-  let messages = ["Begin validating Gemini API key"];
+  const messages: Messages = ["Begin validating Gemini API key"];
 
   try {
     const { GoogleGenAI } = await getGenAI();
@@ -30,6 +30,7 @@ export async function validateApiKey(apiKey: string): Promise<ErrOr<boolean>> {
     //  See https://github.com/googleapis/js-genai/issues/455
     // console.debug(`[INSPECT] Google GenAI error type: '${typeof error}', error:`, error);
     const WORKAROUND_apiKeyInvalidError = "API_KEY_INVALID";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const WORKAROUND_isApiKeyInvalid = (error as any).message.includes(WORKAROUND_apiKeyInvalidError);
     if (WORKAROUND_isApiKeyInvalid) {
       return ok({ messages, uiMessage: "Invalid Gemini API key", value: false });
@@ -44,7 +45,7 @@ export async function generate<TStructuredResponse>(
   prompt: string,
   structuredResponseSchema: unknown, // 'unknown' for flexibility; some schemas may have metadata
 ): Promise<ErrOr<TStructuredResponse>> {
-  let messages = ["Begin generating content"];
+  const messages: Messages = ["Begin generating content"];
 
   try {
     const { GoogleGenAI } = await getGenAI();

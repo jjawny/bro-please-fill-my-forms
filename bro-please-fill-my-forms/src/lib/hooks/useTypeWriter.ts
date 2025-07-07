@@ -74,7 +74,18 @@ export function useTypewriter(params: {
     setText(currWord.slice(0, charIndex));
 
     return cleanUp;
-  }, [charIndex, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseTime, cleanUp]);
+  }, [
+    charIndex,
+    isDeleting,
+    wordIndex,
+    words,
+    typingSpeed,
+    deletingSpeed,
+    pauseTime,
+    pauseTimeAfterTyping,
+    pauseTimeAfterDeleting,
+    cleanUp,
+  ]);
 
   return { text, currentWordIndex: wordIndex };
 }

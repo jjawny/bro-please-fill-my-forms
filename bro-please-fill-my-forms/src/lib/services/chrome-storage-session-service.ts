@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod/v4";
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { DEFAULT_TEMPORARY_DATA, TemporaryData, TemporaryDataSchema } from "~/lib/models/TemporaryData";
 import { logError } from "~/lib/utils/log-utils";
 import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
@@ -8,7 +8,7 @@ import { convertUndefinedToNullOneLevelDeep } from "~/lib/utils/object-utils";
  * Loads TemporaryData from chrome.storage.session
  */
 export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<TemporaryData>> {
-  let messages = ["Begin loading TemporaryData from chrome.storage.session"];
+  const messages: Messages = ["Begin loading TemporaryData from chrome.storage.session"];
 
   try {
     if (import.meta.env.DEV) {
@@ -51,7 +51,7 @@ export async function loadTemporaryDataFromSessionStorage(): Promise<ErrOr<Tempo
  * Note: Google Chrome has a write rate-limit, debounce these function calls
  */
 export async function saveToSessionStorage<T extends ZodType>(schema: T, data: z.infer<T>): Promise<ErrOr<z.infer<T>>> {
-  let messages = ["Begin saving to chrome.storage.session"];
+  const messages: Messages = ["Begin saving to chrome.storage.session"];
 
   try {
     if (import.meta.env.DEV) {

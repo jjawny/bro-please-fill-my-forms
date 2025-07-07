@@ -1,12 +1,12 @@
 import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
-import { err, ErrOr, ok } from "~/lib/models/ErrOr";
+import { err, ErrOr, Messages, ok } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { PopulatedFormFieldsLlmResponse } from "~/lib/models/llm-structured-responses/PopulateFormFieldLlmResponse";
 import { ServiceWorkerRequest } from "~/lib/models/ServiceWorkerRequest";
 import { logError } from "~/lib/utils/log-utils";
 
 export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
-  let messages = ["Begin getting active tab"];
+  const messages: Messages = ["Begin getting active tab"];
 
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -22,7 +22,7 @@ export async function getActiveTab(): Promise<ErrOr<chrome.tabs.Tab>> {
 }
 
 export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm>> {
-  let messages = ["Begin scraping form fields"];
+  const messages: Messages = ["Begin scraping form fields"];
 
   try {
     const message: ServiceWorkerRequest = { tabId, action: ServiceWorkerAction.SCRAPE_FORM_FIELDS };
@@ -39,7 +39,7 @@ export async function scrapeFormFields(tabId: number): Promise<ErrOr<ScrapedForm
 }
 
 export async function fillFormFields(tabId: number, formData: PopulatedFormFieldsLlmResponse): Promise<ErrOr> {
-  let messages = ["Begin filling form fields"];
+  const messages: Messages = ["Begin filling form fields"];
 
   try {
     const message: ServiceWorkerRequest = {
