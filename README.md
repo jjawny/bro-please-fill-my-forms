@@ -15,7 +15,7 @@ Chromium Extension (CRX) that **auto-fill** any form using **natural** language 
 
 ## 🔌 How do I run it?
 ### 🏪 Chrome Web Store:
-1. Get it [here](TODO:)
+1. Get it [here](https://chromewebstore.google.com/detail/bro-please-fill-my-forms/cginpdgbbfjkanihacmoiggbneiliabf)!
 
 ### 🧑‍💻 Manually:
 1. `npm run build` will dump the artifact [here](./bro-please-fill-my-forms/dist)
