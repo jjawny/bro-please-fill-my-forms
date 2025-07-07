@@ -53,7 +53,7 @@ export default function Step2() {
 
       if (!savePromptResponse.isOk) {
         setGlobalError(savePromptResponse.uiMessage);
-        // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+        // Continue even if not OK, this is just a quality of life
       }
     }, SAVE_PROMPT_DEBOUNCE_DELAY_MS),
     [savePrompt, setGlobalError],
@@ -69,7 +69,7 @@ export default function Step2() {
 
     if (!completeTutorialStepResponse.isOk) {
       setGlobalError(completeTutorialStepResponse.uiMessage);
-      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+      // Continue even if not OK, this is just a quality of life
     }
 
     debouncedSavePrompt(newPrompt);
@@ -85,7 +85,7 @@ export default function Step2() {
 
     if (!completeTutorialStepResponse.isOk) {
       setGlobalError(completeTutorialStepResponse.uiMessage);
-      // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+      // Continue even if not OK, this is just a quality of life
     }
 
     const isSuccessful = await scrapeAndFillForm();
@@ -151,7 +151,7 @@ export default function Step2() {
       return false;
     }
 
-    // 4. Fill form fields
+    // 4. Fill the form
     const fillResponse = await fillFormFields(tabId, aiResponse.value);
 
     logResponse(fillResponse);

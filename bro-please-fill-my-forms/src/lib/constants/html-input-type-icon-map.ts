@@ -1,5 +1,3 @@
-// icons.ts
-
 import {
   Calendar1Icon,
   CalendarIcon,

@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils/cn";
 import DialogWrapper from "./DialogWrapper";
 import ScrapedFormFieldBadge, { FieldDetailBadge, OverflowBadge } from "./ScrapedFormFieldBadge";
 
-// Test/adjust these values together
+// Test/adjust these values together when changing any
 const UI_ITEM_WIDTH_PX = 90;
 const UI_OVERFLOW_ITEM_WIDTH_PX = 40;
 const GAP_WIDTH_PX = 4;
@@ -48,7 +48,7 @@ export default function ScrapedFormFieldsPreview({
       <div
         className={cn(
           "flex gap-1 items-center",
-          "font-mono", // use monospace font for equal-width chars
+          "font-mono", // use monospace fonts for equal-width chars
         )}
         style={{ gap: `${GAP_WIDTH_PX}px` }}
       >

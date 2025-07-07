@@ -13,13 +13,11 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
     (event: KeyboardEvent) => {
       const activeKeys = getActiveKeysFromEvent(event);
 
-      // console.debug("Active keys:", activeKeys);
-
       for (const shortcut of shortcuts) {
         if (shortcut.disabled) continue;
 
         if (isKeysMatchesShortcut(activeKeys, shortcut)) {
-          // Explicit false check as on by default if undefined
+          // Use an explicit false check >>> falsey check, as undefined = on by default
           if (shortcut.preventDefault !== false) {
             event.preventDefault();
             event.stopPropagation();

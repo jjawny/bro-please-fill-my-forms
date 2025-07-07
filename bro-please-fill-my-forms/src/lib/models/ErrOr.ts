@@ -3,7 +3,6 @@ export type ErrOr<TValue = true> =
   | { isOk: false; messages: Messages; uiMessage: string };
 export type Messages = (string | Messages)[];
 
-// #region HELPER FUNCTIONS
 type CommonErrOrParams = {
   messages?: Messages;
   uiMessage: string;
@@ -49,4 +48,3 @@ export function err<T = true>(params?: CommonErrOrParams): ErrOr<T> {
     uiMessage,
   };
 }
-// #endregion

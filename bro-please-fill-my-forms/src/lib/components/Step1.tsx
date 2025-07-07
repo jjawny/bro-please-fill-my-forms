@@ -12,7 +12,7 @@ import { sleep } from "~/lib/utils/sleep-utils";
 import Spinner from "./Spinner";
 import TutorialToolTip from "./TutorialToolTip";
 
-const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // Arbitrary number to minimize unnecessary API calls
+const MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION = 16; // arbitrary number, purely to minimize unnecessary API calls
 const SAVE_API_KEY_DEBOUNCE_DELAY_MS = 2_000;
 
 export default function Step1() {
@@ -36,7 +36,7 @@ export default function Step1() {
 
   useEffect(function setInitialApiKeyInputValueOnceOnMount() {
     // This component should be rendered after a successful unlock
-    //  decrypted key should be available immediately
+    //  and decrypted key should be available immediately
     const geminiApiKeyDecrypted = usePinStore.getState().geminiApiKeyDecrypted;
     if (geminiApiKeyDecrypted) {
       setApiKeyInputValue(geminiApiKeyDecrypted);
@@ -47,7 +47,9 @@ export default function Step1() {
     debounce(async (apiKey: string) => {
       setIsValidating(true);
 
-      await sleep(100); // Simulate latency to avoid flash of loading spinner (validation state), this is for better UX
+      // Simulate small latency to avoid flash of loading spinner
+      //  better UX to allow time for user to acknowledge loading state
+      await sleep(100);
 
       const cleanedApiKey = apiKey.trim();
       const shouldTest = cleanedApiKey.length > MIN_KEY_LENGTH_BEFORE_TESTING_CONNECTION;
@@ -57,7 +59,7 @@ export default function Step1() {
 
       if (!setApiKeyResponse.isOk) {
         setGlobalError(setApiKeyResponse.uiMessage);
-        // Continue even if not OK, we will re-attempt to save next time
+        // Continue even if not OK, we will re-attempt saving next time
       }
 
       setIsApiKeyDirty(false);
@@ -77,7 +79,7 @@ export default function Step1() {
 
       if (!completeTutorialStepResponse.isOk) {
         setGlobalError(completeTutorialStepResponse.uiMessage);
-        // Continue even if not OK, this is just a quality of life; user's input cached for the browser session
+        // Continue even if not OK, this is just a quality of life
       }
 
       if (!isFirstRender.current) {

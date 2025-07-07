@@ -18,10 +18,10 @@ export const useTheme = () => {
     }
   };
 
-  // Apply the theme ASAP upon selection
+  // Apply theme ASAP upon selection
   useEffect(applyTheme, [theme]);
 
-  // When system theme is selected; listen to system theme changes
+  // When system theme is selected; sync with system theme changes
   useEffect(
     function listenToSystemThemeChanges() {
       if (theme !== Theme.SYSTEM) return;

@@ -6,12 +6,12 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ErrOr<S
     {
       target: { tabId },
       /**
-       * Pro tip: GPT a vanilla JS version of this function then test directly on web page (rapidly feedback loop)
-       * Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
+       * Pro-tip: Gen a vanilla JS version of this function then test directly on web page (rapid feedback loop)
+       * FYI: Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
        */
       func: () => {
         /**
-         * Find the associated label for an element
+         * Find the associated label for a HTML element
          */
         const findLabel = (el: HTMLElement): string => {
           // Try label[for] first
@@ -88,6 +88,7 @@ export const scrapeFormFields = (tabId: number, sendResponse: (response: ErrOr<S
           };
 
           // 4. Set a selector to find this element later
+          // GOTCHA: Must 'INPUT_SELECTOR_NAME' must match in form-filling phase, unable to import a shared constant here
           const INPUT_SELECTOR_NAME = "data-digi-field";
           el.setAttribute(INPUT_SELECTOR_NAME, fieldId);
 

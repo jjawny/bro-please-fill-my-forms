@@ -14,7 +14,6 @@ import { logError } from "~/lib/utils/log-utils";
 
 type PinMode = "SETTING_UP" | "LOCKED" | "UNLOCKED";
 
-//#region STORE DEFINITION
 type PinStore = ByoKeyData &
   TemporaryData & {
     isInitialized: boolean;
@@ -71,15 +70,13 @@ type PinStore = ByoKeyData &
      */
     GET_DEBUG_DUMP: () => object;
   };
-//#endregion
 
 export const usePinStore = create<PinStore>((set, get) => {
-  //#region PRIVATE
   const transitionToLockedMode = async (otherState?: Partial<PinStore>): Promise<ErrOr> => {
     let messages: Messages = ["Begin transitioning to locked mode"];
 
     try {
-      // If the user intentionally locks, clear the PIN so nothing tries to auto-unlock
+      // Clear the PIN so no components attempt auto-unlock
       const pin = null;
       const clearTempDataResponse = await saveToSessionStorage(TemporaryDataSchema, { pin, prompt: get().prompt });
 
@@ -87,7 +84,7 @@ export const usePinStore = create<PinStore>((set, get) => {
 
       if (!clearTempDataResponse.isOk) {
         messages.push("Failed to clear PIN to prevent future auto-unlocks");
-        // continue
+        // Continue silently as not a fatal error
       }
 
       set({
@@ -223,9 +220,6 @@ export const usePinStore = create<PinStore>((set, get) => {
     }
   };
 
-  //#endregion
-
-  //#region PUBLIC
   return {
     ...DEFAULT_BYO_KEY_DATA,
     ...DEFAULT_TEMPORARY_DATA,
@@ -487,5 +481,4 @@ export const usePinStore = create<PinStore>((set, get) => {
 
     GET_DEBUG_DUMP: () => ({ ...get() }),
   };
-  //#endregion
 });

@@ -1,5 +1,3 @@
-// Function to scrape form fields from the page
-
 import { ServiceWorkerAction } from "~/lib/enums/ServiceWorkerAction";
 import { err, ErrOr } from "~/lib/models/ErrOr";
 import { ScrapedForm } from "~/lib/models/FormField";
@@ -29,6 +27,7 @@ chrome.runtime.onMessage.addListener(
         }
         fillFormFields(message.tabId, message.formData, sendResponse);
         return KEEP_CHANNEL_OPEN;
+      // No default case needed here
     }
   },
 );

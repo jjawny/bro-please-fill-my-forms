@@ -8,5 +8,5 @@ export const TutorialDataSchema = z.object({
 export type TutorialData = z.infer<typeof TutorialDataSchema>;
 
 export const DEFAULT_TUTORIAL_DATA: TutorialData = {
-  currentStep: TutorialStep.ENCRYPT_GEMINI_API_KEY, // default to step 1
+  currentStep: TutorialStep.ENCRYPT_GEMINI_API_KEY,
 };

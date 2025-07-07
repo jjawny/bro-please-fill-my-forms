@@ -101,10 +101,10 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
       const currentTutorialStep = get().currentTutorialStep;
       const nextTutorialProgress: TutorialProgress = { ...get().tutorialProgress };
 
-      // Mark all steps prior to the given step as complete
+      // Mark all steps prior to the given step as completed
       for (let i = 0; i < givenStepIndex; i++) {
         if (nextTutorialProgress[TutorialStepValues[i]] === false) {
-          // Silently continue (using OK >>> err) as it's expected the user may try to interact w steps out-of-order (not an actual error)
+          // Silently continue (return OK) as it's expected the user may try to interact w steps out-of-order (not an actual error)
           return ok({ messages, uiMessage: `Please complete prior step '${TutorialStepValues[i]}' first` });
         }
       }
@@ -112,14 +112,15 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
       // Mark the given step as complete
       nextTutorialProgress[step] = true;
 
-      // Only advance beyond the currentTutorialStep if we're completing that specific step
+      // Only advance beyond the current step if we're completing it
       let nextCurrentTutorialStepStep = currentTutorialStep;
       if (step === currentTutorialStep) {
         const nextStepValue = TutorialStepValues[givenStepIndex + 1];
         nextCurrentTutorialStepStep = nextStepValue ?? undefined;
       }
 
-      // Save to storage to avoid repeating tutorial or losing progress ONLY if there is a change
+      // Save to storage to avoid repeating tutorial or losing progress
+      // Only save if there is a change to avoid hitting storage rate-limits
       if (currentTutorialStep !== nextCurrentTutorialStepStep) {
         const saveToSessionStorageResponse = await saveToSyncStorage(TutorialDataSchema, {
           currentStep: nextCurrentTutorialStepStep ?? null,

@@ -36,7 +36,9 @@ export default function AppContent() {
           }
         }
 
-        await sleep(100); // Simulate latency to avoid flash of validation state (better UX)
+        // Simulate small latency to avoid flash of validation state
+        //  better UX to allow time for user to acknowledge validation state
+        await sleep(100);
         setIsAutoUnlocking(false);
       }
     };
@@ -59,6 +61,7 @@ export default function AppContent() {
       </div>
     );
   }
+
   return (
     <>
       <Hero />

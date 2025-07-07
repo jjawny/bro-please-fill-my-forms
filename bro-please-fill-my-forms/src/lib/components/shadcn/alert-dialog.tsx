@@ -16,7 +16,8 @@ function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialog
   return <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />;
 }
 
-//#region AlertDialogOverlay fix for ref console error
+//#region <AlertDialogOverlay> fix for ref-related console error
+
 // ORIGINAL VERSION
 // function AlertDialogOverlay({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
 //   return (
@@ -31,7 +32,7 @@ function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialog
 //   );
 // }
 
-// FIX VERSION
+// FIXED VERSION
 const AlertDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>

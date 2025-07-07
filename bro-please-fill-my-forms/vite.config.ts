@@ -19,9 +19,9 @@ export default defineConfig({
         "service-worker": "src/lib/service-workers/service-worker.ts",
       },
       output: {
-        // Ensure service-worker files have no hash in the name after [transpiled, bundled, minified, etc]
+        // Ensure service-worker files have no hash in the name after transpiled/bundled/minified/etc
         // Why? CRX's manifest points to the service-worker by name
-        // Other files will have a hash to ensure cache busting
+        // Other files will continue to have hashed names to ensure cache busting
         entryFileNames: (chunkInfo) => {
           return chunkInfo.name === "service-worker" ? "assets/[name].js" : "assets/[name]-[hash].js";
         },
@@ -30,7 +30,6 @@ export default defineConfig({
         format: "es",
       },
     },
-    // CRX expect a 'dist' folder
     outDir: "dist",
   },
 });

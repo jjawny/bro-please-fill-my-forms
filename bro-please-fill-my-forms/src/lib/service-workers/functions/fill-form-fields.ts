@@ -11,34 +11,35 @@ export const fillFormFields = (
       target: { tabId },
       args: [formData],
       /**
-       * Pro tip: GPT a vanilla JS version of this function then test directly on web page (rapidly feedback loop)
-       * Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
+       * Pro-tip: Gen a vanilla JS version of this function then test directly on web page (rapid feedback loop)
+       * FYI: Cannot import libs/constants/etc here; must be isolated/lightweight/vanilla
        */
       func: (formData) => {
         /**
-         * Finds the element using multiple strats
+         * Finds the HTML element using multiple strats
          */
         const findElement = (fieldId: string) => {
-          // Try custom attribute set during scraping
+          // Try custom attribute set during scraping phase
+          // GOTCHA: Must 'INPUT_SELECTOR_NAME' must match in scraping phase, unable to import a shared constant here
           const INPUT_SELECTOR_NAME = "data-digi-field";
           let element = document.querySelector(`[${INPUT_SELECTOR_NAME}="${fieldId}"]`);
           if (element) return element;
 
-          // Try the ID
+          // Try ID
           element = document.getElementById(fieldId);
           if (element) return element;
 
-          // Try the name attribute
+          // Try name attribute
           element = document.querySelector(
             `input[name="${fieldId}"], select[name="${fieldId}"], textarea[name="${fieldId}"]`,
           );
           if (element) return element;
 
-          // Try the aria-label
+          // Try aria-label
           element = document.querySelector(`[aria-label="${fieldId}"]`);
           if (element) return element;
 
-          // Try the contenteditable elements
+          // Try contenteditable elements
           element = document.querySelector(`[contenteditable="true"][data-field="${fieldId}"]`);
           return element;
         };
@@ -57,14 +58,14 @@ export const fillFormFields = (
 
           events.forEach((event) => element.dispatchEvent(event));
 
-          // Also trigger React/Vue specific events
+          // Trigger React/Vue specific events
           const reactEvent = new Event("input", { bubbles: true });
           Object.defineProperty(reactEvent, "target", { writable: false, value: element });
           element.dispatchEvent(reactEvent);
         };
 
         /**
-         * Sets the new value for different field types
+         * Injects the value - handling different field types
          */
         const setValue = (element: HTMLElement, value: string): boolean => {
           const handleInputElement = (input: HTMLInputElement, value: string, type: string): boolean => {
@@ -113,7 +114,7 @@ export const fillFormFields = (
                 return true;
 
               default:
-                // Handle text, email, password, number, url, tel, etc.
+                // Handle text, email, password, number, url, tel, etc
                 input.value = value;
                 triggerEvents(input);
                 return true;
