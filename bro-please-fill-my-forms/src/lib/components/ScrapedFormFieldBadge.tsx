@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils/cn";
 
 const SHARED_BADGE_STYLES = "select-none text-xs cursor-pointer hover:scale-105";
 
-export default function FieldBadge({
+export default function ScrapedFormFieldBadge({
   field,
   widthPx,
   onClick,

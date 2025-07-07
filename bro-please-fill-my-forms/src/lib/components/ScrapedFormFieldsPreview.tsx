@@ -3,7 +3,7 @@ import { useUiItemWidthCalculator } from "~/lib/hooks/useUiItemWidthCalculator";
 import { ScrapedForm } from "~/lib/models/FormField";
 import { cn } from "~/lib/utils/cn";
 import DialogWrapper from "./DialogWrapper";
-import FieldBadge, { FieldDetailBadge, OverflowBadge } from "./FormFieldBadge";
+import ScrapedFormFieldBadge, { FieldDetailBadge, OverflowBadge } from "./ScrapedFormFieldBadge";
 
 // Test/adjust these values together
 const UI_ITEM_WIDTH_PX = 90;
@@ -13,7 +13,7 @@ const GAP_WIDTH_PX = 4;
 /**
  * Hints at the scraped inputs for transparency/better feedback
  */
-export default function FormFieldBadgeRow({
+export default function ScrapedFormFieldsPreview({
   scrapedForm,
   className,
 }: {
@@ -43,7 +43,7 @@ export default function FormFieldBadgeRow({
         isOpen={isFieldsDialogOpen}
         onClose={() => setIsFieldsDialogOpen(false)}
         Title={`Found ${scrapedForm.fields.length} Fields`}
-        Content={<FormFieldsSummary scrapedForm={scrapedForm} />}
+        Content={<ScrapedFormFieldsSummary scrapedForm={scrapedForm} />}
       />
       <div
         className={cn(
@@ -53,7 +53,7 @@ export default function FormFieldBadgeRow({
         style={{ gap: `${GAP_WIDTH_PX}px` }}
       >
         {visibleFields.map((field) => (
-          <FieldBadge key={field.id} field={field} widthPx={UI_ITEM_WIDTH_PX} onClick={openDialog} />
+          <ScrapedFormFieldBadge key={field.id} field={field} widthPx={UI_ITEM_WIDTH_PX} onClick={openDialog} />
         ))}
         {invisibleItemCount > 0 && (
           <OverflowBadge count={invisibleItemCount} widthPx={UI_OVERFLOW_ITEM_WIDTH_PX} onClick={openDialog} />
@@ -63,7 +63,7 @@ export default function FormFieldBadgeRow({
   );
 }
 
-function FormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
+function ScrapedFormFieldsSummary({ scrapedForm }: { scrapedForm: ScrapedForm }) {
   const SoftBorder = ({ className }: { className?: string }) => {
     return (
       <span

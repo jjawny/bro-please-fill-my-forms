@@ -15,7 +15,7 @@ import { cn } from "~/lib/utils/cn";
 import { debounce } from "~/lib/utils/debounce-utils";
 import { logResponse } from "~/lib/utils/log-utils";
 import { populatePrompt } from "~/lib/utils/prompt-utils";
-import FormFieldBadgeRow from "./FormFieldBadgeRow";
+import ScrapedFormFieldsPreview from "./ScrapedFormFieldsPreview";
 import { RippleButton } from "./shadcn/ripple";
 import { Textarea } from "./shadcn/textarea";
 import Spinner from "./Spinner";
@@ -196,7 +196,7 @@ export default function Step2() {
             className={cn("bg-[var(--pin-background-color)] resize-none ![field-sizing:initial]")}
           />
           {scrapedForm && (
-            <FormFieldBadgeRow
+            <ScrapedFormFieldsPreview
               scrapedForm={scrapedForm}
               className="absolute bottom-0 left-0 right-0 h-fit pt-6 pb-1 rounded-md m-[1px] flex items-center px-2 bg-gradient-to-t from-[var(--pin-background-color)] via-[var(--pin-background-color)] to-transparent justify-end"
             />
