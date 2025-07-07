@@ -1,6 +1,6 @@
 import { XIcon } from "lucide-react";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
-import { RippleButton } from "./shadcn/ripple";
+import RippleButton from "./shadcn/ripple";
 
 /**
  * Place to display misc/generic/global errors rather than using toasts (as this is a CRX)

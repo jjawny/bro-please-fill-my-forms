@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Pin, { PinHelperText } from "~/lib/components/Pin";
-import { RippleButton } from "~/lib/components/shadcn/ripple";
+import RippleButton from "~/lib/components/shadcn/ripple";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";
 import AlertDialogWrapper from "./AlertDialogWrapper";

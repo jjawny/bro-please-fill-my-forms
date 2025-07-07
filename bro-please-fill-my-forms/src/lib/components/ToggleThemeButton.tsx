@@ -1,5 +1,5 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { RippleButton } from "~/lib/components/shadcn/ripple";
+import RippleButton from "~/lib/components/shadcn/ripple";
 import { Theme } from "~/lib/enums/Theme";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { useTheme } from "~/lib/hooks/useTheme";

@@ -1,5 +1,5 @@
 import { LockIcon, LockOpenIcon } from "lucide-react";
-import { RippleButton } from "~/lib/components/shadcn/ripple";
+import RippleButton from "~/lib/components/shadcn/ripple";
 import { useGlobalStore } from "~/lib/hooks/stores/useGlobalStore";
 import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { logResponse } from "~/lib/utils/log-utils";

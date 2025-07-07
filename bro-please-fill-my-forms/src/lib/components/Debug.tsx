@@ -5,7 +5,7 @@ import { usePinStore } from "~/lib/hooks/stores/usePinStore";
 import { useUserPreferencesStore } from "~/lib/hooks/stores/useUserPreferencesStore";
 import { useKeyboardShortcuts } from "~/lib/hooks/useKeyboardShortcuts";
 import MenuWrapper, { MenuItem } from "./MenuWrapper";
-import { RippleButton } from "./shadcn/ripple";
+import RippleButton from "./shadcn/ripple";
 
 /**
  * Debug UI during development only; shortcuts still work in production
