@@ -15,7 +15,9 @@ Chromium Extension (CRX) that **auto-fill** any form using **natural** language 
 
 ## 🔌 How do I run it?
 ### 🏪 Chrome Web Store:
-1. Get it [here](https://chromewebstore.google.com/detail/bro-please-fill-my-forms/cginpdgbbfjkanihacmoiggbneiliabf)!
+Get it [here](https://chromewebstore.google.com/detail/bro-please-fill-my-forms/cginpdgbbfjkanihacmoiggbneiliabf)!
+
+<img src="README/preview.png" alt="inspect service worker logs" style="max-height: 128px;">
 
 ### 🧑‍💻 Manually:
 1. `npm run build` will dump the artifact [here](./bro-please-fill-my-forms/dist)
@@ -30,7 +32,9 @@ Chromium Extension (CRX) that **auto-fill** any form using **natural** language 
 
 ## 🪵 How do I view the console logs?
 - ⚛️ Component logs? inspect the popup UI
-- 🤖 Service worker logs? inspect the extension <img src="bro-please-fill-my-forms/public/images/README/inspect-service-worker-logs.png" alt="inspect service worker logs" style="max-height: 128px;">
+- 🤖 Service worker logs? inspect the extension
+  
+  <img src="README/inspect-service-worker-logs.png" alt="inspect service worker logs" style="max-height: 128px;">
 - 💉 Injected scripts logs (`chrome.scripting.executeScript`)? inspect the current page
 
 ## ⚡️ How do I optimize the bundle size?
